@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>365BET - 嘴炮王足球竞猜</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg: #0d0d1a;
@@ -30,9 +29,6 @@ body {
   background: var(--bg); color: var(--text); min-height: 100vh;
   padding-bottom: 76px; overflow-x: hidden;
 }
-::-webkit-scrollbar { width:4px; }
-::-webkit-scrollbar-thumb { background:var(--text2); border-radius:4px; }
-
 .header {
   position:sticky; top:0; z-index:100;
   background:linear-gradient(135deg,#0d0d1a 0%,#1a0a2e 100%);
@@ -126,10 +122,7 @@ body {
 .btn-primary { background:var(--primary); color:#000; }
 .btn-gold { background:var(--gold); color:#000; }
 .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
-.btn-red { background:var(--red); color:#fff; }
-.btn-blue { background:var(--blue); color:#fff; }
 .btn-small { padding:4px 12px; font-size:11px; }
-.btn:disabled { opacity:.3; cursor:default; }
 
 .summary-card {
   background:linear-gradient(135deg,var(--card),var(--card2));
@@ -227,7 +220,7 @@ body {
 .admin-panel input:focus { border-color:var(--gold); }
 .admin-row { display:flex; gap:8px; }
 .admin-row input { flex:1; }
-.stake-option input:checked+span { background:var(--gold) !important; color:#000 !important; border-color:var(--gold) !important; }
+.stake-option input:checked+span { background:var(--gold)!important; color:#000!important; border-color:var(--gold)!important; }
 
 .debt-summary {
   display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;
@@ -247,7 +240,6 @@ body {
 .debt-amount { font-size:15px; font-weight:700; margin-left:auto; }
 .debt-amount.positive { color:var(--primary); }
 .debt-amount.negative { color:var(--red); }
-.debt-item .sub { font-size:11px; color:var(--text2); }
 
 .empty-state { text-align:center; padding:40px 20px; color:var(--text2); }
 .empty-state .icon { font-size:48px; margin-bottom:12px; opacity:.5; }
@@ -289,7 +281,6 @@ body {
   animation: spin .8s linear infinite; margin-bottom:12px;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
-
 @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 .match-card,.bill-item,.rank-card,.debt-item { animation:fadeIn .3s ease; }
 
@@ -303,24 +294,24 @@ body {
 
 <div class="header">
   <h1>⚽ 365BET</h1>
-  <button class="user-btn" id="userBtn" onclick="showUserSelect()">
+  <button class="user-btn" id="userBtn">
     <span class="avatar" id="userAvatar">?</span>
     <span id="userName">选择用户</span>
   </button>
-  <button class="settings-btn" onclick="toggleAdmin()" title="管理员模式">⚙</button>
+  <button class="settings-btn" id="adminBtn" title="管理员模式">⚙</button>
 </div>
 
 <div id="tabMatches" class="content active">
-  <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
-    <button class="btn btn-outline btn-small league-filter active" data-league="all" onclick="filterLeague('all')">全部</button>
-    <button class="btn btn-outline btn-small league-filter" data-league="英超" onclick="filterLeague('英超')">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</button>
-    <button class="btn btn-outline btn-small league-filter" data-league="欧冠" onclick="filterLeague('欧冠')">🏆 欧冠</button>
-    <button class="btn btn-outline btn-small league-filter" data-league="世界杯" onclick="filterLeague('世界杯')">🌍 世界杯</button>
+  <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;" id="leagueFilters">
+    <button class="btn btn-outline btn-small active" data-league="all">全部</button>
+    <button class="btn btn-outline btn-small" data-league="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</button>
+    <button class="btn btn-outline btn-small" data-league="欧冠">🏆 欧冠</button>
+    <button class="btn btn-outline btn-small" data-league="世界杯">🌍 世界杯</button>
   </div>
   <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
   <div class="admin-toggle">
     <label class="switch">
-      <input type="checkbox" id="adminSwitch" onchange="toggleAdmin()">
+      <input type="checkbox" id="adminSwitch">
       <span class="slider"></span>
     </label>
     <label for="adminSwitch">管理员模式</label>
@@ -340,29 +331,14 @@ body {
     <label>比赛时间</label>
     <input type="datetime-local" id="addDate">
     <label>每注金额 (输家每人付)</label>
-    <div style="display:flex;gap:6px;margin-bottom:10px;">
-      <label class="stake-option" onclick="selectStake(this,10)">
-        <input type="radio" name="addStake" value="10" checked hidden>
-        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥10</span>
-      </label>
-      <label class="stake-option" onclick="selectStake(this,15)">
-        <input type="radio" name="addStake" value="15" hidden>
-        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥15</span>
-      </label>
-      <label class="stake-option" onclick="selectStake(this,20)">
-        <input type="radio" name="addStake" value="20" hidden>
-        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥20</span>
-      </label>
-      <label class="stake-option" onclick="selectStake(this,25)">
-        <input type="radio" name="addStake" value="25" hidden>
-        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥25</span>
-      </label>
-      <label class="stake-option" onclick="selectStake(this,30)">
-        <input type="radio" name="addStake" value="30" hidden>
-        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥30</span>
-      </label>
+    <div style="display:flex;gap:6px;margin-bottom:10px;" id="stakeOptions">
+      <label class="stake-option"><input type="radio" name="addStake" value="10" checked hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥10</span></label>
+      <label class="stake-option"><input type="radio" name="addStake" value="15" hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥15</span></label>
+      <label class="stake-option"><input type="radio" name="addStake" value="20" hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥20</span></label>
+      <label class="stake-option"><input type="radio" name="addStake" value="25" hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥25</span></label>
+      <label class="stake-option"><input type="radio" name="addStake" value="30" hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥30</span></label>
     </div>
-    <button class="btn btn-gold" onclick="addMatch()" style="width:100%;margin-top:4px;">➕ 添加比赛</button>
+    <button class="btn btn-gold" id="addMatchBtn" style="width:100%;margin-top:4px;">➕ 添加比赛</button>
   </div>
 </div>
 
@@ -370,22 +346,29 @@ body {
 <div id="tabRank" class="content"><div id="rankContent"></div></div>
 <div id="tabDebt" class="content"><div id="debtContent"></div></div>
 
-<!-- User Select Modal -->
 <div class="modal-overlay" id="userModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('userModal')">✕</button>
+    <button class="modal-close" id="closeModalBtn">✕</button>
     <h2>👤 选择你的身份</h2>
     <div class="user-grid" id="userGrid"></div>
   </div>
 </div>
 
-<script>
+<div class="tabs">
+  <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
+  <button class="tab" data-tab="Bill"><span class="icon">💰</span><span>账单</span></button>
+  <button class="tab" data-tab="Rank"><span class="icon">🏆</span><span>排行榜</span></button>
+  <button class="tab" data-tab="Debt"><span class="icon">📋</span><span>欠款</span></button>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
 // ======================== SUPABASE ========================
 const SUPABASE_URL = 'https://dpfdndvxhsbdngvypoie.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZmRuZHZ4aHNiZG5ndnlwb2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjg4NDIsImV4cCI6MjA5MzgwNDg0Mn0.Np3v76r6q9sfu0LsP82UqQmRQH8tVhaF0G2fzlqYoeQ';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ======================== DATA ========================
 const USERS = ['老章','大毛','王彬','王玺','三瓶','糖糖','二红','隔离'];
 const COLORS = ['#00e676','#448aff','#ffd740','#ff5252','#ab47bc','#26c6da','#ff7043','#7e57c2'];
 
@@ -401,9 +384,8 @@ const TEAMS = {
   英格兰:['🏴󠁧󠁢󠁥󠁮󠁧󠁿','英格兰'], 西班牙:['🇪🇸','西班牙'],
   葡萄牙:['🇵🇹','葡萄牙'], 荷兰:['🇳🇱','荷兰'],
 };
-
-function teamEmoji(name) { return TEAMS[name]?.[0]||'⚽'; }
-function teamShort(name) { return TEAMS[name]?.[1]||name; }
+function teamEmoji(n) { return TEAMS[n]?.[0]||'⚽'; }
+function teamShort(n) { return TEAMS[n]?.[1]||n; }
 
 const SEED_MATCHES = [
   { id:'m1', league:'英超', home:'阿森纳', away:'切尔西', date:new Date('2026-05-03T22:00').getTime(), home_score:2, away_score:1, stake:15, settled:false, settlement:null },
@@ -424,677 +406,334 @@ const SEED_MATCHES = [
 
 // ======================== STATE ========================
 let state = {
-  users: USERS.map((n,i)=>({id:i,name:n,balance:0,points:0,wins:0,losses:0})),
-  matches: [],
-  predictions: [],
-  settlementLogs: [],
-  currentUser: null,
-  isAdmin: false,
-  loaded: false
+  users: USERS.map((n,i)=>({id:i,name:n})),
+  matches: [], predictions: [], settlementLogs: [],
+  currentUser: localStorage.getItem('zuipao_user') !== null ? parseInt(localStorage.getItem('zuipao_user')) : null,
+  isAdmin: false, loaded: false
 };
 
-// ======================== SUPABASE OPERATIONS ========================
+// ======================== DATA LOADING ========================
 async function loadFromSupabase() {
-  // Load matches
-  const { data: matches } = await supabase.from('matches').select('*').order('date');
-  if (matches && matches.length > 0) {
-    state.matches = matches;
-  } else {
-    // Seed data
-    const { error } = await supabase.from('matches').insert(SEED_MATCHES);
-    if (!error) {
-      const { data: seeded } = await supabase.from('matches').select('*').order('date');
-      state.matches = seeded || [];
+  try {
+    let { data: matches, error } = await supabase.from('matches').select('*').order('date');
+    if (error) throw error;
+
+    if (!matches || matches.length === 0) {
+      const { error: insErr } = await supabase.from('matches').insert(SEED_MATCHES);
+      if (insErr) throw insErr;
+      const { data: m2 } = await supabase.from('matches').select('*').order('date');
+      matches = m2 || [];
     }
+
+    state.matches = matches || [];
+
+    const { data: preds } = await supabase.from('predictions').select('*');
+    state.predictions = preds || [];
+
+    const { data: logs } = await supabase.from('settlement_logs').select('*').order('created_at', { ascending: false });
+    state.settlementLogs = logs || [];
+
+    await settleAllPending();
+    state.loaded = true;
+  } catch (e) {
+    console.error('Supabase load error:', e);
+    document.getElementById('matchList').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>数据库连接失败，请刷新重试</p><p style="font-size:11px;margin-top:6px;color:var(--text2);">${e.message}</p></div>`;
   }
-
-  // Load predictions
-  const { data: preds } = await supabase.from('predictions').select('*');
-  state.predictions = preds || [];
-
-  // Load settlement logs
-  const { data: logs } = await supabase.from('settlement_logs').select('*').order('created_at', { ascending: false });
-  state.settlementLogs = logs || [];
-
-  // Settle any pending matches
-  await settleAllPending();
-
-  state.loaded = true;
 }
 
-function getPredictionsForMatch(matchId) {
-  return state.predictions.filter(p => p.match_id === matchId);
-}
+function getPreds(matchId) { return state.predictions.filter(p => p.match_id === matchId); }
+function getPred(matchId, name) { return state.predictions.find(p => p.match_id === matchId && p.user_name === name); }
 
-function getPredictionForUser(matchId, userName) {
-  return state.predictions.find(p => p.match_id === matchId && p.user_name === userName);
-}
-
-function getUserBalance(userName) {
-  let balance = 0;
-  let wins = 0;
-  let losses = 0;
-
-  state.matches.filter(m => m.settled && m.settlement).forEach(match => {
-    const s = match.settlement;
-    if (s.type === 'void') return;
-    if (s.winners && s.winners.includes(userName)) {
-      balance += s.amountPerWinner;
-      wins++;
-    }
-    if (s.losers && s.losers.includes(userName)) {
-      balance -= s.amountPerLoser;
-      losses++;
-    }
+function getStats(name) {
+  let balance=0, wins=0, losses=0;
+  state.matches.filter(m=>m.settled&&m.settlement).forEach(m=>{
+    const s=m.settlement;
+    if(s.type==='void') return;
+    if(s.winners&&s.winners.includes(name)){balance+=s.amountPerWinner;wins++}
+    if(s.losers&&s.losers.includes(name)){balance-=s.amountPerLoser;losses++}
   });
-
-  return { balance: Math.round(balance * 100) / 100, wins, losses };
+  return { balance: Math.round(balance*100)/100, wins, losses };
 }
 
-function getAllUserStats() {
-  return state.users.map(u => {
-    const { balance, wins, losses } = getUserBalance(u.name);
-    return { ...u, balance, wins, losses, points: wins * 2 };
-  });
-}
+function getCurrUser() { return state.currentUser!==null&&state.currentUser!==undefined ? state.users[state.currentUser] : null; }
 
 // ======================== SETTLEMENT ========================
 async function settleMatch(match) {
-  if (!match.home_score || !match.away_score || match.home_score === null || match.away_score === null) return;
-  if (match.settled) return;
-
-  const preds = getPredictionsForMatch(match.id);
-  const winners = preds.filter(p => p.home_score === match.home_score && p.away_score === match.away_score);
-  const winnerNames = winners.map(w => w.user_name);
-  const allUserNames = USERS;
-  const loserNames = allUserNames.filter(n => !winnerNames.includes(n));
-
+  if (!match.home_score || !match.away_score || match.home_score===null || match.away_score===null || match.settled) return;
+  const preds = getPreds(match.id);
+  const winners = preds.filter(p => p.home_score===match.home_score && p.away_score===match.away_score).map(p=>p.user_name);
+  const losers = USERS.filter(n => !winners.includes(n));
+  const fee = match.stake||10;
   let settlement;
-  if (winnerNames.length === 0) {
-    settlement = { type:'void', winners:[], losers:allUserNames, amountPerLoser:0, amountPerWinner:0, totalPot:0 };
-  } else {
-    const feePerLoser = match.stake || 10;
-    const totalPot = loserNames.length * feePerLoser;
-    const perWinner = Math.floor((totalPot / winnerNames.length) * 100) / 100;
-    let remainder = Math.round((totalPot - perWinner * winnerNames.length) * 100) / 100;
 
-    settlement = {
-      type:'settled', winners:winnerNames, losers:loserNames,
-      amountPerWinner: perWinner, amountPerLoser: feePerLoser,
-      totalPot, remainder
-    };
+  if (winners.length===0) {
+    settlement = { type:'void', winners:[], losers:USERS, amountPerLoser:0, amountPerWinner:0, totalPot:0 };
+  } else {
+    const pot = losers.length * fee;
+    const perW = Math.floor((pot / winners.length)*100)/100;
+    const rem = Math.round((pot - perW*winners.length)*100)/100;
+    settlement = { type:'settled', winners, losers, amountPerWinner: perW, amountPerLoser: fee, totalPot: pot, remainder: rem };
   }
 
-  // Update match in DB
-  await supabase.from('matches').update({
-    settled: true,
-    settlement: JSON.stringify(settlement)
-  }).eq('id', match.id);
-
-  // Insert settlement log
-  let detail;
-  if (settlement.type === 'void') {
-    detail = `${match.home} ${match.home_score}-${match.away_score} ${match.away} · 底注¥${match.stake||10} · 无人猜中，本场流局`;
-  } else {
-    detail = `${match.home} ${match.home_score}-${match.away_score} ${match.away} · 底注¥${match.stake||10} · 赢家: ${winnerNames.join(', ')}，每人得 ¥${settlement.amountPerWinner.toFixed(2)}`;
-  }
+  await supabase.from('matches').update({ settled:true, settlement: JSON.stringify(settlement) }).eq('id', match.id);
+  const detail = settlement.type==='void'
+    ? `${match.home} ${match.home_score}-${match.away_score} ${match.away} · 底注¥${fee} · 无人猜中，本场流局`
+    : `${match.home} ${match.home_score}-${match.away_score} ${match.away} · 底注¥${fee} · 赢家: ${winners.join(', ')}，每人得 ¥${settlement.amountPerWinner.toFixed(2)}`;
   await supabase.from('settlement_logs').insert({ match_id: match.id, detail });
 
-  // Update local state
   match.settled = true;
   match.settlement = settlement;
   state.settlementLogs.unshift({ match_id: match.id, detail, created_at: new Date().toISOString() });
 }
 
 async function settleAllPending() {
-  const pending = state.matches.filter(m => m.home_score != null && m.away_score != null && !m.settled);
-  for (const m of pending) {
-    await settleMatch(m);
+  for (const m of state.matches) {
+    if (m.home_score!=null && m.away_score!=null && !m.settled) await settleMatch(m);
   }
 }
 
-// ======================== UI RENDER ========================
-function getStatus(match) {
-  if (match.settled) {
-    if (match.settlement?.type === 'void') return { label:'流局', cls:'流局' };
-    return { label:'已结算', cls:'已结算' };
-  }
-  if (match.home_score != null) return { label:'待结算', cls:'待结算' };
-  const user = getCurrentUser();
-  if (user && getPredictionForUser(match.id, user.name)) return { label:'已预测', cls:'已预测' };
+// ======================== RENDER ========================
+function getStatus(m) {
+  if (m.settled) return { label: m.settlement?.type==='void'?'流局':'已结算', cls: m.settlement?.type==='void'?'流局':'已结算' };
+  if (m.home_score!=null) return { label:'待结算', cls:'待结算' };
+  const u=getCurrUser();
+  if (u&&getPred(m.id,u.name)) return { label:'已预测', cls:'已预测' };
   return { label:'待预测', cls:'待预测' };
 }
 
-function getCurrentUser() {
-  if (state.currentUser === null || state.currentUser === undefined) return null;
-  return state.users[state.currentUser];
-}
-
 function renderMatches() {
-  const el = document.getElementById('matchList');
-  if (!state.loaded) return;
+  const el=document.getElementById('matchList');
+  if(!state.loaded) return;
+  const league=document.querySelector('#leagueFilters .active')?.dataset?.league||'all';
+  const u=getCurrUser();
+  let f=state.matches;
+  if(league!=='all') f=f.filter(m=>m.league===league);
+  f.sort((a,b)=>a.date-b.date);
 
-  const league = document.querySelector('.league-filter.active')?.dataset?.league || 'all';
-  const user = getCurrentUser();
+  if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';return;}
 
-  let filtered = state.matches;
-  if (league !== 'all') filtered = filtered.filter(m => m.league === league);
-  filtered.sort((a,b) => a.date - b.date);
+  el.innerHTML=f.map(m=>{
+    const st=getStatus(m); const isPast=Date.now()>m.date||m.home_score!=null;
+    const pred=u?getPred(m.id,u.name):null; const canPredict=!isPast&&!pred&&u;
+    const stake=m.stake||10; const ds=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
 
-  if (filtered.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';
-    return;
-  }
+    let wi='';
+    if(m.settled&&m.settlement?.type==='settled') wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 赢家: ${m.settlement.winners.join(', ')} · 每人得 ¥${m.settlement.amountPerWinner.toFixed(2)} (底注¥${stake})</div>`;
+    else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局 (底注¥${stake})</div>`;
 
-  el.innerHTML = filtered.map(match => {
-    const status = getStatus(match);
-    const isPast = Date.now() > match.date || match.home_score != null;
-    const pred = user ? getPredictionForUser(match.id, user.name) : null;
-    const canPredict = !isPast && !pred && user;
-    const hasPred = !!pred;
+    let rd='';
+    if(m.home_score!=null&&m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
+    else if(m.home_score!=null&&state.isAdmin&&!m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
+    else if(canPredict) rd=`<div class="match-score-input"><input type="number" min="0" max="20" id="ph_${m.id}" placeholder="?"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="pa_${m.id}" placeholder="?"></div>`;
+    else if(pred) rd=`<div class="match-score">${pred.home_score} - ${pred.away_score}</div>`;
+    else rd=`<div class="match-score"><span class="vs">VS</span></div>`;
 
-    let winnerInfo = '';
-    if (match.settled && match.settlement?.type === 'settled') {
-      const wNames = match.settlement.winners.join(', ');
-      winnerInfo = `<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 赢家: ${wNames} · 每人得 ¥${match.settlement.amountPerWinner.toFixed(2)} (底注¥${match.stake||10})</div>`;
-    } else if (match.settlement?.type === 'void') {
-      winnerInfo = `<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局 (底注¥${match.stake||10})</div>`;
-    }
+    let ac='';
+    if(state.isAdmin&&m.home_score!=null&&!m.settled) ac=`<span style="font-size:11px;color:var(--gold);">⏳ 等待结算...</span>`;
+    else if(state.isAdmin&&!m.home_score&&isPast) ac=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}" placeholder="主" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}" placeholder="客" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" data-act="result" data-mid="${m.id}">录入比分</button></div>`;
+    else if(canPredict) ac=`<button class="btn btn-primary btn-small" data-act="predict" data-mid="${m.id}" style="margin-top:6px;">提交预测</button>`;
+    else if(pred&&!m.home_score) ac=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${pred.home_score}:${pred.away_score}</span>`;
 
-    let resultDisplay = '';
-    if (match.home_score != null && match.settled) {
-      resultDisplay = `<div class="match-score">${match.home_score} - ${match.away_score}</div>`;
-    } else if (match.home_score != null && state.isAdmin && !match.settled) {
-      resultDisplay = `<div class="match-score">${match.home_score} - ${match.away_score}</div>`;
-    } else if (canPredict) {
-      resultDisplay = `
-        <div class="match-score-input">
-          <input type="number" min="0" max="20" id="pred_h_${match.id}" placeholder="?">
-          <span style="color:var(--text2);font-weight:700;">:</span>
-          <input type="number" min="0" max="20" id="pred_a_${match.id}" placeholder="?">
-        </div>`;
-    } else if (hasPred) {
-      resultDisplay = `<div class="match-score">${pred.home_score} - ${pred.away_score}</div>`;
-    } else {
-      resultDisplay = `<div class="match-score"><span class="vs">VS</span></div>`;
-    }
-
-    let actions = '';
-    if (state.isAdmin && match.home_score != null && !match.settled) {
-      actions = `<span style="font-size:11px;color:var(--gold);">⏳ 等待结算...</span>`;
-    } else if (state.isAdmin && !match.home_score && isPast) {
-      actions = `
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;">
-          <input type="number" min="0" max="20" id="res_h_${match.id}" placeholder="主" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;">
-          <span style="color:var(--text2);font-weight:700;">:</span>
-          <input type="number" min="0" max="20" id="res_a_${match.id}" placeholder="客" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;">
-          <button class="btn btn-gold btn-small" onclick="enterResult('${match.id}')">录入比分</button>
-        </div>`;
-    } else if (canPredict) {
-      actions = `<button class="btn btn-primary btn-small" onclick="submitPrediction('${match.id}')" style="margin-top:6px;">提交预测</button>`;
-    } else if (hasPred && !match.home_score) {
-      actions = `<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${pred.home_score}:${pred.away_score}</span>`;
-    }
-
-    const dateStr = new Date(match.date).toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-    const stake = match.stake || 10;
-
-    return `
-      <div class="match-card">
-        <div class="match-header">
-          <span class="league-badge ${match.league}">${match.league}</span>
-          <span style="font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:1px 8px;border-radius:8px;">¥${stake}</span>
-          <span class="match-time">${dateStr}</span>
-          <span class="match-status ${status.cls}">${status.label}</span>
-        </div>
-        <div class="match-teams">
-          <div class="team">
-            <span class="logo">${teamEmoji(match.home)}</span>
-            <span class="name">${teamShort(match.home)}</span>
-          </div>
-          ${resultDisplay}
-          <div class="team away">
-            <span class="logo">${teamEmoji(match.away)}</span>
-            <span class="name">${teamShort(match.away)}</span>
-          </div>
-        </div>
-        ${winnerInfo}
-        ${actions}
-      </div>`;
+    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span style="font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:1px 8px;border-radius:8px;">¥${stake}</span><span class="match-time">${ds}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${teamEmoji(m.home)}</span><span class="name">${teamShort(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${teamEmoji(m.away)}</span><span class="name">${teamShort(m.away)}</span></div></div>${wi}${ac}</div>`;
   }).join('');
 }
 
 function renderBill() {
-  const el = document.getElementById('billContent');
-  if (!state.loaded) { el.innerHTML = '<div class="loading"><div class="spin"></div><p>加载中...</p></div>'; return; }
-
-  const user = getCurrentUser();
-  if (!user) {
-    el.innerHTML = '<div class="empty-state"><div class="icon">👤</div><p>请先选择身份</p><button class="btn btn-primary" onclick="showUserSelect()" style="margin-top:12px;">选择身份</button></div>';
-    return;
-  }
-
-  const stats = getUserBalance(user.name);
-  const settledMatches = state.matches.filter(m => m.settled);
-
-  let billItems = '';
-  settledMatches.forEach(match => {
-    if (!match.settlement) return;
-    if (match.settlement.type === 'void') {
-      billItems += `
-        <div class="bill-item">
-          <div class="match-info">
-            <div class="teams">${teamShort(match.home)} vs ${teamShort(match.away)}</div>
-            <div class="detail">${match.league} · ${match.home_score}:${match.away_score} · 无人猜中</div>
-          </div>
-          <div class="bill-amount" style="color:var(--text2);">—</div>
-        </div>`;
-      return;
-    }
-    const isWinner = match.settlement.winners.includes(user.name);
-    const isLoser = match.settlement.losers.includes(user.name);
-    if (!isWinner && !isLoser) return;
-
-    const amount = isWinner ? match.settlement.amountPerWinner : -match.settlement.amountPerLoser;
-    const pred = getPredictionForUser(match.id, user.name);
-
-    billItems += `
-      <div class="bill-item">
-        <div class="match-info">
-          <div class="teams">${teamShort(match.home)} ${match.home_score}:${match.away_score} ${teamShort(match.away)}</div>
-          <div class="detail">${match.league} · 预测 ${pred?pred.home_score+' : '+pred.away_score:'未预测'} · ${isWinner?'🏆 赢了':'💸 输了'}</div>
-        </div>
-        <div class="bill-amount ${amount>=0?'positive':'negative'}">${amount>=0?'+':''}¥${amount.toFixed(2)}</div>
-      </div>`;
-  });
-
-  if (!billItems) {
-    billItems = '<div class="empty-state"><div class="icon">📊</div><p>暂无已结算的比赛</p></div>';
-  }
-
-  el.innerHTML = `
-    <div class="summary-card">
-      <div style="font-size:14px;color:var(--text2);">💰 ${user.name} 的累计账单</div>
-      <div class="big-num ${stats.balance > 0 ? 'positive' : stats.balance < 0 ? 'negative' : 'zero'}">
-        ${stats.balance >= 0 ? '+' : ''}¥${stats.balance.toFixed(2)}
-      </div>
-      <div class="summary-row">
-        <div class="summary-item">
-          <div class="label">🏆 赢</div>
-          <div class="value" style="color:var(--primary);">+¥${Math.max(0,stats.balance).toFixed(2)}</div>
-        </div>
-        <div class="summary-item">
-          <div class="label">💸 输</div>
-          <div class="value" style="color:var(--red);">-¥${Math.max(0,-stats.balance).toFixed(2)}</div>
-        </div>
-        <div class="summary-item">
-          <div class="label">🎯 猜对</div>
-          <div class="value" style="color:var(--gold);">${stats.wins}次</div>
-        </div>
-        <div class="summary-item">
-          <div class="label">场次</div>
-          <div class="value">${settledMatches.length}</div>
-        </div>
-      </div>
-    </div>
-    <div style="font-size:13px;font-weight:600;margin:0 0 8px 4px;">📋 明细</div>
-    ${billItems}`;
+  const el=document.getElementById('billContent');
+  if(!state.loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const u=getCurrUser();
+  if(!u){el.innerHTML='<div class="empty-state"><div class="icon">👤</div><p>请先选择身份</p><button class="btn btn-primary" id="selUserBtn">选择身份</button></div>';return;}
+  const st=getStats(u.name);
+  const sm=state.matches.filter(m=>m.settled);
+  let bi=sm.map(m=>{
+    if(!m.settlement) return '';
+    if(m.settlement.type==='void') return `<div class="bill-item"><div class="match-info"><div class="teams">${teamShort(m.home)} vs ${teamShort(m.away)}</div><div class="detail">${m.league} · ${m.home_score}:${m.away_score} · 无人猜中</div></div><div class="bill-amount" style="color:var(--text2);">—</div></div>`;
+    const iw=m.settlement.winners.includes(u.name), il=m.settlement.losers.includes(u.name);
+    if(!iw&&!il) return '';
+    const amt=iw?m.settlement.amountPerWinner:-m.settlement.amountPerLoser;
+    const p=getPred(m.id,u.name);
+    return `<div class="bill-item"><div class="match-info"><div class="teams">${teamShort(m.home)} ${m.home_score}:${m.away_score} ${teamShort(m.away)}</div><div class="detail">${m.league} · 预测 ${p?p.home_score+' : '+p.away_score:'未预测'} · ${iw?'🏆 赢了':'💸 输了'}</div></div><div class="bill-amount ${amt>=0?'positive':'negative'}">${amt>=0?'+':''}¥${amt.toFixed(2)}</div></div>`;
+  }).filter(Boolean).join('');
+  if(!bi) bi='<div class="empty-state"><div class="icon">📊</div><p>暂无已结算的比赛</p></div>';
+  el.innerHTML=`<div class="summary-card"><div style="font-size:14px;color:var(--text2);">💰 ${u.name} 的累计账单</div><div class="big-num ${st.balance>0?'positive':st.balance<0?'negative':'zero'}">${st.balance>=0?'+':''}¥${st.balance.toFixed(2)}</div><div class="summary-row"><div class="summary-item"><div class="label">🏆 赢</div><div class="value" style="color:var(--primary);">+¥${Math.max(0,st.balance).toFixed(2)}</div></div><div class="summary-item"><div class="label">💸 输</div><div class="value" style="color:var(--red);">-¥${Math.max(0,-st.balance).toFixed(2)}</div></div><div class="summary-item"><div class="label">🎯 猜对</div><div class="value" style="color:var(--gold);">${st.wins}次</div></div><div class="summary-item"><div class="label">场次</div><div class="value">${sm.length}</div></div></div></div><div style="font-size:13px;font-weight:600;margin:0 0 8px 4px;">📋 明细</div>${bi}`;if(document.getElementById('selUserBtn'))document.getElementById('selUserBtn').onclick=showUserSelect;
 }
 
 function renderLeaderboard() {
-  const el = document.getElementById('rankContent');
-  if (!state.loaded) { el.innerHTML = '<div class="loading"><div class="spin"></div><p>加载中...</p></div>'; return; }
-
-  const allStats = getAllUserStats();
-  const sorted = [...allStats].sort((a,b) => {
-    if (b.points !== a.points) return b.points - a.points;
-    return b.balance - a.balance;
-  });
-
-  const currentUser = getCurrentUser();
-
-  let html = '<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 嘴炮王排行榜</div>';
-  sorted.forEach((user, idx) => {
-    const rankCls = idx === 0 ? 'gold' : idx === 1 ? 'silver' : idx === 2 ? 'bronze' : 'normal';
-    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx+1}`;
-    const isMe = currentUser && user.id === currentUser.id;
-
-    html += `
-      <div class="rank-card" style="${isMe?'border-color:var(--primary-dim);':''}">
-        <div class="rank-num ${rankCls}">${medal}</div>
-        <div class="rank-info">
-          <div class="name">${user.name} ${isMe?'<span style="font-size:10px;color:var(--primary);">(你)</span>':''}</div>
-          <div class="stats">🏆 赢 ${user.wins}次 · 💸 输 ${user.losses}次 · ${user.balance>=0?'+':''}¥${user.balance.toFixed(2)}</div>
-        </div>
-        <div class="rank-score">
-          <div class="pts">${user.points}</div>
-          <div class="label">积分</div>
-        </div>
-      </div>`;
-  });
-  el.innerHTML = html;
+  const el=document.getElementById('rankContent');
+  if(!state.loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const all=state.users.map(u=>{const s=getStats(u.name);return{...u,...s,points:s.wins*2};}).sort((a,b)=>b.points!==a.points?b.points-a.points:b.balance-a.balance);
+  const cu=getCurrUser();
+  el.innerHTML='<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 嘴炮王排行榜</div>'+all.map((u,i)=>{
+    const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'normal';
+    const med=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
+    const me=cu&&u.id===cu.id;
+    return `<div class="rank-card" style="${me?'border-color:var(--primary-dim);':''}"><div class="rank-num ${rc}">${med}</div><div class="rank-info"><div class="name">${u.name}${me?'<span style="font-size:10px;color:var(--primary);">(你)</span>':''}</div><div class="stats">🏆 赢 ${u.wins}次 · 💸 输 ${u.losses}次 · ${u.balance>=0?'+':''}¥${u.balance.toFixed(2)}</div></div><div class="rank-score"><div class="pts">${u.points}</div><div class="label">积分</div></div></div>`;
+  }).join('');
 }
 
 function renderDebts() {
-  const el = document.getElementById('debtContent');
-  if (!state.loaded) { el.innerHTML = '<div class="loading"><div class="spin"></div><p>加载中...</p></div>'; return; }
-
-  const allStats = getAllUserStats();
-  const sorted = [...allStats].filter(u => u.balance !== 0).sort((a,b) => b.balance - a.balance);
-  const creditors = sorted.filter(u => u.balance > 0).map(u => ({...u}));
-  const debtors = sorted.filter(u => u.balance < 0).map(u => ({...u}));
-
-  const settlements = [];
-  let cIdx = 0, dIdx = 0;
-  while (cIdx < creditors.length && dIdx < debtors.length) {
-    const c = creditors[cIdx];
-    const d = debtors[dIdx];
-    const amount = Math.min(c.balance, -d.balance);
-    if (amount > 0.01) {
-      settlements.push({ from:d.name, to:c.name, amount:Math.round(amount*100)/100 });
-    }
-    c.balance = Math.round((c.balance - amount) * 100) / 100;
-    d.balance = Math.round((d.balance + amount) * 100) / 100;
-    if (c.balance < 0.01) cIdx++;
-    if (d.balance > -0.01) dIdx++;
-  }
-
-  const currentUser = getCurrentUser();
-  const settledCount = state.matches.filter(m => m.settled && m.settlement?.type === 'settled').length;
-  const voidCount = state.matches.filter(m => m.settlement?.type === 'void').length;
-
-  let debtHtml = '';
-  if (settlements.length === 0) {
-    debtHtml = '<div class="empty-state"><div class="icon">🤝</div><p>暂无欠款，大家两清！</p></div>';
-  } else {
-    settlements.forEach(s => {
-      const isMeFrom = currentUser && s.from === currentUser.name;
-      const isMeTo = currentUser && s.to === currentUser.name;
-      debtHtml += `
-        <div class="debt-item">
-          <span style="font-weight:600;">${s.from}</span>
-          <span class="arrow">➜</span>
-          <span style="font-weight:600;">${s.to}</span>
-          <div class="debt-amount negative" style="margin-left:8px;">
-            ¥${s.amount.toFixed(2)}
-            ${isMeFrom?'<span style="font-size:10px;color:var(--text2);">(你欠)</span>':''}
-            ${isMeTo?'<span style="font-size:10px;color:var(--primary);">(应收)</span>':''}
-          </div>
-        </div>`;
-    });
-  }
-
-  let logHtml = '';
-  const logs = state.settlementLogs?.slice(0, 20) || [];
-  if (logs.length > 0) {
-    logHtml = logs.map(l => `
-      <div class="bill-item" style="padding:10px 14px;">
-        <div class="match-info">
-          <div class="detail">${l.detail}</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:2px;">${l.created_at ? new Date(l.created_at).toLocaleString('zh-CN') : ''}</div>
-        </div>
-      </div>`).join('');
-  }
-
-  el.innerHTML = `
-    <div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📋 结算概况</div>
-    <div class="debt-summary">
-      <div class="debt-box">
-        <div class="label">✅ 已结算场次</div>
-        <div class="value" style="color:var(--primary);">${settledCount}</div>
-      </div>
-      <div class="debt-box">
-        <div class="label">💤 流局场次</div>
-        <div class="value" style="color:var(--text2);">${voidCount}</div>
-      </div>
-    </div>
-    <div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">🔄 结算关系</div>
-    ${debtHtml}
-    <div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">📜 结算记录</div>
-    ${logHtml || '<div class="empty-state"><div class="icon">📭</div><p>暂无结算记录</p></div>'}`;
+  const el=document.getElementById('debtContent');
+  if(!state.loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const all=state.users.map(u=>{const s=getStats(u.name);return{...u,...s};}).filter(u=>u.balance!==0).sort((a,b)=>b.balance-a.balance);
+  const cr=all.filter(u=>u.balance>0).map(u=>({...u}));
+  const dr=all.filter(u=>u.balance<0).map(u=>({...u}));
+  const sets=[]; let ci=0,di=0;
+  while(ci<cr.length&&di<dr.length){const amt=Math.min(cr[ci].balance,-dr[di].balance);if(amt>0.01)sets.push({from:dr[di].name,to:cr[ci].name,amount:Math.round(amt*100)/100});cr[ci].balance=Math.round((cr[ci].balance-amt)*100)/100;dr[di].balance=Math.round((dr[di].balance+amt)*100)/100;if(cr[ci].balance<0.01)ci++;if(dr[di].balance>-0.01)di++;}
+  const cu=getCurrUser();
+  const sc=state.matches.filter(m=>m.settled&&m.settlement?.type==='settled').length;
+  const vc=state.matches.filter(m=>m.settlement?.type==='void').length;
+  let dh='';
+  if(sets.length===0) dh='<div class="empty-state"><div class="icon">🤝</div><p>暂无欠款，大家两清！</p></div>';
+  else dh=sets.map(s=>{const mf=cu&&s.from===cu.name,mt=cu&&s.to===cu.name;return`<div class="debt-item"><span style="font-weight:600;">${s.from}</span><span class="arrow">➜</span><span style="font-weight:600;">${s.to}</span><div class="debt-amount negative" style="margin-left:8px;">¥${s.amount.toFixed(2)}${mf?'<span style="font-size:10px;color:var(--text2);">(你欠)</span>':''}${mt?'<span style="font-size:10px;color:var(--primary);">(应收)</span>':''}</div></div>`;}).join('');
+  const logs=state.settlementLogs.slice(0,20);
+  let lh=logs.length?logs.map(l=>`<div class="bill-item" style="padding:10px 14px;"><div class="match-info"><div class="detail">${l.detail}</div><div style="font-size:10px;color:var(--text2);margin-top:2px;">${l.created_at?new Date(l.created_at).toLocaleString('zh-CN'):''}</div></div></div>`).join(''):'<div class="empty-state"><div class="icon">📭</div><p>暂无结算记录</p></div>';
+  el.innerHTML=`<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📋 结算概况</div><div class="debt-summary"><div class="debt-box"><div class="label">✅ 已结算场次</div><div class="value" style="color:var(--primary);">${sc}</div></div><div class="debt-box"><div class="label">💤 流局场次</div><div class="value" style="color:var(--text2);">${vc}</div></div></div><div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">🔄 结算关系</div>${dh}<div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">📜 结算记录</div>${lh}`;
 }
 
-function renderAll() {
-  renderMatches();
-  renderBill();
-  renderLeaderboard();
-  renderDebts();
-  updateUserUI();
-}
+function renderAll(){renderMatches();renderBill();renderLeaderboard();renderDebts();updateUserUI();}
 
 // ======================== ACTIONS ========================
-async function submitPrediction(matchId) {
-  const user = getCurrentUser();
-  if (!user) { showToast('请先选择身份'); showUserSelect(); return; }
-
-  const match = state.matches.find(m => m.id === matchId);
-  if (!match) return;
-  if (match.settled || match.home_score != null) { showToast('比赛已结束，无法修改'); return; }
-  if (Date.now() > match.date) { showToast('比赛已开始，无法提交'); return; }
-
-  const home = parseInt(document.getElementById(`pred_h_${matchId}`)?.value);
-  const away = parseInt(document.getElementById(`pred_a_${matchId}`)?.value);
-
-  if (isNaN(home) || isNaN(away) || home < 0 || away < 0) { showToast('请输入有效比分'); return; }
-
-  const { error } = await supabase.from('predictions').insert({
-    match_id: matchId, user_name: user.name, home_score: home, away_score: away
-  });
-  if (error && error.code === '23505') { showToast('你已经提交过预测了！'); return; }
-  if (error) { showToast('提交失败，请重试'); return; }
-
-  state.predictions.push({ match_id: matchId, user_name: user.name, home_score: home, away_score: away });
-  renderAll();
-  showToast(`✅ 已提交 ${match.home} ${home}-${away} ${match.away}`);
+async function submitPrediction(matchId){
+  const u=getCurrUser();
+  if(!u){showToast('请先选择身份');showUserSelect();return;}
+  const m=state.matches.find(x=>x.id===matchId);
+  if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
+  if(Date.now()>m.date){showToast('比赛已开始');return;}
+  const h=parseInt(document.getElementById(`ph_${matchId}`)?.value);
+  const a=parseInt(document.getElementById(`pa_${matchId}`)?.value);
+  if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
+  const {error}=await supabase.from('predictions').insert({match_id:matchId,user_name:u.name,home_score:h,away_score:a});
+  if(error&&error.code==='23505'){showToast('你已经提交过预测了！');return;}
+  if(error){showToast('提交失败，请重试');return;}
+  state.predictions.push({match_id:matchId,user_name:u.name,home_score:h,away_score:a});
+  renderAll();showToast(`✅ 已提交 ${m.home} ${h}-${a} ${m.away}`);
 }
 
-async function enterResult(matchId) {
-  if (!state.isAdmin) return;
-  const match = state.matches.find(m => m.id === matchId);
-  if (!match) return;
-
-  const home = parseInt(document.getElementById(`res_h_${matchId}`)?.value);
-  const away = parseInt(document.getElementById(`res_a_${matchId}`)?.value);
-  if (isNaN(home) || isNaN(away) || home < 0 || away < 0) { showToast('请输入有效比分'); return; }
-
-  await supabase.from('matches').update({ home_score: home, away_score: away }).eq('id', matchId);
-  match.home_score = home;
-  match.away_score = away;
-
-  await settleMatch(match);
-  renderAll();
-  showToast(`✅ ${match.home} ${home}-${away} ${match.away} 已录入并结算`);
+async function enterResult(matchId){
+  if(!state.isAdmin) return;
+  const m=state.matches.find(x=>x.id===matchId);
+  if(!m) return;
+  const h=parseInt(document.getElementById(`rh_${matchId}`)?.value);
+  const a=parseInt(document.getElementById(`ra_${matchId}`)?.value);
+  if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
+  await supabase.from('matches').update({home_score:h,away_score:a}).eq('id',matchId);
+  m.home_score=h;m.away_score=a;
+  await settleMatch(m);renderAll();showToast(`✅ ${m.home} ${h}-${a} ${m.away} 已录入并结算`);
 }
 
-async function addMatch() {
-  const league = document.getElementById('addLeague').value;
-  const home = document.getElementById('addHome').value.trim();
-  const away = document.getElementById('addAway').value.trim();
-  const dateVal = document.getElementById('addDate').value;
-  const stakeEl = document.querySelector('input[name="addStake"]:checked');
-  const stake = stakeEl ? parseInt(stakeEl.value) : 10;
-
-  if (!home || !away) { showToast('请输入球队名称'); return; }
-  if (!dateVal) { showToast('请选择比赛时间'); return; }
-
-  const id = 'm_' + Date.now();
-  const newMatch = {
-    id, league, home, away, stake,
-    date: new Date(dateVal).getTime(),
-    home_score: null, away_score: null, settled: false, settlement: null
-  };
-
-  const { error } = await supabase.from('matches').insert(newMatch);
-  if (error) { showToast('添加失败'); return; }
-
-  state.matches.push(newMatch);
-  document.getElementById('addHome').value = '';
-  document.getElementById('addAway').value = '';
-  document.getElementById('addDate').value = '';
-  renderAll();
-  showToast(`✅ 已添加 ${home} vs ${away} (¥${stake})`);
+async function addMatch(){
+  const league=document.getElementById('addLeague').value;
+  const home=document.getElementById('addHome').value.trim();
+  const away=document.getElementById('addAway').value.trim();
+  const dateVal=document.getElementById('addDate').value;
+  const stakeEl=document.querySelector('input[name="addStake"]:checked');
+  const stake=stakeEl?parseInt(stakeEl.value):10;
+  if(!home||!away){showToast('请输入球队名称');return;}
+  if(!dateVal){showToast('请选择比赛时间');return;}
+  const id='m_'+Date.now();
+  const nm={id,league,home,away,stake,date:new Date(dateVal).getTime(),home_score:null,away_score:null,settled:false,settlement:null};
+  const {error}=await supabase.from('matches').insert(nm);
+  if(error){showToast('添加失败');return;}
+  state.matches.push(nm);
+  document.getElementById('addHome').value='';document.getElementById('addAway').value='';document.getElementById('addDate').value='';
+  renderAll();showToast(`✅ 已添加 ${home} vs ${away} (¥${stake})`);
 }
 
 // ======================== REAL-TIME ========================
 function setupRealtime() {
-  const channel = supabase.channel('zuipao-realtime');
-
-  channel.on('postgres_changes',
-    { event: '*', schema: 'public', table: 'matches' },
-    async () => {
-      const { data } = await supabase.from('matches').select('*');
-      if (data) { state.matches = data; await settleAllPending(); renderAll(); }
-    }
-  );
-
-  channel.on('postgres_changes',
-    { event: '*', schema: 'public', table: 'predictions' },
-    async () => {
-      const { data } = await supabase.from('predictions').select('*');
-      if (data) state.predictions = data;
-      renderAll();
-    }
-  );
-
-  channel.on('postgres_changes',
-    { event: 'INSERT', schema: 'public', table: 'settlement_logs' },
-    async () => {
-      const { data } = await supabase.from('settlement_logs').select('*').order('created_at', { ascending: false });
-      if (data) state.settlementLogs = data;
-      renderAll();
-    }
-  );
-
-  channel.subscribe();
+  const ch=supabase.channel('zuipao-rt');
+  ch.on('postgres_changes',{event:'*',schema:'public',table:'matches'},async()=>{const{data}=await supabase.from('matches').select('*');if(data){state.matches=data;await settleAllPending();renderAll();}});
+  ch.on('postgres_changes',{event:'*',schema:'public',table:'predictions'},async()=>{const{data}=await supabase.from('predictions').select('*');if(data)state.predictions=data;renderAll();});
+  ch.on('postgres_changes',{event:'INSERT',schema:'public',table:'settlement_logs'},async()=>{const{data}=await supabase.from('settlement_logs').select('*').order('created_at',{ascending:false});if(data)state.settlementLogs=data;renderAll();});
+  ch.subscribe();
 }
 
-// ======================== NAVIGATION ========================
-function switchTab(tab) {
-  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(`tab${tab}`).classList.add('active');
-  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
-  renderAll();
-}
-
-// ======================== USER SELECT ========================
-function showUserSelect() {
-  const grid = document.getElementById('userGrid');
-  grid.innerHTML = state.users.map(u => {
-    const sel = state.currentUser === u.id;
-    return `<div class="user-option ${sel?'selected':''}" onclick="selectUser(${u.id})">
-      <div class="avatar-big" style="background:${COLORS[u.id]}22;color:${COLORS[u.id]};">${u.name[0]}</div>
-      <span class="un">${u.name}</span>
-      ${sel?'<span style="font-size:10px;color:var(--primary);">✓ 当前</span>':''}
-    </div>`;
-  }).join('');
+// ======================== UI HELPERS ========================
+function showUserSelect(){
+  const grid=document.getElementById('userGrid');
+  grid.innerHTML=state.users.map(u=>{const sel=state.currentUser===u.id;return`<div class="user-option${sel?' selected':''}" data-uid="${u.id}"><div class="avatar-big" style="background:${COLORS[u.id]}22;color:${COLORS[u.id]};">${u.name[0]}</div><span class="un">${u.name}</span>${sel?'<span style="font-size:10px;color:var(--primary);">✓ 当前</span>':''}</div>`;}).join('');
+  grid.querySelectorAll('.user-option').forEach(el=>el.addEventListener('click',()=>selectUser(parseInt(el.dataset.uid))));
   document.getElementById('userModal').classList.add('show');
 }
 
-function selectUser(id) {
-  state.currentUser = id;
-  localStorage.setItem('zuipao_user', id);
-  updateUserUI();
-  closeModal('userModal');
-  renderAll();
+function selectUser(id){
+  state.currentUser=id;
+  localStorage.setItem('zuipao_user',id);
+  updateUserUI();closeModal('userModal');renderAll();
   showToast(`👋 你好，${state.users[id].name}`);
 }
 
-function updateUserUI() {
-  const user = getCurrentUser();
-  document.getElementById('userName').textContent = user ? user.name : '选择用户';
-  document.getElementById('userAvatar').textContent = user ? user.name[0] : '?';
-  if (user) {
-    document.getElementById('userAvatar').style.background = `${COLORS[user.id]}22`;
-    document.getElementById('userAvatar').style.color = COLORS[user.id];
-  }
+function updateUserUI(){
+  const u=getCurrUser();
+  document.getElementById('userName').textContent=u?u.name:'选择用户';
+  document.getElementById('userAvatar').textContent=u?u.name[0]:'?';
+  if(u){document.getElementById('userAvatar').style.background=COLORS[u.id]+'22';document.getElementById('userAvatar').style.color=COLORS[u.id];}
 }
 
-function closeModal(id) {
-  document.getElementById(id).classList.remove('show');
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
+function filterLeague(l){document.querySelectorAll('#leagueFilters .btn').forEach(b=>b.classList.toggle('active',b.dataset.league===l));renderMatches();}
+function selectStake(el){document.querySelectorAll('#stakeOptions span').forEach(s=>{s.style.background='';s.style.color='';s.style.borderColor='';});el.style.background='var(--gold)';el.style.color='#000';el.style.borderColor='var(--gold)';}
+
+// ======================== EVENT BINDING ========================
+function bindEvents(){
+  // Tabs
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+    document.querySelectorAll('.content,.tab').forEach(e=>e.classList.remove('active'));
+    document.getElementById('tab'+t.dataset.tab).classList.add('active');
+    t.classList.add('active');renderAll();
+  }));
+
+  // League filters
+  document.querySelectorAll('#leagueFilters .btn').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#leagueFilters .btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');renderMatches();
+  }));
+
+  // User button
+  document.getElementById('userBtn').addEventListener('click',showUserSelect);
+  document.getElementById('closeModalBtn').addEventListener('click',()=>closeModal('userModal'));
+  document.getElementById('userModal').addEventListener('click',function(e){if(e.target===this)closeModal('userModal');});
+
+  // Admin
+  document.getElementById('adminBtn').addEventListener('click',toggleAdmin);
+  document.getElementById('adminSwitch').addEventListener('change',toggleAdmin);
+
+  // Add match
+  document.getElementById('addMatchBtn').addEventListener('click',addMatch);
+  document.querySelectorAll('#stakeOptions .stake-option').forEach(el=>el.addEventListener('click',function(){selectStake(this.querySelector('span'));}));
+
+  // Event delegation for dynamic buttons (predict/result)
+  document.getElementById('matchList').addEventListener('click',e=>{
+    const btn=e.target.closest('[data-act]');
+    if(!btn) return;
+    if(btn.dataset.act==='predict') submitPrediction(btn.dataset.mid);
+    if(btn.dataset.act==='result') enterResult(btn.dataset.mid);
+  });
+
+  // Re-bind bill's select user button
+  document.getElementById('billContent').addEventListener('click',e=>{
+    if(e.target.id==='selUserBtn') showUserSelect();
+  });
 }
 
-// ======================== ADMIN ========================
-function toggleAdmin() {
-  state.isAdmin = !state.isAdmin;
-  document.getElementById('adminSwitch').checked = state.isAdmin;
-  document.getElementById('adminPanel').classList.toggle('show', state.isAdmin);
+function toggleAdmin(){
+  state.isAdmin=!state.isAdmin;
+  document.getElementById('adminSwitch').checked=state.isAdmin;
+  document.getElementById('adminPanel').classList.toggle('show',state.isAdmin);
   renderAll();
-}
-
-function selectStake(el, val) {
-  document.querySelectorAll('.stake-option span').forEach(s => {
-    s.style.background = ''; s.style.color = ''; s.style.borderColor = '';
-  });
-  el.querySelector('span').style.background = 'var(--gold)';
-  el.querySelector('span').style.color = '#000';
-  el.querySelector('span').style.borderColor = 'var(--gold)';
-}
-
-// ======================== FILTER ========================
-function filterLeague(league) {
-  document.querySelectorAll('.league-filter').forEach(b => {
-    b.classList.toggle('active', b.dataset.league === league);
-  });
-  renderMatches();
-}
-
-// ======================== TOAST ========================
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.className = 'toast'; t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2200);
 }
 
 // ======================== INIT ========================
-async function init() {
-  // Restore saved user
-  const savedUser = localStorage.getItem('zuipao_user');
-  if (savedUser !== null) state.currentUser = parseInt(savedUser);
-
-  // Load data from Supabase
+async function init(){
+  bindEvents();
   await loadFromSupabase();
   setupRealtime();
-
-  // Bottom tabs
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-  });
-
-  document.getElementById('userModal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal('userModal');
-  });
-
-  updateUserUI();
-  renderAll();
-
-  if (state.currentUser === null || state.currentUser === undefined) {
-    setTimeout(showUserSelect, 500);
-  }
+  updateUserUI();renderAll();
+  if(state.currentUser===null||state.currentUser===undefined) setTimeout(showUserSelect,500);
 }
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
-
-<div class="tabs">
-  <button class="tab active" data-tab="Matches">
-    <span class="icon">⚽</span>
-    <span>赛事</span>
-  </button>
-  <button class="tab" data-tab="Bill">
-    <span class="icon">💰</span>
-    <span>账单</span>
-  </button>
-  <button class="tab" data-tab="Rank">
-    <span class="icon">🏆</span>
-    <span>排行榜</span>
-  </button>
-  <button class="tab" data-tab="Debt">
-    <span class="icon">📋</span>
-    <span>欠款</span>
-  </button>
-</div>
-
 </body>
 </html>
