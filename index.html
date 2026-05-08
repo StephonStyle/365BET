@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>嘴炮王 - 足球竞猜记账</title>
+<style>
+:root {
+  --bg: #0d0d1a;
+  --card: #16162a;
+  --card2: #1e1e3a;
+  --primary: #00e676;
+  --primary-dim: rgba(0,230,118,0.15);
+  --gold: #ffd740;
+  --gold-dim: rgba(255,215,64,0.15);
+  --red: #ff5252;
+  --red-dim: rgba(255,82,82,0.12);
+  --blue: #448aff;
+  --blue-dim: rgba(68,138,255,0.12);
+  --text: #f0f0f0;
+  --text2: #9090b0;
+  --border: rgba(255,255,255,0.06);
+  --radius: 14px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--text); min-height: 100vh;
+  padding-bottom: 76px; overflow-x: hidden;
+}
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--text2); border-radius:4px; }
+
+/* Header */
+.header {
+  position:sticky; top:0; z-index:100;
+  background:linear-gradient(135deg,#0d0d1a 0%,#1a0a2e 100%);
+  padding:14px 18px 10px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:12px;
+}
+.header h1 {
+  font-size:22px; font-weight:800;
+  background:linear-gradient(135deg,var(--gold),var(--primary));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  flex:1;
+}
+.user-btn {
+  display:flex; align-items:center; gap:6px;
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:20px; padding:4px 14px 4px 8px;
+  color:var(--text); font-size:13px; cursor:pointer; white-space:nowrap;
+}
+.user-btn .avatar { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; background:var(--primary-dim); color:var(--primary); }
+.admin-badge { font-size:10px; background:var(--gold-dim); color:var(--gold); padding:2px 8px; border-radius:10px; cursor:pointer; }
+.settings-btn { background:none; border:none; color:var(--text2); font-size:18px; cursor:pointer; padding:4px; line-height:1; }
+
+/* Tabs nav */
+.tabs {
+  position:fixed; bottom:0; left:0; right:0; z-index:100;
+  background:linear-gradient(0deg,#0d0d1a 0%,rgba(13,13,26,0.98) 100%);
+  border-top:1px solid var(--border);
+  display:flex; padding:4px 0 env(safe-area-inset-bottom);
+}
+.tab {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding:6px 0 4px; cursor:pointer; color:var(--text2);
+  font-size:10px; transition:color .2s; border:none; background:none;
+}
+.tab.active { color:var(--primary); }
+.tab .icon { font-size:20px; line-height:1.2; }
+
+/* Content areas */
+.content { display:none; padding:12px 14px; }
+.content.active { display:block; }
+.page-title { font-size:16px; font-weight:700; margin:4px 0 14px; }
+
+/* Match cards */
+.match-card {
+  background:var(--card); border-radius:var(--radius); padding:14px 16px;
+  margin-bottom:12px; border:1px solid var(--border);
+}
+.match-header {
+  display:flex; align-items:center; gap:8px; margin-bottom:10px;
+}
+.league-badge {
+  font-size:10px; font-weight:600; padding:2px 10px; border-radius:10px;
+}
+.league-badge.英超 { background:var(--primary-dim); color:var(--primary); }
+.league-badge.欧冠 { background:var(--blue-dim); color:var(--blue); }
+.league-badge.世界杯 { background:var(--gold-dim); color:var(--gold); }
+.match-time { font-size:11px; color:var(--text2); flex:1; text-align:right; }
+.match-status {
+  font-size:10px; font-weight:600; padding:2px 8px; border-radius:8px;
+  background:var(--card2);
+}
+.match-status.待预测 { color:var(--blue); background:var(--blue-dim); }
+.match-status.已预测 { color:var(--gold); background:var(--gold-dim); }
+.match-status.待结算 { color:var(--primary); background:var(--primary-dim); }
+.match-status.已结算 { color:var(--text2); }
+.match-status.流局 { color:var(--red); background:var(--red-dim); }
+
+.match-teams {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; margin-bottom:12px;
+}
+.team { display:flex; align-items:center; gap:8px; flex:1; }
+.team.away { flex-direction:row-reverse; }
+.team .name { font-size:14px; font-weight:600; }
+.team .logo { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; background:var(--card2); }
+.match-score {
+  font-size:22px; font-weight:800; color:var(--text); text-align:center;
+  min-width:50px;
+}
+.match-score .vs { font-size:14px; font-weight:400; color:var(--text2); }
+.match-score-input {
+  display:flex; align-items:center; gap:4px; justify-content:center;
+}
+.match-score-input input {
+  width:36px; height:36px; border-radius:8px; border:1px solid var(--border);
+  background:var(--card2); color:var(--text); font-size:18px; font-weight:700;
+  text-align:center; outline:none;
+}
+.match-score-input input:focus { border-color:var(--primary); }
+
+.match-footer { display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.pred-status { font-size:11px; color:var(--text2); }
+.pred-status .pred-score { color:var(--gold); font-weight:600; }
+.my-result { font-size:12px; font-weight:600; }
+.my-result.win { color:var(--primary); }
+.my-result.lose { color:var(--red); }
+.btn {
+  padding:6px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600;
+  cursor:pointer; transition:opacity .2s;
+}
+.btn:active { opacity:.7; }
+.btn-primary { background:var(--primary); color:#000; }
+.btn-gold { background:var(--gold); color:#000; }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
+.btn-red { background:var(--red); color:#fff; }
+.btn-blue { background:var(--blue); color:#fff; }
+.btn-small { padding:4px 12px; font-size:11px; }
+.btn:disabled { opacity:.3; cursor:default; }
+
+/* Bill page */
+.summary-card {
+  background:linear-gradient(135deg,var(--card),var(--card2));
+  border-radius:var(--radius); padding:18px; margin-bottom:16px;
+  border:1px solid var(--border); text-align:center;
+}
+.summary-card .big-num { font-size:36px; font-weight:800; margin:6px 0; }
+.summary-card .big-num.positive { color:var(--primary); }
+.summary-card .big-num.negative { color:var(--red); }
+.summary-card .big-num.zero { color:var(--text2); }
+.summary-row {
+  display:flex; justify-content:space-around; gap:12px; margin-top:12px;
+}
+.summary-item { text-align:center; }
+.summary-item .label { font-size:11px; color:var(--text2); }
+.summary-item .value { font-size:18px; font-weight:700; margin-top:2px; }
+.bill-item {
+  background:var(--card); border-radius:var(--radius); padding:12px 14px;
+  margin-bottom:8px; border:1px solid var(--border);
+  display:flex; align-items:center; gap:12px;
+}
+.bill-item .match-info { flex:1; }
+.bill-item .match-info .teams { font-size:13px; font-weight:600; }
+.bill-item .match-info .detail { font-size:11px; color:var(--text2); margin-top:2px; }
+.bill-amount { font-size:16px; font-weight:700; text-align:right; }
+.bill-amount.positive { color:var(--primary); }
+.bill-amount.negative { color:var(--red); }
+
+/* Leaderboard */
+.rank-card {
+  background:var(--card); border-radius:var(--radius); padding:12px 16px;
+  margin-bottom:8px; border:1px solid var(--border);
+  display:flex; align-items:center; gap:12px;
+}
+.rank-num {
+  width:28px; height:28px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:800;
+}
+.rank-num.gold { background:var(--gold); color:#000; }
+.rank-num.silver { background:#a0a0b0; color:#000; }
+.rank-num.bronze { background:#cd7f32; color:#fff; }
+.rank-num.normal { background:var(--card2); color:var(--text2); }
+.rank-info { flex:1; }
+.rank-info .name { font-size:14px; font-weight:600; }
+.rank-info .stats { font-size:11px; color:var(--text2); margin-top:2px; }
+.rank-score { text-align:right; }
+.rank-score .pts { font-size:20px; font-weight:800; color:var(--gold); }
+.rank-score .label { font-size:10px; color:var(--text2); }
+
+/* User selector modal */
+.modal-overlay {
+  position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,.7); display:none;
+  align-items:center; justify-content:center; padding:20px;
+}
+.modal-overlay.show { display:flex; }
+.modal {
+  background:var(--card); border-radius:var(--radius);
+  padding:24px; width:100%; max-width:380px;
+  border:1px solid var(--border); max-height:80vh; overflow-y:auto;
+}
+.modal h2 { font-size:18px; margin-bottom:16px; text-align:center; }
+.modal-close {
+  float:right; background:none; border:none; color:var(--text2);
+  font-size:20px; cursor:pointer; padding:4px;
+}
+.user-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+}
+.user-option {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:14px 8px; border-radius:12px; border:2px solid transparent;
+  background:var(--card2); cursor:pointer; transition:all .2s;
+}
+.user-option:hover { border-color:var(--text2); }
+.user-option.selected { border-color:var(--primary); background:var(--primary-dim); }
+.user-option .avatar-big {
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:700;
+}
+.user-option .un { font-size:13px; font-weight:600; }
+
+/* Admin panel */
+.admin-panel {
+  background:var(--card); border-radius:var(--radius); padding:16px;
+  margin-bottom:14px; border:1px solid var(--gold-dim);
+  display:none;
+}
+.admin-panel.show { display:block; }
+.admin-panel h3 { font-size:14px; color:var(--gold); margin-bottom:12px; }
+.admin-panel label { display:block; font-size:12px; color:var(--text2); margin-bottom:4px; }
+.admin-panel input, .admin-panel select {
+  width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border);
+  background:var(--card2); color:var(--text); font-size:13px; margin-bottom:10px; outline:none;
+}
+.admin-panel input:focus { border-color:var(--gold); }
+.admin-row { display:flex; gap:8px; }
+.admin-row input { flex:1; }
+.stake-option input:checked+span { background:var(--gold) !important; color:#000 !important; border-color:var(--gold) !important; }
+
+/* Debt page */
+.debt-summary {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;
+}
+.debt-box {
+  background:var(--card); border-radius:var(--radius); padding:14px;
+  text-align:center; border:1px solid var(--border);
+}
+.debt-box .label { font-size:11px; color:var(--text2); }
+.debt-box .value { font-size:22px; font-weight:800; margin-top:4px; }
+.debt-item {
+  background:var(--card); border-radius:var(--radius); padding:12px 14px;
+  margin-bottom:8px; border:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+.debt-item .arrow { color:var(--text2); font-size:16px; }
+.debt-amount { font-size:15px; font-weight:700; margin-left:auto; }
+.debt-amount.positive { color:var(--primary); }
+.debt-amount.negative { color:var(--red); }
+.debt-item .sub { font-size:11px; color:var(--text2); }
+
+/* No data */
+.empty-state { text-align:center; padding:40px 20px; color:var(--text2); }
+.empty-state .icon { font-size:48px; margin-bottom:12px; opacity:.5; }
+.empty-state p { font-size:13px; }
+
+/* Toast */
+.toast {
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+  background:var(--card2); color:var(--text); padding:10px 20px;
+  border-radius:10px; font-size:13px; z-index:300;
+  border:1px solid var(--border); box-shadow:var(--shadow);
+  animation: toastIn .3s ease;
+}
+@keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+/* Admin toggle area */
+.admin-toggle {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:8px; margin-top:4px; border-top:1px solid var(--border);
+}
+.admin-toggle label { font-size:11px; color:var(--text2); cursor:pointer; }
+.switch { position:relative; display:inline-block; width:36px; height:20px; cursor:pointer; }
+.switch input { display:none; }
+.switch .slider {
+  position:absolute; inset:0; background:var(--card2);
+  border-radius:20px; transition:.3s;
+}
+.switch .slider::before {
+  content:''; position:absolute; left:2px; top:2px;
+  width:16px; height:16px; border-radius:50%; background:var(--text2); transition:.3s;
+}
+.switch input:checked+.slider { background:var(--gold-dim); }
+.switch input:checked+.slider::before { background:var(--gold); transform:translateX(16px); }
+
+/* Animation */
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.match-card,.bill-item,.rank-card,.debt-item { animation:fadeIn .3s ease; }
+
+/* Responsive */
+@media (min-width:600px) {
+  .content { max-width:600px; margin:0 auto; }
+  .user-grid { grid-template-columns:1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚽ 嘴炮王</h1>
+  <button class="user-btn" id="userBtn" onclick="showUserSelect()">
+    <span class="avatar" id="userAvatar">张</span>
+    <span id="userName">选择用户</span>
+  </button>
+  <button class="settings-btn" onclick="toggleAdmin()" title="管理员模式">⚙</button>
+</div>
+
+<div id="tabMatches" class="content active">
+  <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+    <button class="btn btn-outline btn-small league-filter active" data-league="all" onclick="filterLeague('all')">全部</button>
+    <button class="btn btn-outline btn-small league-filter" data-league="英超" onclick="filterLeague('英超')">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</button>
+    <button class="btn btn-outline btn-small league-filter" data-league="欧冠" onclick="filterLeague('欧冠')">🏆 欧冠</button>
+    <button class="btn btn-outline btn-small league-filter" data-league="世界杯" onclick="filterLeague('世界杯')">🌍 世界杯</button>
+  </div>
+  <div id="matchList"></div>
+  <div class="admin-toggle">
+    <label class="switch">
+      <input type="checkbox" id="adminSwitch" onchange="toggleAdmin()">
+      <span class="slider"></span>
+    </label>
+    <label for="adminSwitch">管理员模式</label>
+  </div>
+  <div class="admin-panel" id="adminPanel">
+    <h3>🛠 管理员面板</h3>
+    <label>联赛</label>
+    <select id="addLeague">
+      <option value="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</option>
+      <option value="欧冠">🏆 欧冠</option>
+      <option value="世界杯">🌍 世界杯</option>
+    </select>
+    <div class="admin-row">
+      <div><label>主队</label><input id="addHome" placeholder="主队名称"></div>
+      <div><label>客队</label><input id="addAway" placeholder="客队名称"></div>
+    </div>
+    <label>比赛时间</label>
+    <input type="datetime-local" id="addDate">
+    <label>每注金额 (输家每人付)</label>
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <label class="stake-option" onclick="selectStake(this,10)">
+        <input type="radio" name="addStake" value="10" checked hidden>
+        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥10</span>
+      </label>
+      <label class="stake-option" onclick="selectStake(this,15)">
+        <input type="radio" name="addStake" value="15" hidden>
+        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥15</span>
+      </label>
+      <label class="stake-option" onclick="selectStake(this,20)">
+        <input type="radio" name="addStake" value="20" hidden>
+        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥20</span>
+      </label>
+      <label class="stake-option" onclick="selectStake(this,25)">
+        <input type="radio" name="addStake" value="25" hidden>
+        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥25</span>
+      </label>
+      <label class="stake-option" onclick="selectStake(this,30)">
+        <input type="radio" name="addStake" value="30" hidden>
+        <span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥30</span>
+      </label>
+    </div>
+    <button class="btn btn-gold" onclick="addMatch()" style="width:100%;margin-top:4px;">➕ 添加比赛</button>
+    <button class="btn btn-outline btn-small" onclick="resetData()" style="width:100%;margin-top:8px;color:var(--red);">⚠ 重置所有数据</button>
+  </div>
+</div>
+
+<div id="tabBill" class="content">
+  <div id="billContent"></div>
+</div>
+
+<div id="tabRank" class="content">
+  <div id="rankContent"></div>
+</div>
+
+<div id="tabDebt" class="content">
+  <div id="debtContent"></div>
+</div>
+
+<!-- User Select Modal -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('userModal')">✕</button>
+    <h2>👤 选择你的身份</h2>
+    <div class="user-grid" id="userGrid"></div>
+  </div>
+</div>
+
+<script>
+// ======================== DATA ========================
+const USERS = ['老章','大毛','王彬','王玺','三瓶','糖糖','二红','隔离'];
+const COLORS = ['#00e676','#448aff','#ffd740','#ff5252','#ab47bc','#26c6da','#ff7043','#7e57c2'];
+
+const TEAMS = {
+  // 英超
+  阿森纳:['🔴','阿森纳'], 切尔西:['🔵','切尔西'], 曼城:['💙','曼城'],
+  利物浦:['🔴','利物浦'], 曼联:['🔴','曼联'], 热刺:['⚪','热刺'],
+  纽卡斯尔:['⚫','纽卡斯尔'], 维拉:['🔵','维拉'],
+  布莱顿:['🔵','布莱顿'], 布伦特福德:['🔴','布伦特福德'],
+  // 欧冠
+  皇马:['👑','皇马'], 拜仁:['🔴','拜仁'], 巴黎:['🔵','巴黎'],
+  巴萨:['🔵','巴萨'], 国米:['🔵','国米'], AC米兰:['🔴','AC米兰'],
+  // 世界杯
+  巴西:['🇧🇷','巴西'], 阿根廷:['🇦🇷','阿根廷'],
+  德国:['🇩🇪','德国'], 法国:['🇫🇷','法国'],
+  英格兰:['🏴󠁧󠁢󠁥󠁮󠁧󠁿','英格兰'], 西班牙:['🇪🇸','西班牙'],
+  葡萄牙:['🇵🇹','葡萄牙'], 荷兰:['🇳🇱','荷兰'],
+};
+
+function teamEmoji(name) { return TEAMS[name]?.[0]||'⚽'; }
+function teamShort(name) { return TEAMS[name]?.[1]||name; }
+
+function makeMatch(id, league, home, away, dateStr, result=null, stake=10) {
+  return {
+    id, league, home, away,
+    date: new Date(dateStr).getTime(),
+    result,
+    predictions: {},
+    settled: false,
+    stake,
+    settlement: null
+  };
+}
+
+const MOCK_MATCHES = [
+  // 英超 (past)
+  makeMatch('m1','英超','阿森纳','切尔西','2026-05-03T22:00',{home:2,away:1},15),
+  makeMatch('m2','英超','曼城','利物浦','2026-05-04T20:30',{home:3,away:0},10),
+  makeMatch('m3','英超','曼联','热刺','2026-05-05T23:00',{home:1,away:1},20),
+  makeMatch('m4','英超','纽卡斯尔','维拉','2026-05-06T22:00',{home:2,away:2},10),
+  // 英超 (upcoming)
+  makeMatch('m5','英超','布莱顿','布伦特福德','2026-05-10T22:00',null,15),
+  makeMatch('m6','英超','阿森纳','曼联','2026-05-12T23:00',null,25),
+  // 欧冠
+  makeMatch('m7','欧冠','皇马','拜仁','2026-05-01T03:00',{home:2,away:2},20),
+  makeMatch('m8','欧冠','巴黎','巴萨','2026-05-02T03:00',{home:3,away:1},15),
+  makeMatch('m9','欧冠','国米','AC米兰','2026-05-07T03:00',null,10),
+  makeMatch('m10','欧冠','皇马','巴黎','2026-05-14T03:00',null,30),
+  // 世界杯
+  makeMatch('m11','世界杯','巴西','阿根廷','2026-06-15T21:00',null,20),
+  makeMatch('m12','世界杯','德国','法国','2026-06-16T18:00',null,15),
+  makeMatch('m13','世界杯','英格兰','西班牙','2026-06-17T21:00',null,25),
+  makeMatch('m14','世界杯','葡萄牙','荷兰','2026-06-18T18:00',null,20),
+];
+
+// ======================== STATE ========================
+let state = { users:[], matches:[], currentUser:null, isAdmin:false };
+
+function defaultState() {
+  return {
+    users: USERS.map((name,i)=>({id:i,name,balance:0,points:0,wins:0,losses:0, predictions:0})),
+    matches: JSON.parse(JSON.stringify(MOCK_MATCHES)),
+    currentUser: state?.currentUser ?? null,
+    isAdmin: false,
+    settlementLog: [],
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('zuipao_state');
+    if (raw) {
+      const s = JSON.parse(raw);
+      // Fill in missing predictions objects
+      s.matches.forEach(m => { if(!m.predictions) m.predictions={}; if(!m.stake) m.stake=10; });
+      if(!s.settlementLog) s.settlementLog = [];
+      return s;
+    }
+  } catch(e){}
+  return defaultState();
+}
+
+function saveState() {
+  localStorage.setItem('zuipao_state', JSON.stringify(state));
+}
+
+state = loadState();
+
+// ======================== SETTLEMENT ========================
+function settleMatch(match) {
+  if (!match.result || match.settled) return;
+
+  const preds = Object.entries(match.predictions);
+  const winners = preds.filter(([,p]) => p.home === match.result.home && p.away === match.result.away);
+  const allUserIds = state.users.map(u => u.id);
+  const loserIds = allUserIds.filter(id => !winners.some(([uid]) => uid == id));
+
+  if (winners.length === 0) {
+    match.settled = true;
+    match.settlement = { type:'void', winners:[], losers:allUserIds, amountPerLoser:0, totalPot:0 };
+    state.settlementLog.push({ matchId:match.id, date:Date.now(), type:'void', detail:`${match.home} ${match.result.home}-${match.result.away} ${match.away} — 无人猜中，本场流局` });
+    updateUserStats();
+    saveState();
+    return;
+  }
+
+  const feePerLoser = match.stake || 10;
+  const totalPot = loserIds.length * feePerLoser;
+  const perWinner = Math.floor((totalPot / winners.length) * 100) / 100;
+  // handle rounding: adjust so total adds up
+  let remainder = Math.round((totalPot - perWinner * winners.length) * 100) / 100;
+
+  winners.forEach(([uid], idx) => {
+    const amount = idx === winners.length - 1 ? Math.round((perWinner + remainder) * 100) / 100 : perWinner;
+    const user = state.users.find(u => u.id == uid);
+    if (user) { user.balance = Math.round((user.balance + amount) * 100) / 100; user.wins++; user.points += 2; }
+  });
+
+  loserIds.forEach(id => {
+    const user = state.users.find(u => u.id === id);
+    if (user) { user.balance = Math.round((user.balance - feePerLoser) * 100) / 100; user.losses++; }
+  });
+
+  match.settled = true;
+  match.settlement = {
+    type:'settled', winners:winners.map(([uid])=>parseInt(uid)), losers:loserIds,
+    amountPerWinner:perWinner, amountPerLoser:feePerLoser, totalPot,
+    remainder: Math.round(remainder * 100) / 100
+  };
+
+  const winnerNames = winners.map(([uid])=>state.users.find(u=>u.id==uid).name).join(', ');
+  state.settlementLog.push({
+    matchId:match.id, date:Date.now(), type:'settled',
+    detail:`${match.home} ${match.result.home}-${match.result.away} ${match.away} · 底注¥${feePerLoser} · 赢家: ${winnerNames}，每人得 ¥${perWinner.toFixed(2)}`
+  });
+
+  updateUserStats();
+  saveState();
+}
+
+function updateUserStats() {
+  state.users.forEach(u => {
+    u.points = u.wins * 2;
+  });
+}
+
+// ======================== SETTLE ALL PENDING ========================
+function settleAllPending() {
+  state.matches.forEach(m => {
+    if (m.result && !m.settled) settleMatch(m);
+  });
+  saveState();
+  renderAll();
+}
+
+// ======================== ENTER RESULT ========================
+function enterResult(matchId) {
+  const match = state.matches.find(m => m.id === matchId);
+  if (!match || !state.isAdmin) return;
+
+  const home = parseInt(document.getElementById(`res_h_${matchId}`)?.value);
+  const away = parseInt(document.getElementById(`res_a_${matchId}`)?.value);
+
+  if (isNaN(home) || isNaN(away) || home < 0 || away < 0) {
+    showToast('请输入有效比分');
+    return;
+  }
+
+  match.result = { home, away };
+  settleMatch(match);
+  saveState();
+  renderAll();
+  showToast(`✅ ${match.home} ${home}-${away} ${match.away} 已录入并结算`);
+}
+
+// ======================== SUBMIT PREDICTION ========================
+function submitPrediction(matchId) {
+  const user = getCurrentUserObj();
+  if (!user) { showToast('请先选择身份'); showUserSelect(); return; }
+
+  const match = state.matches.find(m => m.id === matchId);
+  if (!match) return;
+  if (match.settled || match.result) { showToast('比赛已结束，无法修改'); return; }
+  if (new Date().getTime() > match.date) { showToast('比赛已开始，无法提交'); return; }
+
+  const home = parseInt(document.getElementById(`pred_h_${matchId}`)?.value);
+  const away = parseInt(document.getElementById(`pred_a_${matchId}`)?.value);
+
+  if (isNaN(home) || isNaN(away) || home < 0 || away < 0) {
+    showToast('请输入有效比分');
+    return;
+  }
+
+  match.predictions[user.id] = { home, away };
+  user.predictions = (user.predictions||0) + 1;
+  saveState();
+  renderAll();
+  showToast(`✅ 已提交 ${match.home} ${home}-${away} ${match.away}`);
+}
+
+// ======================== GET CURRENT USER ========================
+function getCurrentUserObj() {
+  if (state.currentUser === null || state.currentUser === undefined) return null;
+  return state.users.find(u => u.id === state.currentUser);
+}
+
+// ======================== RENDER ========================
+function getStatus(match) {
+  if (match.settled) {
+    if (match.settlement?.type === 'void') return { label:'流局', cls:'流局' };
+    return { label:'已结算', cls:'已结算' };
+  }
+  if (match.result) return { label:'待结算', cls:'待结算' };
+  const user = getCurrentUserObj();
+  if (user && match.predictions[user.id]) return { label:'已预测', cls:'已预测' };
+  return { label:'待预测', cls:'待预测' };
+}
+
+function renderMatches() {
+  const el = document.getElementById('matchList');
+  const league = document.querySelector('.league-filter.active')?.dataset?.league || 'all';
+  const user = getCurrentUserObj();
+
+  let filtered = state.matches;
+  if (league !== 'all') filtered = filtered.filter(m => m.league === league);
+  filtered.sort((a,b) => a.date - b.date);
+
+  if (filtered.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(match => {
+    const status = getStatus(match);
+    const isPast = new Date().getTime() > match.date || match.result;
+    const pred = user ? match.predictions[user.id] : null;
+    const canPredict = !isPast && !pred && user;
+    const hasPred = !!pred;
+    const isAdminResult = state.isAdmin && match.result && !match.settled;
+
+    let winnerInfo = '';
+    if (match.settled && match.settlement?.type === 'settled') {
+      const wNames = match.settlement.winners.map(id => state.users.find(u=>u.id===id)?.name||'?').join(', ');
+      winnerInfo = `<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 赢家: ${wNames} · 每人得 ¥${match.settlement.amountPerWinner.toFixed(2)} (底注¥${match.stake||10})</div>`;
+    } else if (match.settlement?.type === 'void') {
+      winnerInfo = `<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局 (底注¥${match.stake||10})</div>`;
+    }
+
+    let resultDisplay = '';
+    if (match.result && match.settled) {
+      resultDisplay = `<div class="match-score">${match.result.home} - ${match.result.away}</div>`;
+    } else if (match.result && state.isAdmin && !match.settled) {
+      resultDisplay = `<div class="match-score">${match.result.home} - ${match.result.away}</div>`;
+    } else if (canPredict) {
+      resultDisplay = `
+        <div class="match-score-input">
+          <input type="number" min="0" max="20" id="pred_h_${match.id}" placeholder="?" value="${pred?.home??''}">
+          <span style="color:var(--text2);font-weight:700;">:</span>
+          <input type="number" min="0" max="20" id="pred_a_${match.id}" placeholder="?" value="${pred?.away??''}">
+        </div>`;
+    } else if (hasPred) {
+      resultDisplay = `<div class="match-score">${pred.home} - ${pred.away}</div>`;
+    } else {
+      resultDisplay = `<div class="match-score"><span class="vs">VS</span></div>`;
+    }
+
+    let actions = '';
+    if (state.isAdmin && match.result && !match.settled) {
+      actions = `<span style="font-size:11px;color:var(--gold);">⏳ 等待结算...</span>`;
+    } else if (state.isAdmin && !match.result && isPast) {
+      actions = `
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;">
+          <input type="number" min="0" max="20" id="res_h_${match.id}" placeholder="主" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;">
+          <span style="color:var(--text2);font-weight:700;">:</span>
+          <input type="number" min="0" max="20" id="res_a_${match.id}" placeholder="客" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;">
+          <button class="btn btn-gold btn-small" onclick="enterResult('${match.id}')">录入比分</button>
+        </div>`;
+    } else if (canPredict) {
+      actions = `<button class="btn btn-primary btn-small" onclick="submitPrediction('${match.id}')" style="margin-top:6px;">提交预测</button>`;
+    } else if (hasPred && !match.result) {
+      actions = `<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${pred.home}:${pred.away}</span>`;
+    }
+
+    const dateStr = new Date(match.date).toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+
+    return `
+      <div class="match-card">
+        <div class="match-header">
+          <span class="league-badge ${match.league}">${match.league}</span>
+          <span style="font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:1px 8px;border-radius:8px;">¥${match.stake||10}</span>
+          <span class="match-time">${dateStr}</span>
+          <span class="match-status ${status.cls}">${status.label}</span>
+        </div>
+        <div class="match-teams">
+          <div class="team">
+            <span class="logo">${teamEmoji(match.home)}</span>
+            <span class="name">${teamShort(match.home)}</span>
+          </div>
+          ${resultDisplay}
+          <div class="team away">
+            <span class="logo">${teamEmoji(match.away)}</span>
+            <span class="name">${teamShort(match.away)}</span>
+          </div>
+        </div>
+        ${winnerInfo}
+        ${actions}
+      </div>`;
+  }).join('');
+}
+
+function renderBill() {
+  const el = document.getElementById('billContent');
+  const user = getCurrentUserObj();
+
+  if (!user) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">👤</div><p>请先选择身份</p><button class="btn btn-primary" onclick="showUserSelect()" style="margin-top:12px;">选择身份</button></div>';
+    return;
+  }
+
+  const totalWon = Math.max(0, user.balance);
+  const totalLost = Math.max(0, -user.balance);
+  const matchCount = state.matches.filter(m => m.settled).length;
+  const settledMatches = state.matches.filter(m => m.settled);
+
+  let billItems = '';
+  settledMatches.forEach(match => {
+    if (!match.settlement || match.settlement.type === 'void') {
+      if (match.settlement?.type === 'void') {
+        billItems += `
+          <div class="bill-item">
+            <div class="match-info">
+              <div class="teams">${teamShort(match.home)} vs ${teamShort(match.away)}</div>
+              <div class="detail">${match.league} · ${match.result.home}:${match.result.away} · 无人猜中</div>
+            </div>
+            <div class="bill-amount" style="color:var(--text2);">—</div>
+          </div>`;
+      }
+      return;
+    }
+    const isWinner = match.settlement.winners.includes(user.id);
+    const isLoser = match.settlement.losers.includes(user.id);
+    if (!isWinner && !isLoser) return;
+
+    const amount = isWinner ? match.settlement.amountPerWinner : -match.settlement.amountPerLoser;
+    const pred = match.predictions[user.id];
+
+    billItems += `
+      <div class="bill-item">
+        <div class="match-info">
+          <div class="teams">${teamShort(match.home)} ${match.result.home}:${match.result.away} ${teamShort(match.away)}</div>
+          <div class="detail">${match.league} · 预测 ${pred?pred.home+' : '+pred.away:'未预测'} · ${isWinner?'🏆 赢了':'💸 输了'}</div>
+        </div>
+        <div class="bill-amount ${amount>=0?'positive':'negative'}">${amount>=0?'+':''}¥${amount.toFixed(2)}</div>
+      </div>`;
+  });
+
+  if (!billItems) {
+    billItems = '<div class="empty-state"><div class="icon">📊</div><p>暂无已结算的比赛</p></div>';
+  }
+
+  el.innerHTML = `
+    <div class="summary-card">
+      <div style="font-size:14px;color:var(--text2);">💰 ${user.name} 的累计账单</div>
+      <div class="big-num ${user.balance > 0 ? 'positive' : user.balance < 0 ? 'negative' : 'zero'}">
+        ${user.balance >= 0 ? '+' : ''}¥${user.balance.toFixed(2)}
+      </div>
+      <div class="summary-row">
+        <div class="summary-item">
+          <div class="label">🏆 赢</div>
+          <div class="value" style="color:var(--primary);">+¥${totalWon.toFixed(2)}</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">💸 输</div>
+          <div class="value" style="color:var(--red);">-¥${totalLost.toFixed(2)}</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">🎯 猜对</div>
+          <div class="value" style="color:var(--gold);">${user.wins}次</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">场次</div>
+          <div class="value">${matchCount}</div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:600;margin:0 0 8px 4px;">📋 明细</div>
+    ${billItems}`;
+}
+
+function renderLeaderboard() {
+  const el = document.getElementById('rankContent');
+  const sorted = [...state.users].sort((a,b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    return b.balance - a.balance;
+  });
+
+  const currentUser = getCurrentUserObj();
+
+  let html = '<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 嘴炮王排行榜</div>';
+  sorted.forEach((user, idx) => {
+    const rankCls = idx === 0 ? 'gold' : idx === 1 ? 'silver' : idx === 2 ? 'bronze' : 'normal';
+    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx+1}`;
+    const isMe = currentUser && user.id === currentUser.id;
+
+    html += `
+      <div class="rank-card" style="${isMe?'border-color:var(--primary-dim);':''}">
+        <div class="rank-num ${rankCls}">${medal}</div>
+        <div class="rank-info">
+          <div class="name">${user.name} ${isMe?'<span style="font-size:10px;color:var(--primary);">(你)</span>':''}</div>
+          <div class="stats">🏆 赢 ${user.wins}次 · 💸 输 ${user.losses}次 · ${user.balance>=0?'+':''}¥${user.balance.toFixed(2)}</div>
+        </div>
+        <div class="rank-score">
+          <div class="pts">${user.points}</div>
+          <div class="label">积分</div>
+        </div>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function renderDebts() {
+  const el = document.getElementById('debtContent');
+
+  // Calculate netting
+  const sorted = [...state.users].filter(u => u.balance !== 0).sort((a,b) => b.balance - a.balance);
+  const creditors = sorted.filter(u => u.balance > 0);
+  const debtors = sorted.filter(u => u.balance < 0);
+
+  // Netting
+  const settlements = [];
+  let cIdx = 0, dIdx = 0;
+  while (cIdx < creditors.length && dIdx < debtors.length) {
+    const c = creditors[cIdx];
+    const d = debtors[dIdx];
+    const amount = Math.min(c.balance, -d.balance);
+    if (amount > 0.01) {
+      settlements.push({ from:d, to:c, amount:Math.round(amount*100)/100 });
+    }
+    c.balance = Math.round((c.balance - amount) * 100) / 100;
+    d.balance = Math.round((d.balance + amount) * 100) / 100;
+    if (c.balance < 0.01) cIdx++;
+    if (d.balance > -0.01) dIdx++;
+  }
+  // restore balances
+  state.users.forEach(u => {
+    u.balance = Math.round(u.balance * 100) / 100;
+  });
+
+  const currentUser = getCurrentUserObj();
+  const totalOwed = creditors.reduce((s,u) => s + u.balance, 0);
+  const totalDebt = debtors.reduce((s,u) => s - u.balance, 0);
+
+  const settledCount = state.matches.filter(m => m.settled && m.settlement?.type === 'settled').length;
+  const voidCount = state.matches.filter(m => m.settlement?.type === 'void').length;
+
+  let debtHtml = '';
+  if (settlements.length === 0) {
+    debtHtml = '<div class="empty-state"><div class="icon">🤝</div><p>暂无欠款，大家两清！</p></div>';
+  } else {
+    settlements.forEach(s => {
+      const isMeFrom = currentUser && s.from.id === currentUser.id;
+      const isMeTo = currentUser && s.to.id === currentUser.id;
+      debtHtml += `
+        <div class="debt-item">
+          <span style="font-weight:600;">${s.from.name}</span>
+          <span class="arrow">➜</span>
+          <span style="font-weight:600;">${s.to.name}</span>
+          <div class="debt-amount negative" style="margin-left:8px;">
+            ¥${s.amount.toFixed(2)}
+            ${isMeFrom?'<span style="font-size:10px;color:var(--text2);">(你欠)</span>':''}
+            ${isMeTo?'<span style="font-size:10px;color:var(--primary);">(应收)</span>':''}
+          </div>
+        </div>`;
+    });
+  }
+
+  let logHtml = '';
+  const logs = state.settlementLog?.slice(-10).reverse() || [];
+  if (logs.length > 0) {
+    logHtml = logs.map(l => `
+      <div class="bill-item" style="padding:10px 14px;">
+        <div class="match-info">
+          <div class="detail">${l.detail}</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:2px;">${new Date(l.date).toLocaleString('zh-CN')}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  el.innerHTML = `
+    <div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📋 结算概况</div>
+    <div class="debt-summary">
+      <div class="debt-box">
+        <div class="label">✅ 已结算场次</div>
+        <div class="value" style="color:var(--primary);">${settledCount}</div>
+      </div>
+      <div class="debt-box">
+        <div class="label">💤 流局场次</div>
+        <div class="value" style="color:var(--text2);">${voidCount}</div>
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">🔄 结算关系</div>
+    ${debtHtml}
+    <div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">📜 结算记录</div>
+    ${logHtml || '<div class="empty-state"><div class="icon">📭</div><p>暂无结算记录</p></div>'}`;
+}
+
+function renderAll() {
+  renderMatches();
+  renderBill();
+  renderLeaderboard();
+  renderDebts();
+  updateUserUI();
+}
+
+// ======================== NAVIGATION ========================
+function switchTab(tab) {
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab${tab}`).classList.add('active');
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  renderAll();
+}
+
+// ======================== USER SELECT ========================
+function showUserSelect() {
+  const grid = document.getElementById('userGrid');
+  grid.innerHTML = state.users.map(u => {
+    const sel = state.currentUser === u.id;
+    return `<div class="user-option ${sel?'selected':''}" onclick="selectUser(${u.id})">
+      <div class="avatar-big" style="background:${COLORS[u.id]}22;color:${COLORS[u.id]};">${u.name[0]}</div>
+      <span class="un">${u.name}</span>
+      ${sel?'<span style="font-size:10px;color:var(--primary);">✓ 当前</span>':''}
+    </div>`;
+  }).join('');
+  document.getElementById('userModal').classList.add('show');
+}
+
+function selectUser(id) {
+  state.currentUser = id;
+  saveState();
+  updateUserUI();
+  closeModal('userModal');
+  renderAll();
+  showToast(`👋 你好，${state.users.find(u=>u.id===id).name}`);
+}
+
+function updateUserUI() {
+  const user = getCurrentUserObj();
+  document.getElementById('userName').textContent = user ? user.name : '选择用户';
+  document.getElementById('userAvatar').textContent = user ? user.name[0] : '?';
+  if (user) {
+    document.getElementById('userAvatar').style.background = `${COLORS[user.id]}22`;
+    document.getElementById('userAvatar').style.color = COLORS[user.id];
+  }
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// ======================== ADMIN ========================
+function toggleAdmin() {
+  state.isAdmin = !state.isAdmin;
+  document.getElementById('adminSwitch').checked = state.isAdmin;
+  document.getElementById('adminPanel').classList.toggle('show', state.isAdmin);
+  renderAll();
+}
+
+function selectStake(el, val) {
+  document.querySelectorAll('.stake-option span').forEach(s => {
+    s.style.background = ''; s.style.color = ''; s.style.borderColor = '';
+  });
+  el.querySelector('span').style.background = 'var(--gold)';
+  el.querySelector('span').style.color = '#000';
+  el.querySelector('span').style.borderColor = 'var(--gold)';
+}
+
+function addMatch() {
+  const league = document.getElementById('addLeague').value;
+  const home = document.getElementById('addHome').value.trim();
+  const away = document.getElementById('addAway').value.trim();
+  const dateVal = document.getElementById('addDate').value;
+  const stakeEl = document.querySelector('input[name="addStake"]:checked');
+  const stake = stakeEl ? parseInt(stakeEl.value) : 10;
+
+  if (!home || !away) { showToast('请输入球队名称'); return; }
+  if (!dateVal) { showToast('请选择比赛时间'); return; }
+
+  const id = 'm_' + Date.now();
+  state.matches.unshift(makeMatch(id, league, home, away, dateVal, null, stake));
+  document.getElementById('addHome').value = '';
+  document.getElementById('addAway').value = '';
+  document.getElementById('addDate').value = '';
+  saveState();
+  renderAll();
+  showToast(`✅ 已添加 ${home} vs ${away}`);
+}
+
+// ======================== FILTER ========================
+function filterLeague(league) {
+  document.querySelectorAll('.league-filter').forEach(b => {
+    b.classList.toggle('active', b.dataset.league === league);
+  });
+  renderMatches();
+}
+
+// ======================== RESET ========================
+function resetData() {
+  if (!confirm('⚠️ 确定要重置所有数据吗？这将清除所有比赛、预测和结算记录！')) return;
+  if (!confirm('再次确认：所有数据将被删除！')) return;
+  state = defaultState();
+  state.currentUser = null;
+  saveState();
+  renderAll();
+  updateUserUI();
+  showToast('已重置所有数据');
+}
+
+// ======================== TOAST ========================
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+// ======================== INIT ========================
+function init() {
+  // Auto-settle any pending matches
+  settleAllPending();
+
+  // Bottom tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+  });
+
+  // Click outside modal to close
+  document.getElementById('userModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal('userModal');
+  });
+
+  updateUserUI();
+  renderAll();
+
+  // Auto show user select on first visit
+  if (state.currentUser === null || state.currentUser === undefined) {
+    setTimeout(showUserSelect, 300);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<!-- Bottom Tab Navigation -->
+<div class="tabs">
+  <button class="tab active" data-tab="Matches">
+    <span class="icon">⚽</span>
+    <span>赛事</span>
+  </button>
+  <button class="tab" data-tab="Bill">
+    <span class="icon">💰</span>
+    <span>账单</span>
+  </button>
+  <button class="tab" data-tab="Rank">
+    <span class="icon">🏆</span>
+    <span>排行榜</span>
+  </button>
+  <button class="tab" data-tab="Debt">
+    <span class="icon">📋</span>
+    <span>欠款</span>
+  </button>
+</div>
+
+</body>
+</html>
