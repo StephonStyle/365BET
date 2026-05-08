@@ -23,7 +23,7 @@
   --radius: 14px;
   --shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+* { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   background: var(--bg); color: var(--text); min-height: 100vh;
@@ -74,93 +74,51 @@ body {
 .match-header {
   display:flex; align-items:center; gap:8px; margin-bottom:10px;
 }
-.league-badge {
-  font-size:10px; font-weight:600; padding:2px 10px; border-radius:10px;
-}
+.league-badge { font-size:10px; font-weight:600; padding:2px 10px; border-radius:10px; }
 .league-badge.英超 { background:var(--primary-dim); color:var(--primary); }
 .league-badge.欧冠 { background:var(--blue-dim); color:var(--blue); }
 .league-badge.世界杯 { background:var(--gold-dim); color:var(--gold); }
 .match-time { font-size:11px; color:var(--text2); flex:1; text-align:right; }
-.match-status {
-  font-size:10px; font-weight:600; padding:2px 8px; border-radius:8px;
-  background:var(--card2);
-}
+.match-status { font-size:10px; font-weight:600; padding:2px 8px; border-radius:8px; background:var(--card2); }
 .match-status.待预测 { color:var(--blue); background:var(--blue-dim); }
 .match-status.已预测 { color:var(--gold); background:var(--gold-dim); }
 .match-status.待结算 { color:var(--primary); background:var(--primary-dim); }
 .match-status.已结算 { color:var(--text2); }
 .match-status.流局 { color:var(--red); background:var(--red-dim); }
-
-.match-teams {
-  display:flex; align-items:center; justify-content:space-between;
-  gap:10px; margin-bottom:12px;
-}
+.match-teams { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
 .team { display:flex; align-items:center; gap:8px; flex:1; }
 .team.away { flex-direction:row-reverse; }
 .team .name { font-size:14px; font-weight:600; }
 .team .logo { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; background:var(--card2); }
-.match-score {
-  font-size:22px; font-weight:800; color:var(--text); text-align:center;
-  min-width:50px;
-}
+.match-score { font-size:22px; font-weight:800; color:var(--text); text-align:center; min-width:50px; }
 .match-score .vs { font-size:14px; font-weight:400; color:var(--text2); }
-.match-score-input {
-  display:flex; align-items:center; gap:4px; justify-content:center;
-}
-.match-score-input input {
-  width:36px; height:36px; border-radius:8px; border:1px solid var(--border);
-  background:var(--card2); color:var(--text); font-size:18px; font-weight:700;
-  text-align:center; outline:none;
-}
+.match-score-input { display:flex; align-items:center; gap:4px; justify-content:center; }
+.match-score-input input { width:36px; height:36px; border-radius:8px; border:1px solid var(--border); background:var(--card2); color:var(--text); font-size:18px; font-weight:700; text-align:center; outline:none; }
 .match-score-input input:focus { border-color:var(--primary); }
-
-.btn {
-  padding:6px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600;
-  cursor:pointer; transition:opacity .2s;
-}
+.btn { padding:6px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600; cursor:pointer; transition:opacity .2s; }
 .btn:active { opacity:.7; }
 .btn-primary { background:var(--primary); color:#000; }
 .btn-gold { background:var(--gold); color:#000; }
 .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
 .btn-small { padding:4px 12px; font-size:11px; }
-
-.summary-card {
-  background:linear-gradient(135deg,var(--card),var(--card2));
-  border-radius:var(--radius); padding:18px; margin-bottom:16px;
-  border:1px solid var(--border); text-align:center;
-}
+.summary-card { background:linear-gradient(135deg,var(--card),var(--card2)); border-radius:var(--radius); padding:18px; margin-bottom:16px; border:1px solid var(--border); text-align:center; }
 .summary-card .big-num { font-size:36px; font-weight:800; margin:6px 0; }
 .summary-card .big-num.positive { color:var(--primary); }
 .summary-card .big-num.negative { color:var(--red); }
 .summary-card .big-num.zero { color:var(--text2); }
-.summary-row {
-  display:flex; justify-content:space-around; gap:12px; margin-top:12px;
-}
+.summary-row { display:flex; justify-content:space-around; gap:12px; margin-top:12px; }
 .summary-item { text-align:center; }
 .summary-item .label { font-size:11px; color:var(--text2); }
 .summary-item .value { font-size:18px; font-weight:700; margin-top:2px; }
-.bill-item {
-  background:var(--card); border-radius:var(--radius); padding:12px 14px;
-  margin-bottom:8px; border:1px solid var(--border);
-  display:flex; align-items:center; gap:12px;
-}
+.bill-item { background:var(--card); border-radius:var(--radius); padding:12px 14px; margin-bottom:8px; border:1px solid var(--border); display:flex; align-items:center; gap:12px; }
 .bill-item .match-info { flex:1; }
 .bill-item .match-info .teams { font-size:13px; font-weight:600; }
 .bill-item .match-info .detail { font-size:11px; color:var(--text2); margin-top:2px; }
 .bill-amount { font-size:16px; font-weight:700; text-align:right; }
 .bill-amount.positive { color:var(--primary); }
 .bill-amount.negative { color:var(--red); }
-
-.rank-card {
-  background:var(--card); border-radius:var(--radius); padding:12px 16px;
-  margin-bottom:8px; border:1px solid var(--border);
-  display:flex; align-items:center; gap:12px;
-}
-.rank-num {
-  width:28px; height:28px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:13px; font-weight:800;
-}
+.rank-card { background:var(--card); border-radius:var(--radius); padding:12px 16px; margin-bottom:8px; border:1px solid var(--border); display:flex; align-items:center; gap:12px; }
+.rank-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; }
 .rank-num.gold { background:var(--gold); color:#000; }
 .rank-num.silver { background:#a0a0b0; color:#000; }
 .rank-num.bronze { background:#cd7f32; color:#fff; }
@@ -171,133 +129,59 @@ body {
 .rank-score { text-align:right; }
 .rank-score .pts { font-size:20px; font-weight:800; color:var(--gold); }
 .rank-score .label { font-size:10px; color:var(--text2); }
-
-.modal-overlay {
-  position:fixed; inset:0; z-index:200;
-  background:rgba(0,0,0,.7); display:none;
-  align-items:center; justify-content:center; padding:20px;
-}
+.modal-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; padding:20px; }
 .modal-overlay.show { display:flex; }
-.modal {
-  background:var(--card); border-radius:var(--radius);
-  padding:24px; width:100%; max-width:380px;
-  border:1px solid var(--border); max-height:80vh; overflow-y:auto;
-}
+.modal { background:var(--card); border-radius:var(--radius); padding:24px; width:100%; max-width:380px; border:1px solid var(--border); max-height:80vh; overflow-y:auto; }
 .modal h2 { font-size:18px; margin-bottom:16px; text-align:center; }
-.modal-close {
-  float:right; background:none; border:none; color:var(--text2);
-  font-size:20px; cursor:pointer; padding:4px;
-}
-.user-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:10px;
-}
-.user-option {
-  display:flex; flex-direction:column; align-items:center; gap:6px;
-  padding:14px 8px; border-radius:12px; border:2px solid transparent;
-  background:var(--card2); cursor:pointer; transition:all .2s;
-}
-.user-option:hover { border-color:var(--text2); }
+.modal-close { float:right; background:none; border:none; color:var(--text2); font-size:20px; cursor:pointer; padding:4px; }
+.user-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.user-option { display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 8px; border-radius:12px; border:2px solid transparent; background:var(--card2); cursor:pointer; }
 .user-option.selected { border-color:var(--primary); background:var(--primary-dim); }
-.user-option .avatar-big {
-  width:44px; height:44px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:18px; font-weight:700;
-}
+.user-option .avatar-big { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; }
 .user-option .un { font-size:13px; font-weight:600; }
-
-.admin-panel {
-  background:var(--card); border-radius:var(--radius); padding:16px;
-  margin-bottom:14px; border:1px solid var(--gold-dim);
-  display:none;
-}
+.admin-panel { background:var(--card); border-radius:var(--radius); padding:16px; margin-bottom:14px; border:1px solid var(--gold-dim); display:none; }
 .admin-panel.show { display:block; }
 .admin-panel h3 { font-size:14px; color:var(--gold); margin-bottom:12px; }
 .admin-panel label { display:block; font-size:12px; color:var(--text2); margin-bottom:4px; }
-.admin-panel input, .admin-panel select {
-  width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border);
-  background:var(--card2); color:var(--text); font-size:13px; margin-bottom:10px; outline:none;
-}
+.admin-panel input, .admin-panel select { width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--card2); color:var(--text); font-size:13px; margin-bottom:10px; outline:none; }
 .admin-panel input:focus { border-color:var(--gold); }
 .admin-row { display:flex; gap:8px; }
 .admin-row input { flex:1; }
 .stake-option input:checked+span { background:var(--gold)!important; color:#000!important; border-color:var(--gold)!important; }
-
-.debt-summary {
-  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;
-}
-.debt-box {
-  background:var(--card); border-radius:var(--radius); padding:14px;
-  text-align:center; border:1px solid var(--border);
-}
+.debt-summary { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.debt-box { background:var(--card); border-radius:var(--radius); padding:14px; text-align:center; border:1px solid var(--border); }
 .debt-box .label { font-size:11px; color:var(--text2); }
 .debt-box .value { font-size:22px; font-weight:800; margin-top:4px; }
-.debt-item {
-  background:var(--card); border-radius:var(--radius); padding:12px 14px;
-  margin-bottom:8px; border:1px solid var(--border);
-  display:flex; align-items:center; gap:10px;
-}
+.debt-item { background:var(--card); border-radius:var(--radius); padding:12px 14px; margin-bottom:8px; border:1px solid var(--border); display:flex; align-items:center; gap:10px; }
 .debt-item .arrow { color:var(--text2); font-size:16px; }
 .debt-amount { font-size:15px; font-weight:700; margin-left:auto; }
 .debt-amount.positive { color:var(--primary); }
 .debt-amount.negative { color:var(--red); }
-
 .empty-state { text-align:center; padding:40px 20px; color:var(--text2); }
 .empty-state .icon { font-size:48px; margin-bottom:12px; opacity:.5; }
 .empty-state p { font-size:13px; }
-
-.toast {
-  position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
-  background:var(--card2); color:var(--text); padding:10px 20px;
-  border-radius:10px; font-size:13px; z-index:300;
-  border:1px solid var(--border); box-shadow:var(--shadow);
-  animation: toastIn .3s ease;
-}
+.toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:var(--card2); color:var(--text); padding:10px 20px; border-radius:10px; font-size:13px; z-index:300; border:1px solid var(--border); box-shadow:var(--shadow); animation: toastIn .3s ease; }
 @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
-
-.admin-toggle {
-  display:flex; align-items:center; justify-content:center; gap:6px;
-  padding:8px; margin-top:4px; border-top:1px solid var(--border);
-}
+.admin-toggle { display:flex; align-items:center; justify-content:center; gap:6px; padding:8px; margin-top:4px; border-top:1px solid var(--border); }
 .admin-toggle label { font-size:11px; color:var(--text2); cursor:pointer; }
 .switch { position:relative; display:inline-block; width:36px; height:20px; cursor:pointer; }
 .switch input { display:none; }
-.switch .slider {
-  position:absolute; inset:0; background:var(--card2);
-  border-radius:20px; transition:.3s;
-}
-.switch .slider::before {
-  content:''; position:absolute; left:2px; top:2px;
-  width:16px; height:16px; border-radius:50%; background:var(--text2); transition:.3s;
-}
+.switch .slider { position:absolute; inset:0; background:var(--card2); border-radius:20px; transition:.3s; }
+.switch .slider::before { content:''; position:absolute; left:2px; top:2px; width:16px; height:16px; border-radius:50%; background:var(--text2); transition:.3s; }
 .switch input:checked+.slider { background:var(--gold-dim); }
 .switch input:checked+.slider::before { background:var(--gold); transform:translateX(16px); }
-
-.loading {
-  text-align:center; padding:60px 20px; color:var(--text2);
-}
-.loading .spin {
-  display:inline-block; width:32px; height:32px; border:3px solid var(--card2);
-  border-top-color:var(--primary); border-radius:50%;
-  animation: spin .8s linear infinite; margin-bottom:12px;
-}
+.loading { text-align:center; padding:60px 20px; color:var(--text2); }
+.loading .spin { display:inline-block; width:32px; height:32px; border:3px solid var(--card2); border-top-color:var(--primary); border-radius:50%; animation: spin .8s linear infinite; margin-bottom:12px; }
 @keyframes spin { to{transform:rotate(360deg)} }
 @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 .match-card,.bill-item,.rank-card,.debt-item { animation:fadeIn .3s ease; }
-
-@media (min-width:600px) {
-  .content { max-width:600px; margin:0 auto; }
-  .user-grid { grid-template-columns:1fr 1fr 1fr; }
-}
+@media (min-width:600px) { .content { max-width:600px; margin:0 auto; } .user-grid { grid-template-columns:1fr 1fr 1fr; } }
 </style>
 </head>
 <body>
-
 <div class="header">
   <h1>⚽ 365BET</h1>
-  <button class="user-btn" id="userBtn">
-    <span class="avatar" id="userAvatar">?</span>
-    <span id="userName">选择用户</span>
-  </button>
+  <button class="user-btn" id="userBtn"><span class="avatar" id="userAvatar">?</span><span id="userName">选择用户</span></button>
   <button class="settings-btn" id="adminBtn" title="管理员模式">⚙</button>
 </div>
 
@@ -309,27 +193,12 @@ body {
     <button class="btn btn-outline btn-small" data-league="世界杯">🌍 世界杯</button>
   </div>
   <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
-  <div class="admin-toggle">
-    <label class="switch">
-      <input type="checkbox" id="adminSwitch">
-      <span class="slider"></span>
-    </label>
-    <label for="adminSwitch">管理员模式</label>
-  </div>
+  <div class="admin-toggle"><label class="switch"><input type="checkbox" id="adminSwitch"><span class="slider"></span></label><label for="adminSwitch">管理员模式</label></div>
   <div class="admin-panel" id="adminPanel">
     <h3>🛠 管理员面板</h3>
-    <label>联赛</label>
-    <select id="addLeague">
-      <option value="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</option>
-      <option value="欧冠">🏆 欧冠</option>
-      <option value="世界杯">🌍 世界杯</option>
-    </select>
-    <div class="admin-row">
-      <div><label>主队</label><input id="addHome" placeholder="主队名称"></div>
-      <div><label>客队</label><input id="addAway" placeholder="客队名称"></div>
-    </div>
-    <label>比赛时间</label>
-    <input type="datetime-local" id="addDate">
+    <label>联赛</label><select id="addLeague"><option value="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</option><option value="欧冠">🏆 欧冠</option><option value="世界杯">🌍 世界杯</option></select>
+    <div class="admin-row"><div><label>主队</label><input id="addHome" placeholder="主队名称"></div><div><label>客队</label><input id="addAway" placeholder="客队名称"></div></div>
+    <label>比赛时间</label><input type="datetime-local" id="addDate">
     <label>每注金额 (输家每人付)</label>
     <div style="display:flex;gap:6px;margin-bottom:10px;" id="stakeOptions">
       <label class="stake-option"><input type="radio" name="addStake" value="10" checked hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥10</span></label>
@@ -347,11 +216,7 @@ body {
 <div id="tabDebt" class="content"><div id="debtContent"></div></div>
 
 <div class="modal-overlay" id="userModal">
-  <div class="modal">
-    <button class="modal-close" id="closeModalBtn">✕</button>
-    <h2>👤 选择你的身份</h2>
-    <div class="user-grid" id="userGrid"></div>
-  </div>
+  <div class="modal"><button class="modal-close" id="closeModalBtn">✕</button><h2>👤 选择你的身份</h2><div class="user-grid" id="userGrid"></div></div>
 </div>
 
 <div class="tabs">
@@ -361,379 +226,346 @@ body {
   <button class="tab" data-tab="Debt"><span class="icon">📋</span><span>欠款</span></button>
 </div>
 
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+<script>
+// ======================== SUPABASE REST ========================
+const SB_URL = 'https://dpfdndvxhsbdngvypoie.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZmRuZHZ4aHNiZG5ndnlwb2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjg4NDIsImV4cCI6MjA5MzgwNDg0Mn0.Np3v76r6q9sfu0LsP82UqQmRQH8tVhaF0G2fzlqYoeQ';
 
-// ======================== SUPABASE ========================
-const SUPABASE_URL = 'https://dpfdndvxhsbdngvypoie.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZmRuZHZ4aHNiZG5ndnlwb2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjg4NDIsImV4cCI6MjA5MzgwNDg0Mn0.Np3v76r6q9sfu0LsP82UqQmRQH8tVhaF0G2fzlqYoeQ';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+async function sbGet(table, opts='') {
+  const r = await fetch(SB_URL+'/rest/v1/'+table+opts, {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Accept': 'application/json' }
+  });
+  if (!r.ok) throw new Error(table+' GET failed: '+r.status);
+  return r.json();
+}
 
+async function sbPost(table, data) {
+  const r = await fetch(SB_URL+'/rest/v1/'+table, {
+    method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(data)
+  });
+  if (!r.ok && r.status!==201) { const t=await r.text(); throw new Error(table+' POST failed: '+r.status+' '+t); }
+  return r;
+}
+
+async function sbPatch(table, data) {
+  const r = await fetch(SB_URL+'/rest/v1/matches', {
+    method: 'PATCH', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(data)
+  });
+  if (!r.ok && r.status!==204) throw new Error('PATCH failed: '+r.status);
+  return r;
+}
+
+// ======================== CONSTANTS ========================
 const USERS = ['老章','大毛','王彬','王玺','三瓶','糖糖','二红','隔离'];
 const COLORS = ['#00e676','#448aff','#ffd740','#ff5252','#ab47bc','#26c6da','#ff7043','#7e57c2'];
-
 const TEAMS = {
-  阿森纳:['🔴','阿森纳'], 切尔西:['🔵','切尔西'], 曼城:['💙','曼城'],
-  利物浦:['🔴','利物浦'], 曼联:['🔴','曼联'], 热刺:['⚪','热刺'],
-  纽卡斯尔:['⚫','纽卡斯尔'], 维拉:['🔵','维拉'],
-  布莱顿:['🔵','布莱顿'], 布伦特福德:['🔴','布伦特福德'],
-  皇马:['👑','皇马'], 拜仁:['🔴','拜仁'], 巴黎:['🔵','巴黎'],
-  巴萨:['🔵','巴萨'], 国米:['🔵','国米'], AC米兰:['🔴','AC米兰'],
-  巴西:['🇧🇷','巴西'], 阿根廷:['🇦🇷','阿根廷'],
-  德国:['🇩🇪','德国'], 法国:['🇫🇷','法国'],
-  英格兰:['🏴󠁧󠁢󠁥󠁮󠁧󠁿','英格兰'], 西班牙:['🇪🇸','西班牙'],
-  葡萄牙:['🇵🇹','葡萄牙'], 荷兰:['🇳🇱','荷兰'],
+  阿森纳:['🔴','阿森纳'],切尔西:['🔵','切尔西'],曼城:['💙','曼城'],利物浦:['🔴','利物浦'],
+  曼联:['🔴','曼联'],热刺:['⚪','热刺'],纽卡斯尔:['⚫','纽卡斯尔'],维拉:['🔵','维拉'],
+  布莱顿:['🔵','布莱顿'],布伦特福德:['🔴','布伦特福德'],皇马:['👑','皇马'],拜仁:['🔴','拜仁'],
+  巴黎:['🔵','巴黎'],巴萨:['🔵','巴萨'],国米:['🔵','国米'],AC米兰:['🔴','AC米兰'],
+  巴西:['🇧🇷','巴西'],阿根廷:['🇦🇷','阿根廷'],德国:['🇩🇪','德国'],法国:['🇫🇷','法国'],
+  英格兰:['🏴󠁧󠁢󠁥󠁮󠁧󠁿','英格兰'],西班牙:['🇪🇸','西班牙'],葡萄牙:['🇵🇹','葡萄牙'],荷兰:['🇳🇱','荷兰'],
 };
-function teamEmoji(n) { return TEAMS[n]?.[0]||'⚽'; }
-function teamShort(n) { return TEAMS[n]?.[1]||n; }
-
-const SEED_MATCHES = [
-  { id:'m1', league:'英超', home:'阿森纳', away:'切尔西', date:new Date('2026-05-03T22:00').getTime(), home_score:2, away_score:1, stake:15, settled:false, settlement:null },
-  { id:'m2', league:'英超', home:'曼城', away:'利物浦', date:new Date('2026-05-04T20:30').getTime(), home_score:3, away_score:0, stake:10, settled:false, settlement:null },
-  { id:'m3', league:'英超', home:'曼联', away:'热刺', date:new Date('2026-05-05T23:00').getTime(), home_score:1, away_score:1, stake:20, settled:false, settlement:null },
-  { id:'m4', league:'英超', home:'纽卡斯尔', away:'维拉', date:new Date('2026-05-06T22:00').getTime(), home_score:2, away_score:2, stake:10, settled:false, settlement:null },
-  { id:'m5', league:'英超', home:'布莱顿', away:'布伦特福德', date:new Date('2026-05-10T22:00').getTime(), home_score:null, away_score:null, stake:15, settled:false, settlement:null },
-  { id:'m6', league:'英超', home:'阿森纳', away:'曼联', date:new Date('2026-05-12T23:00').getTime(), home_score:null, away_score:null, stake:25, settled:false, settlement:null },
-  { id:'m7', league:'欧冠', home:'皇马', away:'拜仁', date:new Date('2026-05-01T03:00').getTime(), home_score:2, away_score:2, stake:20, settled:false, settlement:null },
-  { id:'m8', league:'欧冠', home:'巴黎', away:'巴萨', date:new Date('2026-05-02T03:00').getTime(), home_score:3, away_score:1, stake:15, settled:false, settlement:null },
-  { id:'m9', league:'欧冠', home:'国米', away:'AC米兰', date:new Date('2026-05-07T03:00').getTime(), home_score:null, away_score:null, stake:10, settled:false, settlement:null },
-  { id:'m10', league:'欧冠', home:'皇马', away:'巴黎', date:new Date('2026-05-14T03:00').getTime(), home_score:null, away_score:null, stake:30, settled:false, settlement:null },
-  { id:'m11', league:'世界杯', home:'巴西', away:'阿根廷', date:new Date('2026-06-15T21:00').getTime(), home_score:null, away_score:null, stake:20, settled:false, settlement:null },
-  { id:'m12', league:'世界杯', home:'德国', away:'法国', date:new Date('2026-06-16T18:00').getTime(), home_score:null, away_score:null, stake:15, settled:false, settlement:null },
-  { id:'m13', league:'世界杯', home:'英格兰', away:'西班牙', date:new Date('2026-06-17T21:00').getTime(), home_score:null, away_score:null, stake:25, settled:false, settlement:null },
-  { id:'m14', league:'世界杯', home:'葡萄牙', away:'荷兰', date:new Date('2026-06-18T18:00').getTime(), home_score:null, away_score:null, stake:20, settled:false, settlement:null },
-];
+function te(n){return TEAMS[n]?.[0]||'⚽'}
+function ts(n){return TEAMS[n]?.[1]||n}
 
 // ======================== STATE ========================
-let state = {
-  users: USERS.map((n,i)=>({id:i,name:n})),
-  matches: [], predictions: [], settlementLogs: [],
-  currentUser: localStorage.getItem('zuipao_user') !== null ? parseInt(localStorage.getItem('zuipao_user')) : null,
-  isAdmin: false, loaded: false
-};
+let M=[], P=[], L=[];
+let curUser = localStorage.getItem('zuipao_user')!==null ? parseInt(localStorage.getItem('zuipao_user')) : null;
+let isAdmin = false;
+let loaded = false;
 
-// ======================== DATA LOADING ========================
-async function loadFromSupabase() {
-  try {
-    let { data: matches, error } = await supabase.from('matches').select('*').order('date');
-    if (error) throw error;
+function cu() { return (curUser!==null&&curUser!==undefined) ? USERS[curUser] : null; }
 
-    if (!matches || matches.length === 0) {
-      const { error: insErr } = await supabase.from('matches').insert(SEED_MATCHES);
-      if (insErr) throw insErr;
-      const { data: m2 } = await supabase.from('matches').select('*').order('date');
-      matches = m2 || [];
-    }
+function getPreds(mid){return P.filter(p=>p.match_id===mid)}
+function getPred(mid,nm){return P.find(p=>p.match_id===mid&&p.user_name===nm)}
 
-    state.matches = matches || [];
-
-    const { data: preds } = await supabase.from('predictions').select('*');
-    state.predictions = preds || [];
-
-    const { data: logs } = await supabase.from('settlement_logs').select('*').order('created_at', { ascending: false });
-    state.settlementLogs = logs || [];
-
-    await settleAllPending();
-    state.loaded = true;
-  } catch (e) {
-    console.error('Supabase load error:', e);
-    document.getElementById('matchList').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>数据库连接失败，请刷新重试</p><p style="font-size:11px;margin-top:6px;color:var(--text2);">${e.message}</p></div>`;
-  }
-}
-
-function getPreds(matchId) { return state.predictions.filter(p => p.match_id === matchId); }
-function getPred(matchId, name) { return state.predictions.find(p => p.match_id === matchId && p.user_name === name); }
-
-function getStats(name) {
-  let balance=0, wins=0, losses=0;
-  state.matches.filter(m=>m.settled&&m.settlement).forEach(m=>{
+function getStats(nm){
+  let b=0,w=0,lo=0;
+  M.filter(m=>m.settled&&m.settlement).forEach(m=>{
     const s=m.settlement;
     if(s.type==='void') return;
-    if(s.winners&&s.winners.includes(name)){balance+=s.amountPerWinner;wins++}
-    if(s.losers&&s.losers.includes(name)){balance-=s.amountPerLoser;losses++}
+    if(s.winners&&s.winners.includes(nm)){b+=s.amountPerWinner;w++}
+    if(s.losers&&s.losers.includes(nm)){b-=s.amountPerLoser;lo++}
   });
-  return { balance: Math.round(balance*100)/100, wins, losses };
+  return {balance:Math.round(b*100)/100,wins:w,losses:lo};
 }
-
-function getCurrUser() { return state.currentUser!==null&&state.currentUser!==undefined ? state.users[state.currentUser] : null; }
 
 // ======================== SETTLEMENT ========================
-async function settleMatch(match) {
-  if (!match.home_score || !match.away_score || match.home_score===null || match.away_score===null || match.settled) return;
-  const preds = getPreds(match.id);
-  const winners = preds.filter(p => p.home_score===match.home_score && p.away_score===match.away_score).map(p=>p.user_name);
-  const losers = USERS.filter(n => !winners.includes(n));
-  const fee = match.stake||10;
-  let settlement;
-
-  if (winners.length===0) {
-    settlement = { type:'void', winners:[], losers:USERS, amountPerLoser:0, amountPerWinner:0, totalPot:0 };
-  } else {
-    const pot = losers.length * fee;
-    const perW = Math.floor((pot / winners.length)*100)/100;
-    const rem = Math.round((pot - perW*winners.length)*100)/100;
-    settlement = { type:'settled', winners, losers, amountPerWinner: perW, amountPerLoser: fee, totalPot: pot, remainder: rem };
+async function settleMatch(m){
+  if(!m.home_score||m.home_score==null||m.away_score==null||m.settled) return;
+  const ps=getPreds(m.id);
+  const wnrs=ps.filter(p=>p.home_score===m.home_score&&p.away_score===m.away_score).map(p=>p.user_name);
+  const losrs=USERS.filter(n=>!wnrs.includes(n));
+  const fee=m.stake||10;
+  let s;
+  if(wnrs.length===0){
+    s={type:'void',winners:[],losers:USERS,amountPerLoser:0,amountPerWinner:0,totalPot:0};
+  }else{
+    const pot=losrs.length*fee;
+    const pw=Math.floor((pot/wnrs.length)*100)/100;
+    const rem=Math.round((pot-pw*wnrs.length)*100)/100;
+    s={type:'settled',winners:wnrs,losers:losrs,amountPerWinner:pw,amountPerLoser:fee,totalPot:pot,remainder:rem};
   }
-
-  await supabase.from('matches').update({ settled:true, settlement: JSON.stringify(settlement) }).eq('id', match.id);
-  const detail = settlement.type==='void'
-    ? `${match.home} ${match.home_score}-${match.away_score} ${match.away} · 底注¥${fee} · 无人猜中，本场流局`
-    : `${match.home} ${match.home_score}-${match.away_score} ${match.away} · 底注¥${fee} · 赢家: ${winners.join(', ')}，每人得 ¥${settlement.amountPerWinner.toFixed(2)}`;
-  await supabase.from('settlement_logs').insert({ match_id: match.id, detail });
-
-  match.settled = true;
-  match.settlement = settlement;
-  state.settlementLogs.unshift({ match_id: match.id, detail, created_at: new Date().toISOString() });
+  await fetch(SB_URL+'/rest/v1/matches?id=eq.'+m.id,{
+    method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({settled:true,settlement:JSON.stringify(s)})
+  });
+  const det=s.type==='void'?`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 底注¥${fee} · 无人猜中，本场流局`:`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 底注¥${fee} · 赢家: ${wnrs.join(', ')}，每人得 ¥${s.amountPerWinner.toFixed(2)}`;
+  await fetch(SB_URL+'/rest/v1/settlement_logs',{
+    method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({match_id:m.id,detail:det})
+  });
+  m.settled=true;m.settlement=s;
 }
 
-async function settleAllPending() {
-  for (const m of state.matches) {
-    if (m.home_score!=null && m.away_score!=null && !m.settled) await settleMatch(m);
+async function settleAll(){
+  for(const m of M) if(m.home_score!=null&&m.away_score!=null&&!m.settled) await settleMatch(m);
+}
+
+// ======================== LOAD DATA ========================
+async function loadData(){
+  try{
+    let matches = await sbGet('matches','?order=date');
+    if(!matches||matches.length===0){
+      const SEED = [
+        {id:'m1',league:'英超',home:'阿森纳',away:'切尔西',date:new Date('2026-05-03T22:00').getTime(),home_score:2,away_score:1,stake:15,settled:false,settlement:null},
+        {id:'m2',league:'英超',home:'曼城',away:'利物浦',date:new Date('2026-05-04T20:30').getTime(),home_score:3,away_score:0,stake:10,settled:false,settlement:null},
+        {id:'m3',league:'英超',home:'曼联',away:'热刺',date:new Date('2026-05-05T23:00').getTime(),home_score:1,away_score:1,stake:20,settled:false,settlement:null},
+        {id:'m4',league:'英超',home:'纽卡斯尔',away:'维拉',date:new Date('2026-05-06T22:00').getTime(),home_score:2,away_score:2,stake:10,settled:false,settlement:null},
+        {id:'m5',league:'英超',home:'布莱顿',away:'布伦特福德',date:new Date('2026-05-10T22:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m6',league:'英超',home:'阿森纳',away:'曼联',date:new Date('2026-05-12T23:00').getTime(),home_score:null,away_score:null,stake:25,settled:false,settlement:null},
+        {id:'m7',league:'欧冠',home:'皇马',away:'拜仁',date:new Date('2026-05-01T03:00').getTime(),home_score:2,away_score:2,stake:20,settled:false,settlement:null},
+        {id:'m8',league:'欧冠',home:'巴黎',away:'巴萨',date:new Date('2026-05-02T03:00').getTime(),home_score:3,away_score:1,stake:15,settled:false,settlement:null},
+        {id:'m9',league:'欧冠',home:'国米',away:'AC米兰',date:new Date('2026-05-07T03:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        {id:'m10',league:'欧冠',home:'皇马',away:'巴黎',date:new Date('2026-05-14T03:00').getTime(),home_score:null,away_score:null,stake:30,settled:false,settlement:null},
+        {id:'m11',league:'世界杯',home:'巴西',away:'阿根廷',date:new Date('2026-06-15T21:00').getTime(),home_score:null,away_score:null,stake:20,settled:false,settlement:null},
+        {id:'m12',league:'世界杯',home:'德国',away:'法国',date:new Date('2026-06-16T18:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m13',league:'世界杯',home:'英格兰',away:'西班牙',date:new Date('2026-06-17T21:00').getTime(),home_score:null,away_score:null,stake:25,settled:false,settlement:null},
+        {id:'m14',league:'世界杯',home:'葡萄牙',away:'荷兰',date:new Date('2026-06-18T18:00').getTime(),home_score:null,away_score:null,stake:20,settled:false,settlement:null}
+      ];
+      await sbPost('matches', SEED);
+      matches = await sbGet('matches','?order=date');
+    }
+    M = matches||[];
+    P = await sbGet('predictions','?order=id');
+    L = await sbGet('settlement_logs','?order=created_at.desc');
+    await settleAll();
+    loaded=true;
+    renderAll();
+  }catch(e){
+    console.error(e);
+    document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>数据加载失败: '+e.message+'</p><button class="btn btn-primary" onclick="location.reload()" style="margin-top:12px;">刷新重试</button></div>';
   }
 }
 
 // ======================== RENDER ========================
-function getStatus(m) {
-  if (m.settled) return { label: m.settlement?.type==='void'?'流局':'已结算', cls: m.settlement?.type==='void'?'流局':'已结算' };
-  if (m.home_score!=null) return { label:'待结算', cls:'待结算' };
-  const u=getCurrUser();
-  if (u&&getPred(m.id,u.name)) return { label:'已预测', cls:'已预测' };
-  return { label:'待预测', cls:'待预测' };
+function gs(m){
+  if(m.settled) return{label:m.settlement?.type==='void'?'流局':'已结算',cls:m.settlement?.type==='void'?'流局':'已结算'};
+  if(m.home_score!=null) return{label:'待结算',cls:'待结算'};
+  const u=cu();if(u&&getPred(m.id,u)) return{label:'已预测',cls:'已预测'};
+  return{label:'待预测',cls:'待预测'};
 }
 
-function renderMatches() {
-  const el=document.getElementById('matchList');
-  if(!state.loaded) return;
-  const league=document.querySelector('#leagueFilters .active')?.dataset?.league||'all';
-  const u=getCurrUser();
-  let f=state.matches;
-  if(league!=='all') f=f.filter(m=>m.league===league);
+function renderMatches(){
+  const el=document.getElementById('matchList'); if(!loaded) return;
+  const lg=document.querySelector('#leagueFilters .active')?.dataset?.league||'all';
+  const u=cu(); let f=M; if(lg!=='all') f=f.filter(m=>m.league===lg);
   f.sort((a,b)=>a.date-b.date);
-
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';return;}
-
   el.innerHTML=f.map(m=>{
-    const st=getStatus(m); const isPast=Date.now()>m.date||m.home_score!=null;
-    const pred=u?getPred(m.id,u.name):null; const canPredict=!isPast&&!pred&&u;
-    const stake=m.stake||10; const ds=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-
+    const st=gs(m);const isP=Date.now()>m.date||m.home_score!=null;
+    const p=u?getPred(m.id,u):null;const cP=!isP&&!p&&u;const stk=m.stake||10;
+    const ds=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
     let wi='';
-    if(m.settled&&m.settlement?.type==='settled') wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 赢家: ${m.settlement.winners.join(', ')} · 每人得 ¥${m.settlement.amountPerWinner.toFixed(2)} (底注¥${stake})</div>`;
-    else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局 (底注¥${stake})</div>`;
-
+    if(m.settled&&m.settlement?.type==='settled') wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 赢家: ${m.settlement.winners.join(', ')} · 每人得 ¥${m.settlement.amountPerWinner.toFixed(2)} (底注¥${stk})</div>`;
+    else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局 (底注¥${stk})</div>`;
     let rd='';
     if(m.home_score!=null&&m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
-    else if(m.home_score!=null&&state.isAdmin&&!m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
-    else if(canPredict) rd=`<div class="match-score-input"><input type="number" min="0" max="20" id="ph_${m.id}" placeholder="?"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="pa_${m.id}" placeholder="?"></div>`;
-    else if(pred) rd=`<div class="match-score">${pred.home_score} - ${pred.away_score}</div>`;
+    else if(m.home_score!=null&&isAdmin&&!m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
+    else if(cP) rd=`<div class="match-score-input"><input type="number" min="0" max="20" id="ph_${m.id}" placeholder="?"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="pa_${m.id}" placeholder="?"></div>`;
+    else if(p) rd=`<div class="match-score">${p.home_score} - ${p.away_score}</div>`;
     else rd=`<div class="match-score"><span class="vs">VS</span></div>`;
-
     let ac='';
-    if(state.isAdmin&&m.home_score!=null&&!m.settled) ac=`<span style="font-size:11px;color:var(--gold);">⏳ 等待结算...</span>`;
-    else if(state.isAdmin&&!m.home_score&&isPast) ac=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}" placeholder="主" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}" placeholder="客" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" data-act="result" data-mid="${m.id}">录入比分</button></div>`;
-    else if(canPredict) ac=`<button class="btn btn-primary btn-small" data-act="predict" data-mid="${m.id}" style="margin-top:6px;">提交预测</button>`;
-    else if(pred&&!m.home_score) ac=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${pred.home_score}:${pred.away_score}</span>`;
-
-    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span style="font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:1px 8px;border-radius:8px;">¥${stake}</span><span class="match-time">${ds}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${teamEmoji(m.home)}</span><span class="name">${teamShort(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${teamEmoji(m.away)}</span><span class="name">${teamShort(m.away)}</span></div></div>${wi}${ac}</div>`;
+    if(isAdmin&&m.home_score!=null&&!m.settled) ac=`<span style="font-size:11px;color:var(--gold);">⏳ 等待结算...</span>`;
+    else if(isAdmin&&!m.home_score&&isP) ac=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}" placeholder="主" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}" placeholder="客" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="enterResult('${m.id}')">录入比分</button></div>`;
+    else if(cP) ac=`<button class="btn btn-primary btn-small" onclick="submitPred('${m.id}')" style="margin-top:6px;">提交预测</button>`;
+    else if(p&&!m.home_score) ac=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${p.home_score}:${p.away_score}</span>`;
+    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span style="font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:1px 8px;border-radius:8px;">¥${stk}</span><span class="match-time">${ds}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${ac}</div>`;
   }).join('');
 }
 
-function renderBill() {
-  const el=document.getElementById('billContent');
-  if(!state.loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
-  const u=getCurrUser();
-  if(!u){el.innerHTML='<div class="empty-state"><div class="icon">👤</div><p>请先选择身份</p><button class="btn btn-primary" id="selUserBtn">选择身份</button></div>';return;}
-  const st=getStats(u.name);
-  const sm=state.matches.filter(m=>m.settled);
+function renderBill(){
+  const el=document.getElementById('billContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const u=cu(); if(!u){el.innerHTML='<div class="empty-state"><div class="icon">👤</div><p>请先选择身份</p><button class="btn btn-primary" onclick="showUserSelect()" style="margin-top:12px;">选择身份</button></div>';return;}
+  const st=getStats(u); const sm=M.filter(m=>m.settled);
   let bi=sm.map(m=>{
     if(!m.settlement) return '';
-    if(m.settlement.type==='void') return `<div class="bill-item"><div class="match-info"><div class="teams">${teamShort(m.home)} vs ${teamShort(m.away)}</div><div class="detail">${m.league} · ${m.home_score}:${m.away_score} · 无人猜中</div></div><div class="bill-amount" style="color:var(--text2);">—</div></div>`;
-    const iw=m.settlement.winners.includes(u.name), il=m.settlement.losers.includes(u.name);
+    if(m.settlement.type==='void') return `<div class="bill-item"><div class="match-info"><div class="teams">${ts(m.home)} vs ${ts(m.away)}</div><div class="detail">${m.league} · ${m.home_score}:${m.away_score} · 无人猜中</div></div><div class="bill-amount" style="color:var(--text2);">—</div></div>`;
+    const iw=m.settlement.winners.includes(u),il=m.settlement.losers.includes(u);
     if(!iw&&!il) return '';
     const amt=iw?m.settlement.amountPerWinner:-m.settlement.amountPerLoser;
-    const p=getPred(m.id,u.name);
-    return `<div class="bill-item"><div class="match-info"><div class="teams">${teamShort(m.home)} ${m.home_score}:${m.away_score} ${teamShort(m.away)}</div><div class="detail">${m.league} · 预测 ${p?p.home_score+' : '+p.away_score:'未预测'} · ${iw?'🏆 赢了':'💸 输了'}</div></div><div class="bill-amount ${amt>=0?'positive':'negative'}">${amt>=0?'+':''}¥${amt.toFixed(2)}</div></div>`;
+    const p=getPred(m.id,u);
+    return `<div class="bill-item"><div class="match-info"><div class="teams">${ts(m.home)} ${m.home_score}:${m.away_score} ${ts(m.away)}</div><div class="detail">${m.league} · 预测 ${p?p.home_score+' : '+p.away_score:'未预测'} · ${iw?'🏆 赢了':'💸 输了'}</div></div><div class="bill-amount ${amt>=0?'positive':'negative'}">${amt>=0?'+':''}¥${Math.abs(amt).toFixed(2)}</div></div>`;
   }).filter(Boolean).join('');
   if(!bi) bi='<div class="empty-state"><div class="icon">📊</div><p>暂无已结算的比赛</p></div>';
-  el.innerHTML=`<div class="summary-card"><div style="font-size:14px;color:var(--text2);">💰 ${u.name} 的累计账单</div><div class="big-num ${st.balance>0?'positive':st.balance<0?'negative':'zero'}">${st.balance>=0?'+':''}¥${st.balance.toFixed(2)}</div><div class="summary-row"><div class="summary-item"><div class="label">🏆 赢</div><div class="value" style="color:var(--primary);">+¥${Math.max(0,st.balance).toFixed(2)}</div></div><div class="summary-item"><div class="label">💸 输</div><div class="value" style="color:var(--red);">-¥${Math.max(0,-st.balance).toFixed(2)}</div></div><div class="summary-item"><div class="label">🎯 猜对</div><div class="value" style="color:var(--gold);">${st.wins}次</div></div><div class="summary-item"><div class="label">场次</div><div class="value">${sm.length}</div></div></div></div><div style="font-size:13px;font-weight:600;margin:0 0 8px 4px;">📋 明细</div>${bi}`;if(document.getElementById('selUserBtn'))document.getElementById('selUserBtn').onclick=showUserSelect;
+  el.innerHTML=`<div class="summary-card"><div style="font-size:14px;color:var(--text2);">💰 ${u} 的累计账单</div><div class="big-num ${st.balance>0?'positive':st.balance<0?'negative':'zero'}">${st.balance>=0?'+':''}¥${st.balance.toFixed(2)}</div><div class="summary-row"><div class="summary-item"><div class="label">🏆 赢</div><div class="value" style="color:var(--primary);">+¥${Math.max(0,st.balance).toFixed(2)}</div></div><div class="summary-item"><div class="label">💸 输</div><div class="value" style="color:var(--red);">-¥${Math.max(0,-st.balance).toFixed(2)}</div></div><div class="summary-item"><div class="label">🎯 猜对</div><div class="value" style="color:var(--gold);">${st.wins}次</div></div><div class="summary-item"><div class="label">场次</div><div class="value">${sm.length}</div></div></div></div><div style="font-size:13px;font-weight:600;margin:0 0 8px 4px;">📋 明细</div>${bi}`;
 }
 
-function renderLeaderboard() {
-  const el=document.getElementById('rankContent');
-  if(!state.loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
-  const all=state.users.map(u=>{const s=getStats(u.name);return{...u,...s,points:s.wins*2};}).sort((a,b)=>b.points!==a.points?b.points-a.points:b.balance-a.balance);
-  const cu=getCurrUser();
-  el.innerHTML='<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 嘴炮王排行榜</div>'+all.map((u,i)=>{
+function renderRank(){
+  const el=document.getElementById('rankContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const al=USERS.map((n,i)=>{const s=getStats(n);return{id:i,name:n,...s,pts:s.wins*2};}).sort((a,b)=>b.pts!==a.pts?b.pts-a.pts:b.balance-a.balance);
+  const u=cu();
+  el.innerHTML='<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 嘴炮王排行榜</div>'+al.map((x,i)=>{
     const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'normal';
-    const med=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
-    const me=cu&&u.id===cu.id;
-    return `<div class="rank-card" style="${me?'border-color:var(--primary-dim);':''}"><div class="rank-num ${rc}">${med}</div><div class="rank-info"><div class="name">${u.name}${me?'<span style="font-size:10px;color:var(--primary);">(你)</span>':''}</div><div class="stats">🏆 赢 ${u.wins}次 · 💸 输 ${u.losses}次 · ${u.balance>=0?'+':''}¥${u.balance.toFixed(2)}</div></div><div class="rank-score"><div class="pts">${u.points}</div><div class="label">积分</div></div></div>`;
+    const md=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
+    const me=u&&x.name===u;
+    return `<div class="rank-card" style="${me?'border-color:var(--primary-dim);':''}"><div class="rank-num ${rc}">${md}</div><div class="rank-info"><div class="name">${x.name}${me?'<span style="font-size:10px;color:var(--primary);">(你)</span>':''}</div><div class="stats">🏆 赢 ${x.wins}次 · 💸 输 ${x.losses}次 · ${x.balance>=0?'+':''}¥${x.balance.toFixed(2)}</div></div><div class="rank-score"><div class="pts">${x.pts}</div><div class="label">积分</div></div></div>`;
   }).join('');
 }
 
-function renderDebts() {
-  const el=document.getElementById('debtContent');
-  if(!state.loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
-  const all=state.users.map(u=>{const s=getStats(u.name);return{...u,...s};}).filter(u=>u.balance!==0).sort((a,b)=>b.balance-a.balance);
-  const cr=all.filter(u=>u.balance>0).map(u=>({...u}));
-  const dr=all.filter(u=>u.balance<0).map(u=>({...u}));
-  const sets=[]; let ci=0,di=0;
-  while(ci<cr.length&&di<dr.length){const amt=Math.min(cr[ci].balance,-dr[di].balance);if(amt>0.01)sets.push({from:dr[di].name,to:cr[ci].name,amount:Math.round(amt*100)/100});cr[ci].balance=Math.round((cr[ci].balance-amt)*100)/100;dr[di].balance=Math.round((dr[di].balance+amt)*100)/100;if(cr[ci].balance<0.01)ci++;if(dr[di].balance>-0.01)di++;}
-  const cu=getCurrUser();
-  const sc=state.matches.filter(m=>m.settled&&m.settlement?.type==='settled').length;
-  const vc=state.matches.filter(m=>m.settlement?.type==='void').length;
+function renderDebt(){
+  const el=document.getElementById('debtContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const al=USERS.map(n=>{const s=getStats(n);return{name:n,...s};}).filter(x=>x.balance!==0).sort((a,b)=>b.balance-a.balance);
+  const cr=al.filter(x=>x.balance>0).map(x=>({...x}));
+  const dr=al.filter(x=>x.balance<0).map(x=>({...x}));
+  const sts=[];let ci=0,di=0;
+  while(ci<cr.length&&di<dr.length){const amt=Math.min(cr[ci].balance,-dr[di].balance);if(amt>0.01)sts.push({from:dr[di].name,to:cr[ci].name,amount:Math.round(amt*100)/100});cr[ci].balance=Math.round((cr[ci].balance-amt)*100)/100;dr[di].balance=Math.round((dr[di].balance+amt)*100)/100;if(cr[ci].balance<0.01)ci++;if(dr[di].balance>-0.01)di++;}
+  const u=cu();
+  const sc=M.filter(m=>m.settled&&m.settlement?.type==='settled').length;
+  const vc=M.filter(m=>m.settlement?.type==='void').length;
   let dh='';
-  if(sets.length===0) dh='<div class="empty-state"><div class="icon">🤝</div><p>暂无欠款，大家两清！</p></div>';
-  else dh=sets.map(s=>{const mf=cu&&s.from===cu.name,mt=cu&&s.to===cu.name;return`<div class="debt-item"><span style="font-weight:600;">${s.from}</span><span class="arrow">➜</span><span style="font-weight:600;">${s.to}</span><div class="debt-amount negative" style="margin-left:8px;">¥${s.amount.toFixed(2)}${mf?'<span style="font-size:10px;color:var(--text2);">(你欠)</span>':''}${mt?'<span style="font-size:10px;color:var(--primary);">(应收)</span>':''}</div></div>`;}).join('');
-  const logs=state.settlementLogs.slice(0,20);
+  if(sts.length===0) dh='<div class="empty-state"><div class="icon">🤝</div><p>暂无欠款，大家两清！</p></div>';
+  else dh=sts.map(s=>{const mf=u&&s.from===u,mt=u&&s.to===u;return`<div class="debt-item"><span style="font-weight:600;">${s.from}</span><span class="arrow">➜</span><span style="font-weight:600;">${s.to}</span><div class="debt-amount negative" style="margin-left:8px;">¥${s.amount.toFixed(2)}${mf?'<span style="font-size:10px;color:var(--text2);">(你欠)</span>':''}${mt?'<span style="font-size:10px;color:var(--primary);">(应收)</span>':''}</div></div>`;}).join('');
+  const logs=L.slice(0,20);
   let lh=logs.length?logs.map(l=>`<div class="bill-item" style="padding:10px 14px;"><div class="match-info"><div class="detail">${l.detail}</div><div style="font-size:10px;color:var(--text2);margin-top:2px;">${l.created_at?new Date(l.created_at).toLocaleString('zh-CN'):''}</div></div></div>`).join(''):'<div class="empty-state"><div class="icon">📭</div><p>暂无结算记录</p></div>';
   el.innerHTML=`<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📋 结算概况</div><div class="debt-summary"><div class="debt-box"><div class="label">✅ 已结算场次</div><div class="value" style="color:var(--primary);">${sc}</div></div><div class="debt-box"><div class="label">💤 流局场次</div><div class="value" style="color:var(--text2);">${vc}</div></div></div><div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">🔄 结算关系</div>${dh}<div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">📜 结算记录</div>${lh}`;
 }
 
-function renderAll(){renderMatches();renderBill();renderLeaderboard();renderDebts();updateUserUI();}
+function renderAll(){renderMatches();renderBill();renderRank();renderDebt();updateUI();}
 
 // ======================== ACTIONS ========================
-async function submitPrediction(matchId){
-  const u=getCurrUser();
-  if(!u){showToast('请先选择身份');showUserSelect();return;}
-  const m=state.matches.find(x=>x.id===matchId);
-  if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
+async function submitPred(mid){
+  const u=cu(); if(!u){showToast('请先选择身份');showUserSelect();return;}
+  const m=M.find(x=>x.id===mid); if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
   if(Date.now()>m.date){showToast('比赛已开始');return;}
-  const h=parseInt(document.getElementById(`ph_${matchId}`)?.value);
-  const a=parseInt(document.getElementById(`pa_${matchId}`)?.value);
+  const h=parseInt(document.getElementById('ph_'+mid)?.value);
+  const a=parseInt(document.getElementById('pa_'+mid)?.value);
   if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
-  const {error}=await supabase.from('predictions').insert({match_id:matchId,user_name:u.name,home_score:h,away_score:a});
-  if(error&&error.code==='23505'){showToast('你已经提交过预测了！');return;}
-  if(error){showToast('提交失败，请重试');return;}
-  state.predictions.push({match_id:matchId,user_name:u.name,home_score:h,away_score:a});
+  try{
+    await sbPost('predictions',{match_id:mid,user_name:u,home_score:h,away_score:a});
+  }catch(e){
+    if(e.message.includes('23505')){showToast('你已经提交过预测了！');return;}
+    showToast('提交失败');return;
+  }
+  P.push({match_id:mid,user_name:u,home_score:h,away_score:a});
   renderAll();showToast(`✅ 已提交 ${m.home} ${h}-${a} ${m.away}`);
 }
 
-async function enterResult(matchId){
-  if(!state.isAdmin) return;
-  const m=state.matches.find(x=>x.id===matchId);
-  if(!m) return;
-  const h=parseInt(document.getElementById(`rh_${matchId}`)?.value);
-  const a=parseInt(document.getElementById(`ra_${matchId}`)?.value);
+async function enterResult(mid){
+  if(!isAdmin) return;
+  const m=M.find(x=>x.id===mid); if(!m) return;
+  const h=parseInt(document.getElementById('rh_'+mid)?.value);
+  const a=parseInt(document.getElementById('ra_'+mid)?.value);
   if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
-  await supabase.from('matches').update({home_score:h,away_score:a}).eq('id',matchId);
+  await fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
+    method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({home_score:h,away_score:a})
+  });
   m.home_score=h;m.away_score=a;
   await settleMatch(m);renderAll();showToast(`✅ ${m.home} ${h}-${a} ${m.away} 已录入并结算`);
+  // Refresh logs
+  L = await sbGet('settlement_logs','?order=created_at.desc');
 }
 
 async function addMatch(){
-  const league=document.getElementById('addLeague').value;
-  const home=document.getElementById('addHome').value.trim();
-  const away=document.getElementById('addAway').value.trim();
-  const dateVal=document.getElementById('addDate').value;
-  const stakeEl=document.querySelector('input[name="addStake"]:checked');
-  const stake=stakeEl?parseInt(stakeEl.value):10;
-  if(!home||!away){showToast('请输入球队名称');return;}
-  if(!dateVal){showToast('请选择比赛时间');return;}
+  const lg=document.getElementById('addLeague').value;
+  const h=document.getElementById('addHome').value.trim();
+  const a=document.getElementById('addAway').value.trim();
+  const dv=document.getElementById('addDate').value;
+  const se=document.querySelector('input[name="addStake"]:checked');
+  const sk=se?parseInt(se.value):10;
+  if(!h||!a){showToast('请输入球队名称');return;}
+  if(!dv){showToast('请选择比赛时间');return;}
   const id='m_'+Date.now();
-  const nm={id,league,home,away,stake,date:new Date(dateVal).getTime(),home_score:null,away_score:null,settled:false,settlement:null};
-  const {error}=await supabase.from('matches').insert(nm);
-  if(error){showToast('添加失败');return;}
-  state.matches.push(nm);
+  const nm={id,league:lg,home:h,away:a,stake:sk,date:new Date(dv).getTime(),home_score:null,away_score:null,settled:false,settlement:null};
+  await sbPost('matches',nm);
+  M.push(nm);
   document.getElementById('addHome').value='';document.getElementById('addAway').value='';document.getElementById('addDate').value='';
-  renderAll();showToast(`✅ 已添加 ${home} vs ${away} (¥${stake})`);
+  renderAll();showToast(`✅ 已添加 ${h} vs ${a} (¥${sk})`);
 }
 
-// ======================== REAL-TIME ========================
-function setupRealtime() {
-  const ch=supabase.channel('zuipao-rt');
-  ch.on('postgres_changes',{event:'*',schema:'public',table:'matches'},async()=>{const{data}=await supabase.from('matches').select('*');if(data){state.matches=data;await settleAllPending();renderAll();}});
-  ch.on('postgres_changes',{event:'*',schema:'public',table:'predictions'},async()=>{const{data}=await supabase.from('predictions').select('*');if(data)state.predictions=data;renderAll();});
-  ch.on('postgres_changes',{event:'INSERT',schema:'public',table:'settlement_logs'},async()=>{const{data}=await supabase.from('settlement_logs').select('*').order('created_at',{ascending:false});if(data)state.settlementLogs=data;renderAll();});
-  ch.subscribe();
-}
-
-// ======================== UI HELPERS ========================
+// ======================== UI ========================
 function showUserSelect(){
-  const grid=document.getElementById('userGrid');
-  grid.innerHTML=state.users.map(u=>{const sel=state.currentUser===u.id;return`<div class="user-option${sel?' selected':''}" data-uid="${u.id}"><div class="avatar-big" style="background:${COLORS[u.id]}22;color:${COLORS[u.id]};">${u.name[0]}</div><span class="un">${u.name}</span>${sel?'<span style="font-size:10px;color:var(--primary);">✓ 当前</span>':''}</div>`;}).join('');
-  grid.querySelectorAll('.user-option').forEach(el=>el.addEventListener('click',()=>selectUser(parseInt(el.dataset.uid))));
+  const g=document.getElementById('userGrid');
+  g.innerHTML=USERS.map((n,i)=>{const s=curUser===i;return`<div class="user-option${s?' selected':''}" onclick="selectUser(${i})"><div class="avatar-big" style="background:${COLORS[i]}22;color:${COLORS[i]};">${n[0]}</div><span class="un">${n}</span>${s?'<span style="font-size:10px;color:var(--primary);">✓ 当前</span>':''}</div>`;}).join('');
   document.getElementById('userModal').classList.add('show');
 }
 
 function selectUser(id){
-  state.currentUser=id;
-  localStorage.setItem('zuipao_user',id);
-  updateUserUI();closeModal('userModal');renderAll();
-  showToast(`👋 你好，${state.users[id].name}`);
+  curUser=id;localStorage.setItem('zuipao_user',id);
+  updateUI();document.getElementById('userModal').classList.remove('show');renderAll();
+  showToast('👋 你好，'+USERS[id]);
 }
 
-function updateUserUI(){
-  const u=getCurrUser();
-  document.getElementById('userName').textContent=u?u.name:'选择用户';
-  document.getElementById('userAvatar').textContent=u?u.name[0]:'?';
-  if(u){document.getElementById('userAvatar').style.background=COLORS[u.id]+'22';document.getElementById('userAvatar').style.color=COLORS[u.id];}
+function updateUI(){
+  const u=cu();
+  document.getElementById('userName').textContent=u||'选择用户';
+  document.getElementById('userAvatar').textContent=u?u[0]:'?';
+  if(u){document.getElementById('userAvatar').style.background=COLORS[USERS.indexOf(u)]+'22';document.getElementById('userAvatar').style.color=COLORS[USERS.indexOf(u)];}
 }
 
-function closeModal(id){document.getElementById(id).classList.remove('show');}
-function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
-function filterLeague(l){document.querySelectorAll('#leagueFilters .btn').forEach(b=>b.classList.toggle('active',b.dataset.league===l));renderMatches();}
-function selectStake(el){document.querySelectorAll('#stakeOptions span').forEach(s=>{s.style.background='';s.style.color='';s.style.borderColor='';});el.style.background='var(--gold)';el.style.color='#000';el.style.borderColor='var(--gold)';}
-
-// ======================== EVENT BINDING ========================
-function bindEvents(){
-  // Tabs
-  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-    document.querySelectorAll('.content,.tab').forEach(e=>e.classList.remove('active'));
-    document.getElementById('tab'+t.dataset.tab).classList.add('active');
-    t.classList.add('active');renderAll();
-  }));
-
-  // League filters
-  document.querySelectorAll('#leagueFilters .btn').forEach(b=>b.addEventListener('click',()=>{
-    document.querySelectorAll('#leagueFilters .btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');renderMatches();
-  }));
-
-  // User button
-  document.getElementById('userBtn').addEventListener('click',showUserSelect);
-  document.getElementById('closeModalBtn').addEventListener('click',()=>closeModal('userModal'));
-  document.getElementById('userModal').addEventListener('click',function(e){if(e.target===this)closeModal('userModal');});
-
-  // Admin
-  document.getElementById('adminBtn').addEventListener('click',toggleAdmin);
-  document.getElementById('adminSwitch').addEventListener('change',toggleAdmin);
-
-  // Add match
-  document.getElementById('addMatchBtn').addEventListener('click',addMatch);
-  document.querySelectorAll('#stakeOptions .stake-option').forEach(el=>el.addEventListener('click',function(){selectStake(this.querySelector('span'));}));
-
-  // Event delegation for dynamic buttons (predict/result)
-  document.getElementById('matchList').addEventListener('click',e=>{
-    const btn=e.target.closest('[data-act]');
-    if(!btn) return;
-    if(btn.dataset.act==='predict') submitPrediction(btn.dataset.mid);
-    if(btn.dataset.act==='result') enterResult(btn.dataset.mid);
-  });
-
-  // Re-bind bill's select user button
-  document.getElementById('billContent').addEventListener('click',e=>{
-    if(e.target.id==='selUserBtn') showUserSelect();
-  });
-}
+function showToast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
 
 function toggleAdmin(){
-  state.isAdmin=!state.isAdmin;
-  document.getElementById('adminSwitch').checked=state.isAdmin;
-  document.getElementById('adminPanel').classList.toggle('show',state.isAdmin);
+  isAdmin=!isAdmin;
+  document.getElementById('adminSwitch').checked=isAdmin;
+  document.getElementById('adminPanel').classList.toggle('show',isAdmin);
   renderAll();
 }
 
-// ======================== INIT ========================
-async function init(){
-  bindEvents();
-  await loadFromSupabase();
-  setupRealtime();
-  updateUserUI();renderAll();
-  if(state.currentUser===null||state.currentUser===undefined) setTimeout(showUserSelect,500);
+// ======================== REAL-TIME POLL ========================
+let pollTimer = null;
+function startPoll(){
+  pollTimer = setInterval(async ()=>{
+    try{
+      M = await sbGet('matches','?order=date');
+      P = await sbGet('predictions','?order=id');
+      L = await sbGet('settlement_logs','?order=created_at.desc');
+      await settleAll();
+      renderAll();
+    }catch(e){}
+  }, 3000);
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// ======================== INIT ========================
+function init(){
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+    document.querySelectorAll('.content,.tab').forEach(e=>e.classList.remove('active'));
+    document.getElementById('tab'+t.dataset.tab).classList.add('active');t.classList.add('active');renderAll();
+  }));
+  document.querySelectorAll('#leagueFilters .btn').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#leagueFilters .btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderMatches();
+  }));
+  document.getElementById('userBtn').addEventListener('click',showUserSelect);
+  document.querySelector('#userModal .modal-close').addEventListener('click',()=>document.getElementById('userModal').classList.remove('show'));
+  document.getElementById('userModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
+  document.getElementById('adminBtn').addEventListener('click',toggleAdmin);
+  document.getElementById('adminSwitch').addEventListener('change',toggleAdmin);
+  document.getElementById('addMatchBtn').addEventListener('click',addMatch);
+  document.querySelectorAll('#stakeOptions .stake-option').forEach(el=>el.addEventListener('click',function(){
+    document.querySelectorAll('#stakeOptions span').forEach(s=>{s.style.background='';s.style.color='';s.style.borderColor='';});
+    this.querySelector('span').style.background='var(--gold)';this.querySelector('span').style.color='#000';this.querySelector('span').style.borderColor='var(--gold)';
+  }));
+  updateUI();
+  loadData().then(() => {
+    startPoll();
+  });
+}
+
+document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
