@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>365BET - 嘴炮王足球竞猜</title>
+<title>东南亚消保委足球竞猜</title>
 <style>
 :root {
   --bg: #0d0d1a;
@@ -84,6 +84,7 @@ body {
 .match-status.已预测 { color:var(--gold); background:var(--gold-dim); }
 .match-status.待结算 { color:var(--primary); background:var(--primary-dim); }
 .match-status.已结算 { color:var(--text2); }
+.match-status.预测截止 { color:var(--red); background:var(--red-dim); }
 .match-status.流局 { color:var(--red); background:var(--red-dim); }
 .match-teams { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
 .team { display:flex; align-items:center; gap:8px; flex:1; }
@@ -180,7 +181,7 @@ body {
 </head>
 <body>
 <div class="header">
-  <h1>⚽ 365BET</h1>
+  <h1>⚽ 东南亚消保委</h1>
   <button class="user-btn" id="userBtn"><span class="avatar" id="userAvatar">?</span><span id="userName">选择用户</span></button>
   <button class="settings-btn" id="adminBtn" title="管理员模式">⚙</button>
 </div>
@@ -270,12 +271,15 @@ const TEAMS = {
 };
 function te(n){return TEAMS[n]?.[0]||'⚽'}
 function ts(n){return TEAMS[n]?.[1]||n}
+const AVATAR_MAP={'老章':'章','大毛':'毛','王彬':'彬','王玺':'玺','三瓶':'三','二红':'胸','糖糖':'糖','隔离':'隔'};
+function ac(n){return AVATAR_MAP[n]||n[0]}
 
 // ======================== STATE ========================
 let M=[], P=[], L=[];
 let curUser = localStorage.getItem('zuipao_user')!==null ? parseInt(localStorage.getItem('zuipao_user')) : null;
 let isAdmin = false;
 let loaded = false;
+const PREDICT_CUTOFF = 600000; // 10 min in ms
 
 function cu() { return (curUser!==null&&curUser!==undefined) ? USERS[curUser] : null; }
 
@@ -366,6 +370,7 @@ function gs(m){
   if(m.settled) return{label:m.settlement?.type==='void'?'流局':'已结算',cls:m.settlement?.type==='void'?'流局':'已结算'};
   if(m.home_score!=null) return{label:'待结算',cls:'待结算'};
   const u=cu();if(u&&getPred(m.id,u)) return{label:'已预测',cls:'已预测'};
+  if(Date.now()>m.date-PREDICT_CUTOFF) return{label:'预测截止',cls:'预测截止'};
   return{label:'待预测',cls:'待预测'};
 }
 
@@ -376,9 +381,9 @@ function renderMatches(){
   f.sort((a,b)=>a.date-b.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';return;}
   el.innerHTML=f.map(m=>{
-    const st=gs(m);const isP=Date.now()>m.date||m.home_score!=null;
+    const st=gs(m);const isP=Date.now()>m.date-PREDICT_CUTOFF||m.home_score!=null;
     const p=u?getPred(m.id,u):null;const cP=!isP&&!p&&u;const stk=m.stake||10;
-    const ds=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const ds=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+' (当地时间)';
     let wi='';
     if(m.settled&&m.settlement?.type==='settled') wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 赢家: ${m.settlement.winners.join(', ')} · 每人得 ¥${m.settlement.amountPerWinner.toFixed(2)} (底注¥${stk})</div>`;
     else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局 (底注¥${stk})</div>`;
@@ -393,7 +398,7 @@ function renderMatches(){
     else if(isAdmin&&!m.home_score&&isP) ac=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}" placeholder="主" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}" placeholder="客" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="enterResult('${m.id}')">录入比分</button></div>`;
     else if(cP) ac=`<button class="btn btn-primary btn-small" onclick="submitPred('${m.id}')" style="margin-top:6px;">提交预测</button>`;
     else if(p&&!m.home_score) ac=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${p.home_score}:${p.away_score}</span>`;
-    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span style="font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:1px 8px;border-radius:8px;">¥${stk}</span><span class="match-time">${ds}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${ac}</div>`;
+    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span style="font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:1px 8px;border-radius:8px;">底注¥${stk}</span><span class="match-time">${ds}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${ac}</div>`;
   }).join('');
 }
 
@@ -450,7 +455,7 @@ function renderAll(){renderMatches();renderBill();renderRank();renderDebt();upda
 async function submitPred(mid){
   const u=cu(); if(!u){showToast('请先选择身份');showUserSelect();return;}
   const m=M.find(x=>x.id===mid); if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
-  if(Date.now()>m.date){showToast('比赛已开始');return;}
+  if(Date.now()>m.date-PREDICT_CUTOFF){showToast('预测已截止（比赛开始前10分钟停止预测）');return;}
   const h=parseInt(document.getElementById('ph_'+mid)?.value);
   const a=parseInt(document.getElementById('pa_'+mid)?.value);
   if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
@@ -500,7 +505,7 @@ async function addMatch(){
 // ======================== UI ========================
 function showUserSelect(){
   const g=document.getElementById('userGrid');
-  g.innerHTML=USERS.map((n,i)=>{const s=curUser===i;return`<div class="user-option${s?' selected':''}" onclick="selectUser(${i})"><div class="avatar-big" style="background:${COLORS[i]}22;color:${COLORS[i]};">${n[0]}</div><span class="un">${n}</span>${s?'<span style="font-size:10px;color:var(--primary);">✓ 当前</span>':''}</div>`;}).join('');
+  g.innerHTML=USERS.map((n,i)=>{const s=curUser===i;return`<div class="user-option${s?' selected':''}" onclick="selectUser(${i})"><div class="avatar-big" style="background:${COLORS[i]}22;color:${COLORS[i]};">${ac(n)}</div><span class="un">${n}</span>${s?'<span style="font-size:10px;color:var(--primary);">✓ 当前</span>':''}</div>`;}).join('');
   document.getElementById('userModal').classList.add('show');
 }
 
@@ -513,7 +518,7 @@ function selectUser(id){
 function updateUI(){
   const u=cu();
   document.getElementById('userName').textContent=u||'选择用户';
-  document.getElementById('userAvatar').textContent=u?u[0]:'?';
+  document.getElementById('userAvatar').textContent=u?ac(u):'?';
   if(u){document.getElementById('userAvatar').style.background=COLORS[USERS.indexOf(u)]+'22';document.getElementById('userAvatar').style.color=COLORS[USERS.indexOf(u)];}
 }
 
@@ -528,16 +533,34 @@ function toggleAdmin(){
 
 // ======================== REAL-TIME POLL ========================
 let pollTimer = null;
+
+function saveInputs(){
+  const saved={};
+  document.querySelectorAll('.match-score-input input').forEach(el=>{saved[el.id]=el.value;});
+  document.querySelectorAll('[id^="rh_"],[id^="ra_"]').forEach(el=>{saved[el.id]=el.value;});
+  return saved;
+}
+
+function restoreInputs(saved){
+  if(!saved) return;
+  Object.keys(saved).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=saved[id];
+  });
+}
+
 function startPoll(){
   pollTimer = setInterval(async ()=>{
+    const saved=saveInputs();
     try{
       M = await sbGet('matches','?order=date');
       P = await sbGet('predictions','?order=id');
       L = await sbGet('settlement_logs','?order=created_at.desc');
       await settleAll();
       renderAll();
+      restoreInputs(saved);
     }catch(e){}
-  }, 3000);
+  }, 8000);
 }
 
 // ======================== INIT ========================
