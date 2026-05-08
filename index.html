@@ -418,7 +418,8 @@ async function loadData(){
     loaded=true;
     renderAll();
   }catch(e){
-    console.error('Initial load failed, retrying via poll...', e);
+    document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败: '+e.message+'<br><span style="font-size:11px;color:var(--text2);">请截图发给管理员</span></p></div>';
+    console.error('loadData error:', e);
   }
 }
 
@@ -664,7 +665,9 @@ function startPoll(){
       if(!loaded) loaded=true;
       renderAll();
       restoreInputs(saved);
-    }catch(e){}
+    }catch(e){
+      if(!loaded) document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败: '+e.message+'</p></div>';
+    }
   }, 8000);
 }
 
