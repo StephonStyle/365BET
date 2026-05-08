@@ -234,42 +234,41 @@ const SB_URL = 'https://dpfdndvxhsbdngvypoie.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZmRuZHZ4aHNiZG5ndnlwb2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjg4NDIsImV4cCI6MjA5MzgwNDg0Mn0.Np3v76r6q9sfu0LsP82UqQmRQH8tVhaF0G2fzlqYoeQ';
 
 async function sbGet(table, opts='') {
-  const c=new AbortController();const t=setTimeout(()=>c.abort(),15000);
-  try {
-    const r = await fetch(SB_URL+'/rest/v1/'+table+opts, {
-      signal:c.signal,headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Accept': 'application/json' }
-    });
-    clearTimeout(t);
-    if (!r.ok) throw new Error(table+' GET failed: '+r.status);
-    return r.json();
-  } catch(e){clearTimeout(t);throw e;}
+  const r = await Promise.race([
+    fetch(SB_URL+'/rest/v1/'+table+opts, {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Accept': 'application/json' }
+    }),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))
+  ]);
+  if (!r.ok) throw new Error(table+' GET failed: '+r.status);
+  return r.json();
 }
 
 async function sbPost(table, data) {
-  const c=new AbortController();const t=setTimeout(()=>c.abort(),15000);
-  try {
-    const r = await fetch(SB_URL+'/rest/v1/'+table, {
-      signal:c.signal, method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+  const r = await Promise.race([
+    fetch(SB_URL+'/rest/v1/'+table, {
+      method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
-    });
-    clearTimeout(t);
-    if (!r.ok && r.status!==201) { const te=await r.text(); throw new Error(table+' POST failed: '+r.status+' '+te); }
-    return r;
-  } catch(e){clearTimeout(t);throw e;}
+    }),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))
+  ]);
+  if (!r.ok && r.status!==201) { const te=await r.text(); throw new Error(table+' POST failed: '+r.status+' '+te); }
+  return r;
 }
 
 async function sbPatch(table, data) {
-  const c=new AbortController();const t=setTimeout(()=>c.abort(),15000);
-  try {
-    const r = await fetch(SB_URL+'/rest/v1/matches', {
-      signal:c.signal, method: 'PATCH', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+  const r = await Promise.race([
+    fetch(SB_URL+'/rest/v1/matches', {
+      method: 'PATCH', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
-    });
-    clearTimeout(t);
-    if (!r.ok && r.status!==204) throw new Error('PATCH failed: '+r.status);
-    return r;
-  } catch(e){clearTimeout(t);throw e;}
+    }),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))
+  ]);
+  if (!r.ok && r.status!==204) throw new Error('PATCH failed: '+r.status);
+  return r;
 }
+
+async function ft(url,opts){return Promise.race([fetch(url,opts),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))]);}
 
 // ======================== CONSTANTS ========================
 const USERS = ['老章','大毛','王彬','王玺','三瓶','糖糖','二红','隔离'];
@@ -320,7 +319,7 @@ async function uploadAvatar(file){
   const u=cu();if(!u){showToast('请先选择身份');return;}
   const dataUrl=await compressImage(file,100);
   try{await sbPost('avatars',{user_name:u,image_data:dataUrl});}catch(e){
-    await fetch(SB_URL+'/rest/v1/avatars?user_name=eq.'+encodeURIComponent(u),{
+    await ft(SB_URL+'/rest/v1/avatars?user_name=eq.'+encodeURIComponent(u),{
       method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
       body:JSON.stringify({image_data:dataUrl})
     });
@@ -369,12 +368,12 @@ async function settleMatch(m){
     losrs.forEach(n=>{indv[n]=-(stakes[n]||defStake);});
     s={type:'settled',winners:wnrs,losers:losrs,amountPerWinner:0,amountPerLoser:defStake,totalPot:pot,remainder:0,individual:indv};
   }
-  await fetch(SB_URL+'/rest/v1/matches?id=eq.'+m.id,{
+  await ft(SB_URL+'/rest/v1/matches?id=eq.'+m.id,{
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({settled:true,settlement:JSON.stringify(s)})
   });
   const det=s.type==='void'?`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 无人猜中，本场流局`:`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 总奖池¥${s.totalPot} · 赢家按比例分配`;
-  await fetch(SB_URL+'/rest/v1/settlement_logs',{
+  await ft(SB_URL+'/rest/v1/settlement_logs',{
     method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({match_id:m.id,detail:det})
   });
@@ -526,7 +525,7 @@ async function submitPred(mid){
   const existing=getPred(mid,u);
   try{
     if(existing){
-      await fetch(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{
+      await ft(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{
         method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
         body:JSON.stringify({home_score:h,away_score:a})
       });
@@ -547,7 +546,7 @@ async function submitPred(mid){
       const cur=mx.settlement?(typeof mx.settlement==='string'?JSON.parse(mx.settlement):mx.settlement):{};
       if(!cur.stakes) cur.stakes={};
       cur.stakes[u]=cs;
-      try{await fetch(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});}catch(e){}
+      try{await ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});}catch(e){}
       mx.settlement=cur;
     }
   }
@@ -560,7 +559,7 @@ async function enterResult(mid){
   const h=parseInt(document.getElementById('rh_'+mid)?.value);
   const a=parseInt(document.getElementById('ra_'+mid)?.value);
   if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
-  await fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
+  await ft(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({home_score:h,away_score:a})
   });
@@ -576,7 +575,7 @@ async function adminEditResult(mid){
   const h=parseInt(document.getElementById('rh_'+mid)?.value);
   const a=parseInt(document.getElementById('ra_'+mid)?.value);
   if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
-  await fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
+  await ft(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({settled:false,settlement:null})
   });
