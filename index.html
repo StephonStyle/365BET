@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>东南亚消保委足球竞猜</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>365BET</title>
 <style>
 :root {
   --bg: #0d0d1a;
@@ -29,6 +32,7 @@ body {
   background: var(--bg); color: var(--text); min-height: 100vh;
   padding-bottom: 76px; overflow-x: hidden;
 }
+.footer { position:fixed; bottom:52px; left:0; right:0; text-align:center; font-size:10px; color:var(--text2); padding:6px; background:var(--bg); z-index:99; border-top:1px solid var(--border); }
 .header {
   position:sticky; top:0; z-index:100;
   background:linear-gradient(135deg,#0d0d1a 0%,#1a0a2e 100%);
@@ -216,6 +220,7 @@ body {
   <div class="modal"><button class="modal-close" id="closeModalBtn">✕</button><h2>👤 选择你的身份</h2><div class="user-grid" id="userGrid"></div></div>
 </div>
 
+<div class="footer">© 2024-2026 Stephon · v1.1.0 · 东南亚消保委足球竞猜</div>
 <div class="tabs">
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
   <button class="tab" data-tab="Bill"><span class="icon">💰</span><span>账单</span></button>
@@ -365,7 +370,9 @@ async function settleMatch(m){
 }
 
 async function settleAll(){
-  for(const m of M) if(m.home_score!=null&&m.away_score!=null&&!m.settled) await settleMatch(m);
+  for(const m of M) if(m.home_score!=null&&m.away_score!=null&&!m.settled) {
+    try{await settleMatch(m);}catch(e){console.error('结算失败',m.id,e);}
+  }
 }
 
 // ======================== LOAD DATA ========================
