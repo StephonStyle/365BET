@@ -624,7 +624,7 @@ async function setUserPin(un,pin){
 }
 async function selectUser(id){
   const nm=USERS[id];
-  if(curUser!==id){
+  if(curUser!==id || !await getUserPin(nm)){
     const ep=await getUserPin(nm);
     if(ep){
       const ip=prompt('请输入 '+nm+' 的密码:');
