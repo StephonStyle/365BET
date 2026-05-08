@@ -730,16 +730,18 @@ function init(){
     this.querySelector('span').style.background='var(--gold)';this.querySelector('span').style.color='#000';this.querySelector('span').style.borderColor='var(--gold)';
   }));
   updateUI();
-  if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
-  var cv='v1.2.0';
-  var lv=localStorage.getItem('365v');
-  if(lv!==cv){
-    localStorage.setItem('365v',cv);
-    fetch(window.location.href.split('?')[0]+'?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(h){
-      var m=h.match(/v\d+\.\d+\.\d+/);
-      if(m&&m[0]!==cv&&!window.location.search.includes('_='))window.location.replace(window.location.href.split('?')[0]+'?_='+m[0]);
-    }).catch(function(){});
-  }
+  try{
+    if(navigator.serviceWorker)navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister();});}).catch(function(){});
+    var cv='v1.2.0';
+    var lv=localStorage.getItem('365v');
+    if(lv!==cv){
+      localStorage.setItem('365v',cv);
+      fetch(window.location.href.split('?')[0]+'?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(h){
+        var m=h.match(/v\d+\.\d+\.\d+/);
+        if(m&&m[0]!==cv&&!window.location.search.includes('_='))window.location.replace(window.location.href.split('?')[0]+'?_='+m[0]);
+      }).catch(function(){});
+    }
+  }catch(e){}
   loadData().then(() => {
     startPoll();
   });
