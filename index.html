@@ -231,17 +231,21 @@ body {
 </div>
 
 <script>
+window.onerror=function(m,u,l){try{document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">JS错误: '+m+'<br><span style="font-size:11px;color:var(--text2);">行'+l+'</span></p></div>';}catch(e){}};
 // ======================== SUPABASE REST ========================
 const SB_URL = 'https://dpfdndvxhsbdngvypoie.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZmRuZHZ4aHNiZG5ndnlwb2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjg4NDIsImV4cCI6MjA5MzgwNDg0Mn0.Np3v76r6q9sfu0LsP82UqQmRQH8tVhaF0G2fzlqYoeQ';
 
 async function sbGet(table, opts='') {
+  _dl('Supabase: '+table+'...');
+  const start=Date.now();
   const r = await Promise.race([
     fetch(SB_URL+'/rest/v1/'+table+opts, {
       headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Accept': 'application/json' }
     }),
     new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))
   ]);
+  _dl('Supabase: '+table+' OK ('+(Date.now()-start)+'ms)');
   if (!r.ok) throw new Error(table+' GET failed: '+r.status);
   return r.json();
 }
@@ -389,8 +393,12 @@ async function settleAll(){
 }
 
 // ======================== LOAD DATA ========================
+var _dbg=document.getElementById('matchList');
+function _dl(m){try{if(!_dbg)_dbg=document.getElementById('matchList');if(_dbg)_dbg.innerHTML='<div class="loading"><p style="color:var(--primary);font-size:12px;">'+m+'</p></div>';}catch(e){}}
+setTimeout(function(){_dl('初始化中...');},100);
+_dl('准备加载数据...');
 async function loadData(){
-  try{
+  try{_dl('正在获取比赛数据...');
     let matches = await sbGet('matches','?order=date');
     if(!matches||matches.length===0){
       const SEED = [
