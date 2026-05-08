@@ -624,17 +624,15 @@ async function setUserPin(un,pin){
 }
 async function selectUser(id){
   const nm=USERS[id];
-  if(curUser!==id || !await getUserPin(nm)){
-    const ep=await getUserPin(nm);
-    if(ep){
-      const ip=prompt('请输入 '+nm+' 的密码:');
-      if(ip===null)return;
-      if(ip!==ep){showToast('密码错误');return;}
-    }else{
-      const np=prompt('首次使用，请为 '+nm+' 设置4位数密码:');
-      if(np===null||!/^\d{4}$/.test(np)){showToast('密码必须为4位数字');return;}
-      await setUserPin(nm,np);
-    }
+  const ep=await getUserPin(nm);
+  if(ep){
+    const ip=prompt('请输入 '+nm+' 的密码:');
+    if(ip===null)return;
+    if(ip!==ep){showToast('密码错误');return;}
+  }else{
+    const np=prompt('首次使用，请为 '+nm+' 设置4位数密码:');
+    if(np===null||!/^\d{4}$/.test(np)){showToast('密码必须为4位数字');return;}
+    await setUserPin(nm,np);
   }
   curUser=id;localStorage.setItem('zuipao_user',id);
   updateUI();document.getElementById('userModal').classList.remove('show');renderAll();
