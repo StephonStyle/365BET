@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>嘴炮王 - 足球竞猜记账</title>
+<title>365BET - 嘴炮王足球竞猜</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg: #0d0d1a;
@@ -32,7 +33,6 @@ body {
 ::-webkit-scrollbar { width:4px; }
 ::-webkit-scrollbar-thumb { background:var(--text2); border-radius:4px; }
 
-/* Header */
 .header {
   position:sticky; top:0; z-index:100;
   background:linear-gradient(135deg,#0d0d1a 0%,#1a0a2e 100%);
@@ -52,10 +52,8 @@ body {
   color:var(--text); font-size:13px; cursor:pointer; white-space:nowrap;
 }
 .user-btn .avatar { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; background:var(--primary-dim); color:var(--primary); }
-.admin-badge { font-size:10px; background:var(--gold-dim); color:var(--gold); padding:2px 8px; border-radius:10px; cursor:pointer; }
 .settings-btn { background:none; border:none; color:var(--text2); font-size:18px; cursor:pointer; padding:4px; line-height:1; }
 
-/* Tabs nav */
 .tabs {
   position:fixed; bottom:0; left:0; right:0; z-index:100;
   background:linear-gradient(0deg,#0d0d1a 0%,rgba(13,13,26,0.98) 100%);
@@ -70,12 +68,9 @@ body {
 .tab.active { color:var(--primary); }
 .tab .icon { font-size:20px; line-height:1.2; }
 
-/* Content areas */
 .content { display:none; padding:12px 14px; }
 .content.active { display:block; }
-.page-title { font-size:16px; font-weight:700; margin:4px 0 14px; }
 
-/* Match cards */
 .match-card {
   background:var(--card); border-radius:var(--radius); padding:14px 16px;
   margin-bottom:12px; border:1px solid var(--border);
@@ -123,12 +118,6 @@ body {
 }
 .match-score-input input:focus { border-color:var(--primary); }
 
-.match-footer { display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
-.pred-status { font-size:11px; color:var(--text2); }
-.pred-status .pred-score { color:var(--gold); font-weight:600; }
-.my-result { font-size:12px; font-weight:600; }
-.my-result.win { color:var(--primary); }
-.my-result.lose { color:var(--red); }
 .btn {
   padding:6px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600;
   cursor:pointer; transition:opacity .2s;
@@ -142,7 +131,6 @@ body {
 .btn-small { padding:4px 12px; font-size:11px; }
 .btn:disabled { opacity:.3; cursor:default; }
 
-/* Bill page */
 .summary-card {
   background:linear-gradient(135deg,var(--card),var(--card2));
   border-radius:var(--radius); padding:18px; margin-bottom:16px;
@@ -170,7 +158,6 @@ body {
 .bill-amount.positive { color:var(--primary); }
 .bill-amount.negative { color:var(--red); }
 
-/* Leaderboard */
 .rank-card {
   background:var(--card); border-radius:var(--radius); padding:12px 16px;
   margin-bottom:8px; border:1px solid var(--border);
@@ -192,7 +179,6 @@ body {
 .rank-score .pts { font-size:20px; font-weight:800; color:var(--gold); }
 .rank-score .label { font-size:10px; color:var(--text2); }
 
-/* User selector modal */
 .modal-overlay {
   position:fixed; inset:0; z-index:200;
   background:rgba(0,0,0,.7); display:none;
@@ -226,7 +212,6 @@ body {
 }
 .user-option .un { font-size:13px; font-weight:600; }
 
-/* Admin panel */
 .admin-panel {
   background:var(--card); border-radius:var(--radius); padding:16px;
   margin-bottom:14px; border:1px solid var(--gold-dim);
@@ -244,7 +229,6 @@ body {
 .admin-row input { flex:1; }
 .stake-option input:checked+span { background:var(--gold) !important; color:#000 !important; border-color:var(--gold) !important; }
 
-/* Debt page */
 .debt-summary {
   display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;
 }
@@ -265,12 +249,10 @@ body {
 .debt-amount.negative { color:var(--red); }
 .debt-item .sub { font-size:11px; color:var(--text2); }
 
-/* No data */
 .empty-state { text-align:center; padding:40px 20px; color:var(--text2); }
 .empty-state .icon { font-size:48px; margin-bottom:12px; opacity:.5; }
 .empty-state p { font-size:13px; }
 
-/* Toast */
 .toast {
   position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
   background:var(--card2); color:var(--text); padding:10px 20px;
@@ -280,7 +262,6 @@ body {
 }
 @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
 
-/* Admin toggle area */
 .admin-toggle {
   display:flex; align-items:center; justify-content:center; gap:6px;
   padding:8px; margin-top:4px; border-top:1px solid var(--border);
@@ -299,11 +280,19 @@ body {
 .switch input:checked+.slider { background:var(--gold-dim); }
 .switch input:checked+.slider::before { background:var(--gold); transform:translateX(16px); }
 
-/* Animation */
+.loading {
+  text-align:center; padding:60px 20px; color:var(--text2);
+}
+.loading .spin {
+  display:inline-block; width:32px; height:32px; border:3px solid var(--card2);
+  border-top-color:var(--primary); border-radius:50%;
+  animation: spin .8s linear infinite; margin-bottom:12px;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
 @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 .match-card,.bill-item,.rank-card,.debt-item { animation:fadeIn .3s ease; }
 
-/* Responsive */
 @media (min-width:600px) {
   .content { max-width:600px; margin:0 auto; }
   .user-grid { grid-template-columns:1fr 1fr 1fr; }
@@ -313,9 +302,9 @@ body {
 <body>
 
 <div class="header">
-  <h1>⚽ 嘴炮王</h1>
+  <h1>⚽ 365BET</h1>
   <button class="user-btn" id="userBtn" onclick="showUserSelect()">
-    <span class="avatar" id="userAvatar">张</span>
+    <span class="avatar" id="userAvatar">?</span>
     <span id="userName">选择用户</span>
   </button>
   <button class="settings-btn" onclick="toggleAdmin()" title="管理员模式">⚙</button>
@@ -328,7 +317,7 @@ body {
     <button class="btn btn-outline btn-small league-filter" data-league="欧冠" onclick="filterLeague('欧冠')">🏆 欧冠</button>
     <button class="btn btn-outline btn-small league-filter" data-league="世界杯" onclick="filterLeague('世界杯')">🌍 世界杯</button>
   </div>
-  <div id="matchList"></div>
+  <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
   <div class="admin-toggle">
     <label class="switch">
       <input type="checkbox" id="adminSwitch" onchange="toggleAdmin()">
@@ -374,21 +363,12 @@ body {
       </label>
     </div>
     <button class="btn btn-gold" onclick="addMatch()" style="width:100%;margin-top:4px;">➕ 添加比赛</button>
-    <button class="btn btn-outline btn-small" onclick="resetData()" style="width:100%;margin-top:8px;color:var(--red);">⚠ 重置所有数据</button>
   </div>
 </div>
 
-<div id="tabBill" class="content">
-  <div id="billContent"></div>
-</div>
-
-<div id="tabRank" class="content">
-  <div id="rankContent"></div>
-</div>
-
-<div id="tabDebt" class="content">
-  <div id="debtContent"></div>
-</div>
+<div id="tabBill" class="content"><div id="billContent"></div></div>
+<div id="tabRank" class="content"><div id="rankContent"></div></div>
+<div id="tabDebt" class="content"><div id="debtContent"></div></div>
 
 <!-- User Select Modal -->
 <div class="modal-overlay" id="userModal">
@@ -400,20 +380,22 @@ body {
 </div>
 
 <script>
+// ======================== SUPABASE ========================
+const SUPABASE_URL = 'https://dpfdndvxhsbdngvypoie.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZmRuZHZ4aHNiZG5ndnlwb2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjg4NDIsImV4cCI6MjA5MzgwNDg0Mn0.Np3v76r6q9sfu0LsP82UqQmRQH8tVhaF0G2fzlqYoeQ';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // ======================== DATA ========================
 const USERS = ['老章','大毛','王彬','王玺','三瓶','糖糖','二红','隔离'];
 const COLORS = ['#00e676','#448aff','#ffd740','#ff5252','#ab47bc','#26c6da','#ff7043','#7e57c2'];
 
 const TEAMS = {
-  // 英超
   阿森纳:['🔴','阿森纳'], 切尔西:['🔵','切尔西'], 曼城:['💙','曼城'],
   利物浦:['🔴','利物浦'], 曼联:['🔴','曼联'], 热刺:['⚪','热刺'],
   纽卡斯尔:['⚫','纽卡斯尔'], 维拉:['🔵','维拉'],
   布莱顿:['🔵','布莱顿'], 布伦特福德:['🔴','布伦特福德'],
-  // 欧冠
   皇马:['👑','皇马'], 拜仁:['🔴','拜仁'], 巴黎:['🔵','巴黎'],
   巴萨:['🔵','巴萨'], 国米:['🔵','国米'], AC米兰:['🔴','AC米兰'],
-  // 世界杯
   巴西:['🇧🇷','巴西'], 阿根廷:['🇦🇷','阿根廷'],
   德国:['🇩🇪','德国'], 法国:['🇫🇷','法国'],
   英格兰:['🏴󠁧󠁢󠁥󠁮󠁧󠁿','英格兰'], 西班牙:['🇪🇸','西班牙'],
@@ -423,206 +405,177 @@ const TEAMS = {
 function teamEmoji(name) { return TEAMS[name]?.[0]||'⚽'; }
 function teamShort(name) { return TEAMS[name]?.[1]||name; }
 
-function makeMatch(id, league, home, away, dateStr, result=null, stake=10) {
-  return {
-    id, league, home, away,
-    date: new Date(dateStr).getTime(),
-    result,
-    predictions: {},
-    settled: false,
-    stake,
-    settlement: null
-  };
-}
-
-const MOCK_MATCHES = [
-  // 英超 (past)
-  makeMatch('m1','英超','阿森纳','切尔西','2026-05-03T22:00',{home:2,away:1},15),
-  makeMatch('m2','英超','曼城','利物浦','2026-05-04T20:30',{home:3,away:0},10),
-  makeMatch('m3','英超','曼联','热刺','2026-05-05T23:00',{home:1,away:1},20),
-  makeMatch('m4','英超','纽卡斯尔','维拉','2026-05-06T22:00',{home:2,away:2},10),
-  // 英超 (upcoming)
-  makeMatch('m5','英超','布莱顿','布伦特福德','2026-05-10T22:00',null,15),
-  makeMatch('m6','英超','阿森纳','曼联','2026-05-12T23:00',null,25),
-  // 欧冠
-  makeMatch('m7','欧冠','皇马','拜仁','2026-05-01T03:00',{home:2,away:2},20),
-  makeMatch('m8','欧冠','巴黎','巴萨','2026-05-02T03:00',{home:3,away:1},15),
-  makeMatch('m9','欧冠','国米','AC米兰','2026-05-07T03:00',null,10),
-  makeMatch('m10','欧冠','皇马','巴黎','2026-05-14T03:00',null,30),
-  // 世界杯
-  makeMatch('m11','世界杯','巴西','阿根廷','2026-06-15T21:00',null,20),
-  makeMatch('m12','世界杯','德国','法国','2026-06-16T18:00',null,15),
-  makeMatch('m13','世界杯','英格兰','西班牙','2026-06-17T21:00',null,25),
-  makeMatch('m14','世界杯','葡萄牙','荷兰','2026-06-18T18:00',null,20),
+const SEED_MATCHES = [
+  { id:'m1', league:'英超', home:'阿森纳', away:'切尔西', date:new Date('2026-05-03T22:00').getTime(), home_score:2, away_score:1, stake:15, settled:false, settlement:null },
+  { id:'m2', league:'英超', home:'曼城', away:'利物浦', date:new Date('2026-05-04T20:30').getTime(), home_score:3, away_score:0, stake:10, settled:false, settlement:null },
+  { id:'m3', league:'英超', home:'曼联', away:'热刺', date:new Date('2026-05-05T23:00').getTime(), home_score:1, away_score:1, stake:20, settled:false, settlement:null },
+  { id:'m4', league:'英超', home:'纽卡斯尔', away:'维拉', date:new Date('2026-05-06T22:00').getTime(), home_score:2, away_score:2, stake:10, settled:false, settlement:null },
+  { id:'m5', league:'英超', home:'布莱顿', away:'布伦特福德', date:new Date('2026-05-10T22:00').getTime(), home_score:null, away_score:null, stake:15, settled:false, settlement:null },
+  { id:'m6', league:'英超', home:'阿森纳', away:'曼联', date:new Date('2026-05-12T23:00').getTime(), home_score:null, away_score:null, stake:25, settled:false, settlement:null },
+  { id:'m7', league:'欧冠', home:'皇马', away:'拜仁', date:new Date('2026-05-01T03:00').getTime(), home_score:2, away_score:2, stake:20, settled:false, settlement:null },
+  { id:'m8', league:'欧冠', home:'巴黎', away:'巴萨', date:new Date('2026-05-02T03:00').getTime(), home_score:3, away_score:1, stake:15, settled:false, settlement:null },
+  { id:'m9', league:'欧冠', home:'国米', away:'AC米兰', date:new Date('2026-05-07T03:00').getTime(), home_score:null, away_score:null, stake:10, settled:false, settlement:null },
+  { id:'m10', league:'欧冠', home:'皇马', away:'巴黎', date:new Date('2026-05-14T03:00').getTime(), home_score:null, away_score:null, stake:30, settled:false, settlement:null },
+  { id:'m11', league:'世界杯', home:'巴西', away:'阿根廷', date:new Date('2026-06-15T21:00').getTime(), home_score:null, away_score:null, stake:20, settled:false, settlement:null },
+  { id:'m12', league:'世界杯', home:'德国', away:'法国', date:new Date('2026-06-16T18:00').getTime(), home_score:null, away_score:null, stake:15, settled:false, settlement:null },
+  { id:'m13', league:'世界杯', home:'英格兰', away:'西班牙', date:new Date('2026-06-17T21:00').getTime(), home_score:null, away_score:null, stake:25, settled:false, settlement:null },
+  { id:'m14', league:'世界杯', home:'葡萄牙', away:'荷兰', date:new Date('2026-06-18T18:00').getTime(), home_score:null, away_score:null, stake:20, settled:false, settlement:null },
 ];
 
 // ======================== STATE ========================
-let state = { users:[], matches:[], currentUser:null, isAdmin:false };
+let state = {
+  users: USERS.map((n,i)=>({id:i,name:n,balance:0,points:0,wins:0,losses:0})),
+  matches: [],
+  predictions: [],
+  settlementLogs: [],
+  currentUser: null,
+  isAdmin: false,
+  loaded: false
+};
 
-function defaultState() {
-  return {
-    users: USERS.map((name,i)=>({id:i,name,balance:0,points:0,wins:0,losses:0, predictions:0})),
-    matches: JSON.parse(JSON.stringify(MOCK_MATCHES)),
-    currentUser: state?.currentUser ?? null,
-    isAdmin: false,
-    settlementLog: [],
-  };
-}
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem('zuipao_state');
-    if (raw) {
-      const s = JSON.parse(raw);
-      // Fill in missing predictions objects
-      s.matches.forEach(m => { if(!m.predictions) m.predictions={}; if(!m.stake) m.stake=10; });
-      if(!s.settlementLog) s.settlementLog = [];
-      return s;
+// ======================== SUPABASE OPERATIONS ========================
+async function loadFromSupabase() {
+  // Load matches
+  const { data: matches } = await supabase.from('matches').select('*').order('date');
+  if (matches && matches.length > 0) {
+    state.matches = matches;
+  } else {
+    // Seed data
+    const { error } = await supabase.from('matches').insert(SEED_MATCHES);
+    if (!error) {
+      const { data: seeded } = await supabase.from('matches').select('*').order('date');
+      state.matches = seeded || [];
     }
-  } catch(e){}
-  return defaultState();
+  }
+
+  // Load predictions
+  const { data: preds } = await supabase.from('predictions').select('*');
+  state.predictions = preds || [];
+
+  // Load settlement logs
+  const { data: logs } = await supabase.from('settlement_logs').select('*').order('created_at', { ascending: false });
+  state.settlementLogs = logs || [];
+
+  // Settle any pending matches
+  await settleAllPending();
+
+  state.loaded = true;
 }
 
-function saveState() {
-  localStorage.setItem('zuipao_state', JSON.stringify(state));
+function getPredictionsForMatch(matchId) {
+  return state.predictions.filter(p => p.match_id === matchId);
 }
 
-state = loadState();
+function getPredictionForUser(matchId, userName) {
+  return state.predictions.find(p => p.match_id === matchId && p.user_name === userName);
+}
+
+function getUserBalance(userName) {
+  let balance = 0;
+  let wins = 0;
+  let losses = 0;
+
+  state.matches.filter(m => m.settled && m.settlement).forEach(match => {
+    const s = match.settlement;
+    if (s.type === 'void') return;
+    if (s.winners && s.winners.includes(userName)) {
+      balance += s.amountPerWinner;
+      wins++;
+    }
+    if (s.losers && s.losers.includes(userName)) {
+      balance -= s.amountPerLoser;
+      losses++;
+    }
+  });
+
+  return { balance: Math.round(balance * 100) / 100, wins, losses };
+}
+
+function getAllUserStats() {
+  return state.users.map(u => {
+    const { balance, wins, losses } = getUserBalance(u.name);
+    return { ...u, balance, wins, losses, points: wins * 2 };
+  });
+}
 
 // ======================== SETTLEMENT ========================
-function settleMatch(match) {
-  if (!match.result || match.settled) return;
+async function settleMatch(match) {
+  if (!match.home_score || !match.away_score || match.home_score === null || match.away_score === null) return;
+  if (match.settled) return;
 
-  const preds = Object.entries(match.predictions);
-  const winners = preds.filter(([,p]) => p.home === match.result.home && p.away === match.result.away);
-  const allUserIds = state.users.map(u => u.id);
-  const loserIds = allUserIds.filter(id => !winners.some(([uid]) => uid == id));
+  const preds = getPredictionsForMatch(match.id);
+  const winners = preds.filter(p => p.home_score === match.home_score && p.away_score === match.away_score);
+  const winnerNames = winners.map(w => w.user_name);
+  const allUserNames = USERS;
+  const loserNames = allUserNames.filter(n => !winnerNames.includes(n));
 
-  if (winners.length === 0) {
-    match.settled = true;
-    match.settlement = { type:'void', winners:[], losers:allUserIds, amountPerLoser:0, totalPot:0 };
-    state.settlementLog.push({ matchId:match.id, date:Date.now(), type:'void', detail:`${match.home} ${match.result.home}-${match.result.away} ${match.away} — 无人猜中，本场流局` });
-    updateUserStats();
-    saveState();
-    return;
+  let settlement;
+  if (winnerNames.length === 0) {
+    settlement = { type:'void', winners:[], losers:allUserNames, amountPerLoser:0, amountPerWinner:0, totalPot:0 };
+  } else {
+    const feePerLoser = match.stake || 10;
+    const totalPot = loserNames.length * feePerLoser;
+    const perWinner = Math.floor((totalPot / winnerNames.length) * 100) / 100;
+    let remainder = Math.round((totalPot - perWinner * winnerNames.length) * 100) / 100;
+
+    settlement = {
+      type:'settled', winners:winnerNames, losers:loserNames,
+      amountPerWinner: perWinner, amountPerLoser: feePerLoser,
+      totalPot, remainder
+    };
   }
 
-  const feePerLoser = match.stake || 10;
-  const totalPot = loserIds.length * feePerLoser;
-  const perWinner = Math.floor((totalPot / winners.length) * 100) / 100;
-  // handle rounding: adjust so total adds up
-  let remainder = Math.round((totalPot - perWinner * winners.length) * 100) / 100;
+  // Update match in DB
+  await supabase.from('matches').update({
+    settled: true,
+    settlement: JSON.stringify(settlement)
+  }).eq('id', match.id);
 
-  winners.forEach(([uid], idx) => {
-    const amount = idx === winners.length - 1 ? Math.round((perWinner + remainder) * 100) / 100 : perWinner;
-    const user = state.users.find(u => u.id == uid);
-    if (user) { user.balance = Math.round((user.balance + amount) * 100) / 100; user.wins++; user.points += 2; }
-  });
+  // Insert settlement log
+  let detail;
+  if (settlement.type === 'void') {
+    detail = `${match.home} ${match.home_score}-${match.away_score} ${match.away} · 底注¥${match.stake||10} · 无人猜中，本场流局`;
+  } else {
+    detail = `${match.home} ${match.home_score}-${match.away_score} ${match.away} · 底注¥${match.stake||10} · 赢家: ${winnerNames.join(', ')}，每人得 ¥${settlement.amountPerWinner.toFixed(2)}`;
+  }
+  await supabase.from('settlement_logs').insert({ match_id: match.id, detail });
 
-  loserIds.forEach(id => {
-    const user = state.users.find(u => u.id === id);
-    if (user) { user.balance = Math.round((user.balance - feePerLoser) * 100) / 100; user.losses++; }
-  });
-
+  // Update local state
   match.settled = true;
-  match.settlement = {
-    type:'settled', winners:winners.map(([uid])=>parseInt(uid)), losers:loserIds,
-    amountPerWinner:perWinner, amountPerLoser:feePerLoser, totalPot,
-    remainder: Math.round(remainder * 100) / 100
-  };
-
-  const winnerNames = winners.map(([uid])=>state.users.find(u=>u.id==uid).name).join(', ');
-  state.settlementLog.push({
-    matchId:match.id, date:Date.now(), type:'settled',
-    detail:`${match.home} ${match.result.home}-${match.result.away} ${match.away} · 底注¥${feePerLoser} · 赢家: ${winnerNames}，每人得 ¥${perWinner.toFixed(2)}`
-  });
-
-  updateUserStats();
-  saveState();
+  match.settlement = settlement;
+  state.settlementLogs.unshift({ match_id: match.id, detail, created_at: new Date().toISOString() });
 }
 
-function updateUserStats() {
-  state.users.forEach(u => {
-    u.points = u.wins * 2;
-  });
-}
-
-// ======================== SETTLE ALL PENDING ========================
-function settleAllPending() {
-  state.matches.forEach(m => {
-    if (m.result && !m.settled) settleMatch(m);
-  });
-  saveState();
-  renderAll();
-}
-
-// ======================== ENTER RESULT ========================
-function enterResult(matchId) {
-  const match = state.matches.find(m => m.id === matchId);
-  if (!match || !state.isAdmin) return;
-
-  const home = parseInt(document.getElementById(`res_h_${matchId}`)?.value);
-  const away = parseInt(document.getElementById(`res_a_${matchId}`)?.value);
-
-  if (isNaN(home) || isNaN(away) || home < 0 || away < 0) {
-    showToast('请输入有效比分');
-    return;
+async function settleAllPending() {
+  const pending = state.matches.filter(m => m.home_score != null && m.away_score != null && !m.settled);
+  for (const m of pending) {
+    await settleMatch(m);
   }
-
-  match.result = { home, away };
-  settleMatch(match);
-  saveState();
-  renderAll();
-  showToast(`✅ ${match.home} ${home}-${away} ${match.away} 已录入并结算`);
 }
 
-// ======================== SUBMIT PREDICTION ========================
-function submitPrediction(matchId) {
-  const user = getCurrentUserObj();
-  if (!user) { showToast('请先选择身份'); showUserSelect(); return; }
-
-  const match = state.matches.find(m => m.id === matchId);
-  if (!match) return;
-  if (match.settled || match.result) { showToast('比赛已结束，无法修改'); return; }
-  if (new Date().getTime() > match.date) { showToast('比赛已开始，无法提交'); return; }
-
-  const home = parseInt(document.getElementById(`pred_h_${matchId}`)?.value);
-  const away = parseInt(document.getElementById(`pred_a_${matchId}`)?.value);
-
-  if (isNaN(home) || isNaN(away) || home < 0 || away < 0) {
-    showToast('请输入有效比分');
-    return;
-  }
-
-  match.predictions[user.id] = { home, away };
-  user.predictions = (user.predictions||0) + 1;
-  saveState();
-  renderAll();
-  showToast(`✅ 已提交 ${match.home} ${home}-${away} ${match.away}`);
-}
-
-// ======================== GET CURRENT USER ========================
-function getCurrentUserObj() {
-  if (state.currentUser === null || state.currentUser === undefined) return null;
-  return state.users.find(u => u.id === state.currentUser);
-}
-
-// ======================== RENDER ========================
+// ======================== UI RENDER ========================
 function getStatus(match) {
   if (match.settled) {
     if (match.settlement?.type === 'void') return { label:'流局', cls:'流局' };
     return { label:'已结算', cls:'已结算' };
   }
-  if (match.result) return { label:'待结算', cls:'待结算' };
-  const user = getCurrentUserObj();
-  if (user && match.predictions[user.id]) return { label:'已预测', cls:'已预测' };
+  if (match.home_score != null) return { label:'待结算', cls:'待结算' };
+  const user = getCurrentUser();
+  if (user && getPredictionForUser(match.id, user.name)) return { label:'已预测', cls:'已预测' };
   return { label:'待预测', cls:'待预测' };
+}
+
+function getCurrentUser() {
+  if (state.currentUser === null || state.currentUser === undefined) return null;
+  return state.users[state.currentUser];
 }
 
 function renderMatches() {
   const el = document.getElementById('matchList');
+  if (!state.loaded) return;
+
   const league = document.querySelector('.league-filter.active')?.dataset?.league || 'all';
-  const user = getCurrentUserObj();
+  const user = getCurrentUser();
 
   let filtered = state.matches;
   if (league !== 'all') filtered = filtered.filter(m => m.league === league);
@@ -635,42 +588,41 @@ function renderMatches() {
 
   el.innerHTML = filtered.map(match => {
     const status = getStatus(match);
-    const isPast = new Date().getTime() > match.date || match.result;
-    const pred = user ? match.predictions[user.id] : null;
+    const isPast = Date.now() > match.date || match.home_score != null;
+    const pred = user ? getPredictionForUser(match.id, user.name) : null;
     const canPredict = !isPast && !pred && user;
     const hasPred = !!pred;
-    const isAdminResult = state.isAdmin && match.result && !match.settled;
 
     let winnerInfo = '';
     if (match.settled && match.settlement?.type === 'settled') {
-      const wNames = match.settlement.winners.map(id => state.users.find(u=>u.id===id)?.name||'?').join(', ');
+      const wNames = match.settlement.winners.join(', ');
       winnerInfo = `<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 赢家: ${wNames} · 每人得 ¥${match.settlement.amountPerWinner.toFixed(2)} (底注¥${match.stake||10})</div>`;
     } else if (match.settlement?.type === 'void') {
       winnerInfo = `<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局 (底注¥${match.stake||10})</div>`;
     }
 
     let resultDisplay = '';
-    if (match.result && match.settled) {
-      resultDisplay = `<div class="match-score">${match.result.home} - ${match.result.away}</div>`;
-    } else if (match.result && state.isAdmin && !match.settled) {
-      resultDisplay = `<div class="match-score">${match.result.home} - ${match.result.away}</div>`;
+    if (match.home_score != null && match.settled) {
+      resultDisplay = `<div class="match-score">${match.home_score} - ${match.away_score}</div>`;
+    } else if (match.home_score != null && state.isAdmin && !match.settled) {
+      resultDisplay = `<div class="match-score">${match.home_score} - ${match.away_score}</div>`;
     } else if (canPredict) {
       resultDisplay = `
         <div class="match-score-input">
-          <input type="number" min="0" max="20" id="pred_h_${match.id}" placeholder="?" value="${pred?.home??''}">
+          <input type="number" min="0" max="20" id="pred_h_${match.id}" placeholder="?">
           <span style="color:var(--text2);font-weight:700;">:</span>
-          <input type="number" min="0" max="20" id="pred_a_${match.id}" placeholder="?" value="${pred?.away??''}">
+          <input type="number" min="0" max="20" id="pred_a_${match.id}" placeholder="?">
         </div>`;
     } else if (hasPred) {
-      resultDisplay = `<div class="match-score">${pred.home} - ${pred.away}</div>`;
+      resultDisplay = `<div class="match-score">${pred.home_score} - ${pred.away_score}</div>`;
     } else {
       resultDisplay = `<div class="match-score"><span class="vs">VS</span></div>`;
     }
 
     let actions = '';
-    if (state.isAdmin && match.result && !match.settled) {
+    if (state.isAdmin && match.home_score != null && !match.settled) {
       actions = `<span style="font-size:11px;color:var(--gold);">⏳ 等待结算...</span>`;
-    } else if (state.isAdmin && !match.result && isPast) {
+    } else if (state.isAdmin && !match.home_score && isPast) {
       actions = `
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;">
           <input type="number" min="0" max="20" id="res_h_${match.id}" placeholder="主" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;">
@@ -680,17 +632,18 @@ function renderMatches() {
         </div>`;
     } else if (canPredict) {
       actions = `<button class="btn btn-primary btn-small" onclick="submitPrediction('${match.id}')" style="margin-top:6px;">提交预测</button>`;
-    } else if (hasPred && !match.result) {
-      actions = `<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${pred.home}:${pred.away}</span>`;
+    } else if (hasPred && !match.home_score) {
+      actions = `<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${pred.home_score}:${pred.away_score}</span>`;
     }
 
     const dateStr = new Date(match.date).toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const stake = match.stake || 10;
 
     return `
       <div class="match-card">
         <div class="match-header">
           <span class="league-badge ${match.league}">${match.league}</span>
-          <span style="font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:1px 8px;border-radius:8px;">¥${match.stake||10}</span>
+          <span style="font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:1px 8px;border-radius:8px;">¥${stake}</span>
           <span class="match-time">${dateStr}</span>
           <span class="match-status ${status.cls}">${status.label}</span>
         </div>
@@ -713,45 +666,43 @@ function renderMatches() {
 
 function renderBill() {
   const el = document.getElementById('billContent');
-  const user = getCurrentUserObj();
+  if (!state.loaded) { el.innerHTML = '<div class="loading"><div class="spin"></div><p>加载中...</p></div>'; return; }
 
+  const user = getCurrentUser();
   if (!user) {
     el.innerHTML = '<div class="empty-state"><div class="icon">👤</div><p>请先选择身份</p><button class="btn btn-primary" onclick="showUserSelect()" style="margin-top:12px;">选择身份</button></div>';
     return;
   }
 
-  const totalWon = Math.max(0, user.balance);
-  const totalLost = Math.max(0, -user.balance);
-  const matchCount = state.matches.filter(m => m.settled).length;
+  const stats = getUserBalance(user.name);
   const settledMatches = state.matches.filter(m => m.settled);
 
   let billItems = '';
   settledMatches.forEach(match => {
-    if (!match.settlement || match.settlement.type === 'void') {
-      if (match.settlement?.type === 'void') {
-        billItems += `
-          <div class="bill-item">
-            <div class="match-info">
-              <div class="teams">${teamShort(match.home)} vs ${teamShort(match.away)}</div>
-              <div class="detail">${match.league} · ${match.result.home}:${match.result.away} · 无人猜中</div>
-            </div>
-            <div class="bill-amount" style="color:var(--text2);">—</div>
-          </div>`;
-      }
+    if (!match.settlement) return;
+    if (match.settlement.type === 'void') {
+      billItems += `
+        <div class="bill-item">
+          <div class="match-info">
+            <div class="teams">${teamShort(match.home)} vs ${teamShort(match.away)}</div>
+            <div class="detail">${match.league} · ${match.home_score}:${match.away_score} · 无人猜中</div>
+          </div>
+          <div class="bill-amount" style="color:var(--text2);">—</div>
+        </div>`;
       return;
     }
-    const isWinner = match.settlement.winners.includes(user.id);
-    const isLoser = match.settlement.losers.includes(user.id);
+    const isWinner = match.settlement.winners.includes(user.name);
+    const isLoser = match.settlement.losers.includes(user.name);
     if (!isWinner && !isLoser) return;
 
     const amount = isWinner ? match.settlement.amountPerWinner : -match.settlement.amountPerLoser;
-    const pred = match.predictions[user.id];
+    const pred = getPredictionForUser(match.id, user.name);
 
     billItems += `
       <div class="bill-item">
         <div class="match-info">
-          <div class="teams">${teamShort(match.home)} ${match.result.home}:${match.result.away} ${teamShort(match.away)}</div>
-          <div class="detail">${match.league} · 预测 ${pred?pred.home+' : '+pred.away:'未预测'} · ${isWinner?'🏆 赢了':'💸 输了'}</div>
+          <div class="teams">${teamShort(match.home)} ${match.home_score}:${match.away_score} ${teamShort(match.away)}</div>
+          <div class="detail">${match.league} · 预测 ${pred?pred.home_score+' : '+pred.away_score:'未预测'} · ${isWinner?'🏆 赢了':'💸 输了'}</div>
         </div>
         <div class="bill-amount ${amount>=0?'positive':'negative'}">${amount>=0?'+':''}¥${amount.toFixed(2)}</div>
       </div>`;
@@ -764,25 +715,25 @@ function renderBill() {
   el.innerHTML = `
     <div class="summary-card">
       <div style="font-size:14px;color:var(--text2);">💰 ${user.name} 的累计账单</div>
-      <div class="big-num ${user.balance > 0 ? 'positive' : user.balance < 0 ? 'negative' : 'zero'}">
-        ${user.balance >= 0 ? '+' : ''}¥${user.balance.toFixed(2)}
+      <div class="big-num ${stats.balance > 0 ? 'positive' : stats.balance < 0 ? 'negative' : 'zero'}">
+        ${stats.balance >= 0 ? '+' : ''}¥${stats.balance.toFixed(2)}
       </div>
       <div class="summary-row">
         <div class="summary-item">
           <div class="label">🏆 赢</div>
-          <div class="value" style="color:var(--primary);">+¥${totalWon.toFixed(2)}</div>
+          <div class="value" style="color:var(--primary);">+¥${Math.max(0,stats.balance).toFixed(2)}</div>
         </div>
         <div class="summary-item">
           <div class="label">💸 输</div>
-          <div class="value" style="color:var(--red);">-¥${totalLost.toFixed(2)}</div>
+          <div class="value" style="color:var(--red);">-¥${Math.max(0,-stats.balance).toFixed(2)}</div>
         </div>
         <div class="summary-item">
           <div class="label">🎯 猜对</div>
-          <div class="value" style="color:var(--gold);">${user.wins}次</div>
+          <div class="value" style="color:var(--gold);">${stats.wins}次</div>
         </div>
         <div class="summary-item">
           <div class="label">场次</div>
-          <div class="value">${matchCount}</div>
+          <div class="value">${settledMatches.length}</div>
         </div>
       </div>
     </div>
@@ -792,12 +743,15 @@ function renderBill() {
 
 function renderLeaderboard() {
   const el = document.getElementById('rankContent');
-  const sorted = [...state.users].sort((a,b) => {
+  if (!state.loaded) { el.innerHTML = '<div class="loading"><div class="spin"></div><p>加载中...</p></div>'; return; }
+
+  const allStats = getAllUserStats();
+  const sorted = [...allStats].sort((a,b) => {
     if (b.points !== a.points) return b.points - a.points;
     return b.balance - a.balance;
   });
 
-  const currentUser = getCurrentUserObj();
+  const currentUser = getCurrentUser();
 
   let html = '<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 嘴炮王排行榜</div>';
   sorted.forEach((user, idx) => {
@@ -823,13 +777,13 @@ function renderLeaderboard() {
 
 function renderDebts() {
   const el = document.getElementById('debtContent');
+  if (!state.loaded) { el.innerHTML = '<div class="loading"><div class="spin"></div><p>加载中...</p></div>'; return; }
 
-  // Calculate netting
-  const sorted = [...state.users].filter(u => u.balance !== 0).sort((a,b) => b.balance - a.balance);
-  const creditors = sorted.filter(u => u.balance > 0);
-  const debtors = sorted.filter(u => u.balance < 0);
+  const allStats = getAllUserStats();
+  const sorted = [...allStats].filter(u => u.balance !== 0).sort((a,b) => b.balance - a.balance);
+  const creditors = sorted.filter(u => u.balance > 0).map(u => ({...u}));
+  const debtors = sorted.filter(u => u.balance < 0).map(u => ({...u}));
 
-  // Netting
   const settlements = [];
   let cIdx = 0, dIdx = 0;
   while (cIdx < creditors.length && dIdx < debtors.length) {
@@ -837,22 +791,15 @@ function renderDebts() {
     const d = debtors[dIdx];
     const amount = Math.min(c.balance, -d.balance);
     if (amount > 0.01) {
-      settlements.push({ from:d, to:c, amount:Math.round(amount*100)/100 });
+      settlements.push({ from:d.name, to:c.name, amount:Math.round(amount*100)/100 });
     }
     c.balance = Math.round((c.balance - amount) * 100) / 100;
     d.balance = Math.round((d.balance + amount) * 100) / 100;
     if (c.balance < 0.01) cIdx++;
     if (d.balance > -0.01) dIdx++;
   }
-  // restore balances
-  state.users.forEach(u => {
-    u.balance = Math.round(u.balance * 100) / 100;
-  });
 
-  const currentUser = getCurrentUserObj();
-  const totalOwed = creditors.reduce((s,u) => s + u.balance, 0);
-  const totalDebt = debtors.reduce((s,u) => s - u.balance, 0);
-
+  const currentUser = getCurrentUser();
   const settledCount = state.matches.filter(m => m.settled && m.settlement?.type === 'settled').length;
   const voidCount = state.matches.filter(m => m.settlement?.type === 'void').length;
 
@@ -861,13 +808,13 @@ function renderDebts() {
     debtHtml = '<div class="empty-state"><div class="icon">🤝</div><p>暂无欠款，大家两清！</p></div>';
   } else {
     settlements.forEach(s => {
-      const isMeFrom = currentUser && s.from.id === currentUser.id;
-      const isMeTo = currentUser && s.to.id === currentUser.id;
+      const isMeFrom = currentUser && s.from === currentUser.name;
+      const isMeTo = currentUser && s.to === currentUser.name;
       debtHtml += `
         <div class="debt-item">
-          <span style="font-weight:600;">${s.from.name}</span>
+          <span style="font-weight:600;">${s.from}</span>
           <span class="arrow">➜</span>
-          <span style="font-weight:600;">${s.to.name}</span>
+          <span style="font-weight:600;">${s.to}</span>
           <div class="debt-amount negative" style="margin-left:8px;">
             ¥${s.amount.toFixed(2)}
             ${isMeFrom?'<span style="font-size:10px;color:var(--text2);">(你欠)</span>':''}
@@ -878,13 +825,13 @@ function renderDebts() {
   }
 
   let logHtml = '';
-  const logs = state.settlementLog?.slice(-10).reverse() || [];
+  const logs = state.settlementLogs?.slice(0, 20) || [];
   if (logs.length > 0) {
     logHtml = logs.map(l => `
       <div class="bill-item" style="padding:10px 14px;">
         <div class="match-info">
           <div class="detail">${l.detail}</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:2px;">${new Date(l.date).toLocaleString('zh-CN')}</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:2px;">${l.created_at ? new Date(l.created_at).toLocaleString('zh-CN') : ''}</div>
         </div>
       </div>`).join('');
   }
@@ -915,6 +862,112 @@ function renderAll() {
   updateUserUI();
 }
 
+// ======================== ACTIONS ========================
+async function submitPrediction(matchId) {
+  const user = getCurrentUser();
+  if (!user) { showToast('请先选择身份'); showUserSelect(); return; }
+
+  const match = state.matches.find(m => m.id === matchId);
+  if (!match) return;
+  if (match.settled || match.home_score != null) { showToast('比赛已结束，无法修改'); return; }
+  if (Date.now() > match.date) { showToast('比赛已开始，无法提交'); return; }
+
+  const home = parseInt(document.getElementById(`pred_h_${matchId}`)?.value);
+  const away = parseInt(document.getElementById(`pred_a_${matchId}`)?.value);
+
+  if (isNaN(home) || isNaN(away) || home < 0 || away < 0) { showToast('请输入有效比分'); return; }
+
+  const { error } = await supabase.from('predictions').insert({
+    match_id: matchId, user_name: user.name, home_score: home, away_score: away
+  });
+  if (error && error.code === '23505') { showToast('你已经提交过预测了！'); return; }
+  if (error) { showToast('提交失败，请重试'); return; }
+
+  state.predictions.push({ match_id: matchId, user_name: user.name, home_score: home, away_score: away });
+  renderAll();
+  showToast(`✅ 已提交 ${match.home} ${home}-${away} ${match.away}`);
+}
+
+async function enterResult(matchId) {
+  if (!state.isAdmin) return;
+  const match = state.matches.find(m => m.id === matchId);
+  if (!match) return;
+
+  const home = parseInt(document.getElementById(`res_h_${matchId}`)?.value);
+  const away = parseInt(document.getElementById(`res_a_${matchId}`)?.value);
+  if (isNaN(home) || isNaN(away) || home < 0 || away < 0) { showToast('请输入有效比分'); return; }
+
+  await supabase.from('matches').update({ home_score: home, away_score: away }).eq('id', matchId);
+  match.home_score = home;
+  match.away_score = away;
+
+  await settleMatch(match);
+  renderAll();
+  showToast(`✅ ${match.home} ${home}-${away} ${match.away} 已录入并结算`);
+}
+
+async function addMatch() {
+  const league = document.getElementById('addLeague').value;
+  const home = document.getElementById('addHome').value.trim();
+  const away = document.getElementById('addAway').value.trim();
+  const dateVal = document.getElementById('addDate').value;
+  const stakeEl = document.querySelector('input[name="addStake"]:checked');
+  const stake = stakeEl ? parseInt(stakeEl.value) : 10;
+
+  if (!home || !away) { showToast('请输入球队名称'); return; }
+  if (!dateVal) { showToast('请选择比赛时间'); return; }
+
+  const id = 'm_' + Date.now();
+  const newMatch = {
+    id, league, home, away, stake,
+    date: new Date(dateVal).getTime(),
+    home_score: null, away_score: null, settled: false, settlement: null
+  };
+
+  const { error } = await supabase.from('matches').insert(newMatch);
+  if (error) { showToast('添加失败'); return; }
+
+  state.matches.push(newMatch);
+  document.getElementById('addHome').value = '';
+  document.getElementById('addAway').value = '';
+  document.getElementById('addDate').value = '';
+  renderAll();
+  showToast(`✅ 已添加 ${home} vs ${away} (¥${stake})`);
+}
+
+// ======================== REAL-TIME ========================
+function setupRealtime() {
+  const channel = supabase.channel('zuipao-realtime');
+
+  channel.on('postgres_changes',
+    { event: '*', schema: 'public', table: 'matches' },
+    async () => {
+      const { data } = await supabase.from('matches').select('*');
+      if (data) { state.matches = data; await settleAllPending(); renderAll(); }
+    }
+  );
+
+  channel.on('postgres_changes',
+    { event: '*', schema: 'public', table: 'predictions' },
+    async () => {
+      const { data } = await supabase.from('predictions').select('*');
+      if (data) state.predictions = data;
+      renderAll();
+    }
+  );
+
+  channel.on('postgres_changes',
+    { event: 'INSERT', schema: 'public', table: 'settlement_logs' },
+    async () => {
+      const { data } = await supabase.from('settlement_logs').select('*').order('created_at', { ascending: false });
+      if (data) state.settlementLogs = data;
+      renderAll();
+    }
+  );
+
+  channel.subscribe();
+}
+
 // ======================== NAVIGATION ========================
 function switchTab(tab) {
   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
@@ -940,15 +993,15 @@ function showUserSelect() {
 
 function selectUser(id) {
   state.currentUser = id;
-  saveState();
+  localStorage.setItem('zuipao_user', id);
   updateUserUI();
   closeModal('userModal');
   renderAll();
-  showToast(`👋 你好，${state.users.find(u=>u.id===id).name}`);
+  showToast(`👋 你好，${state.users[id].name}`);
 }
 
 function updateUserUI() {
-  const user = getCurrentUserObj();
+  const user = getCurrentUser();
   document.getElementById('userName').textContent = user ? user.name : '选择用户';
   document.getElementById('userAvatar').textContent = user ? user.name[0] : '?';
   if (user) {
@@ -978,27 +1031,6 @@ function selectStake(el, val) {
   el.querySelector('span').style.borderColor = 'var(--gold)';
 }
 
-function addMatch() {
-  const league = document.getElementById('addLeague').value;
-  const home = document.getElementById('addHome').value.trim();
-  const away = document.getElementById('addAway').value.trim();
-  const dateVal = document.getElementById('addDate').value;
-  const stakeEl = document.querySelector('input[name="addStake"]:checked');
-  const stake = stakeEl ? parseInt(stakeEl.value) : 10;
-
-  if (!home || !away) { showToast('请输入球队名称'); return; }
-  if (!dateVal) { showToast('请选择比赛时间'); return; }
-
-  const id = 'm_' + Date.now();
-  state.matches.unshift(makeMatch(id, league, home, away, dateVal, null, stake));
-  document.getElementById('addHome').value = '';
-  document.getElementById('addAway').value = '';
-  document.getElementById('addDate').value = '';
-  saveState();
-  renderAll();
-  showToast(`✅ 已添加 ${home} vs ${away}`);
-}
-
 // ======================== FILTER ========================
 function filterLeague(league) {
   document.querySelectorAll('.league-filter').forEach(b => {
@@ -1007,38 +1039,29 @@ function filterLeague(league) {
   renderMatches();
 }
 
-// ======================== RESET ========================
-function resetData() {
-  if (!confirm('⚠️ 确定要重置所有数据吗？这将清除所有比赛、预测和结算记录！')) return;
-  if (!confirm('再次确认：所有数据将被删除！')) return;
-  state = defaultState();
-  state.currentUser = null;
-  saveState();
-  renderAll();
-  updateUserUI();
-  showToast('已重置所有数据');
-}
-
 // ======================== TOAST ========================
 function showToast(msg) {
   const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
+  t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2200);
 }
 
 // ======================== INIT ========================
-function init() {
-  // Auto-settle any pending matches
-  settleAllPending();
+async function init() {
+  // Restore saved user
+  const savedUser = localStorage.getItem('zuipao_user');
+  if (savedUser !== null) state.currentUser = parseInt(savedUser);
+
+  // Load data from Supabase
+  await loadFromSupabase();
+  setupRealtime();
 
   // Bottom tabs
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
   });
 
-  // Click outside modal to close
   document.getElementById('userModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal('userModal');
   });
@@ -1046,16 +1069,14 @@ function init() {
   updateUserUI();
   renderAll();
 
-  // Auto show user select on first visit
   if (state.currentUser === null || state.currentUser === undefined) {
-    setTimeout(showUserSelect, 300);
+    setTimeout(showUserSelect, 500);
   }
 }
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
 
-<!-- Bottom Tab Navigation -->
 <div class="tabs">
   <button class="tab active" data-tab="Matches">
     <span class="icon">⚽</span>
