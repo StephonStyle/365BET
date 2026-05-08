@@ -200,14 +200,6 @@ body {
     <label>联赛</label><select id="addLeague"><option value="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</option><option value="欧冠">🏆 欧冠</option><option value="世界杯">🌍 世界杯</option></select>
     <div class="admin-row"><div><label>主队</label><input id="addHome" placeholder="主队名称"></div><div><label>客队</label><input id="addAway" placeholder="客队名称"></div></div>
     <label>比赛时间</label><input type="datetime-local" id="addDate">
-    <label>每注金额 (输家每人付)</label>
-    <div style="display:flex;gap:6px;margin-bottom:10px;" id="stakeOptions">
-      <label class="stake-option"><input type="radio" name="addStake" value="10" checked hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥10</span></label>
-      <label class="stake-option"><input type="radio" name="addStake" value="15" hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥15</span></label>
-      <label class="stake-option"><input type="radio" name="addStake" value="20" hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥20</span></label>
-      <label class="stake-option"><input type="radio" name="addStake" value="25" hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥25</span></label>
-      <label class="stake-option"><input type="radio" name="addStake" value="30" hidden><span style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;">¥30</span></label>
-    </div>
     <button class="btn btn-gold" id="addMatchBtn" style="width:100%;margin-top:4px;">➕ 添加比赛</button>
   </div>
 </div>
@@ -291,33 +283,38 @@ function getStats(nm){
   M.filter(m=>m.settled&&m.settlement).forEach(m=>{
     const s=m.settlement;
     if(s.type==='void') return;
-    if(s.winners&&s.winners.includes(nm)){b+=s.amountPerWinner;w++}
-    if(s.losers&&s.losers.includes(nm)){b-=s.amountPerLoser;lo++}
+    const amt=s.individual?.[nm];
+    if(amt!==undefined){b+=amt;if(amt>0)w++;else lo++;}
   });
   return {balance:Math.round(b*100)/100,wins:w,losses:lo};
 }
 
 // ======================== SETTLEMENT ========================
 async function settleMatch(m){
-  if(!m.home_score||m.home_score==null||m.away_score==null||m.settled) return;
+  if(m.home_score==null||m.home_score==null||m.away_score==null||m.settled) return;
   const ps=getPreds(m.id);
   const wnrs=ps.filter(p=>p.home_score===m.home_score&&p.away_score===m.away_score).map(p=>p.user_name);
   const losrs=USERS.filter(n=>!wnrs.includes(n));
-  const fee=m.stake||10;
   let s;
   if(wnrs.length===0){
     s={type:'void',winners:[],losers:USERS,amountPerLoser:0,amountPerWinner:0,totalPot:0};
   }else{
-    const pot=losrs.length*fee;
+    const cur=m.settlement?JSON.parse(m.settlement):{};
+    const stakes=cur.stakes||{};
+    const defStake=m.stake||10;
+    const pot=losrs.reduce((sum,n)=>sum+(stakes[n]||defStake),0);
     const pw=Math.floor((pot/wnrs.length)*100)/100;
     const rem=Math.round((pot-pw*wnrs.length)*100)/100;
-    s={type:'settled',winners:wnrs,losers:losrs,amountPerWinner:pw,amountPerLoser:fee,totalPot:pot,remainder:rem};
+    const indv={};
+    wnrs.forEach(n=>{indv[n]=pw;});
+    losrs.forEach(n=>{indv[n]=-(stakes[n]||defStake);});
+    s={type:'settled',winners:wnrs,losers:losrs,amountPerWinner:pw,amountPerLoser:defStake,totalPot:pot,remainder:rem,individual:indv};
   }
   await fetch(SB_URL+'/rest/v1/matches?id=eq.'+m.id,{
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({settled:true,settlement:JSON.stringify(s)})
   });
-  const det=s.type==='void'?`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 底注¥${fee} · 无人猜中，本场流局`:`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 底注¥${fee} · 赢家: ${wnrs.join(', ')}，每人得 ¥${s.amountPerWinner.toFixed(2)}`;
+  const det=s.type==='void'?`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 无人猜中，本场流局`:`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 总奖池¥${s.totalPot} · 赢家: ${wnrs.join(', ')}，每人得 ¥${s.amountPerWinner.toFixed(2)}`;
   await fetch(SB_URL+'/rest/v1/settlement_logs',{
     method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({match_id:m.id,detail:det})
@@ -384,8 +381,8 @@ function renderMatches(){
     const p=u?getPred(m.id,u):null;const cP=!isP&&!p&&u;const stk=m.stake||10;
     const ds=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+' (当地时间)';
     let wi='';
-    if(m.settled&&m.settlement?.type==='settled') wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 赢家: ${m.settlement.winners.join(', ')} · 每人得 ¥${m.settlement.amountPerWinner.toFixed(2)} (底注¥${stk})</div>`;
-    else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局 (底注¥${stk})</div>`;
+    if(m.settled&&m.settlement?.type==='settled') wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 赢家: ${m.settlement.winners.join(', ')} · 每人得 ¥${m.settlement.amountPerWinner.toFixed(2)}</div>`;
+    else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局</div>`;
     let rd='';
     if(m.home_score!=null&&m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
     else if(m.home_score!=null&&isAdmin&&!m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
@@ -396,7 +393,7 @@ function renderMatches(){
     let ac='';
     if(isAdmin&&m.home_score!=null&&!m.settled) ac=`<span style="font-size:11px;color:var(--gold);">⏳ 等待结算...</span>`;
     else if(isAdmin&&!m.home_score&&isP) ac=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}" placeholder="主" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}" placeholder="客" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="enterResult('${m.id}')">录入比分</button></div>`;
-    else if(cP) ac=`<button class="btn btn-primary btn-small" onclick="submitPred('${m.id}')" style="margin-top:6px;">提交预测</button>`;
+    else if(cP) ac=`<div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="font-size:11px;color:var(--text2);">下注:</span><select id="stk_${m.id}" style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;"><option value="10">¥10</option><option value="15">¥15</option><option value="20">¥20</option><option value="25">¥25</option><option value="30">¥30</option></select><button class="btn btn-primary btn-small" onclick="submitPred('${m.id}')">提交</button></div>`;
     else if(p&&!m.home_score) ac=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${p.home_score}:${p.away_score}</span>`;
     else if(!isAdmin && !m.home_score && Date.now()>m.date) ac=`<span style="font-size:11px;color:var(--text2);">⏳ 等待管理员录入比分</span>`;
     return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span class="match-time">${ds}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${pi}${ac}</div>`;
@@ -467,6 +464,18 @@ async function submitPred(mid){
     showToast('提交失败');return;
   }
   P.push({match_id:mid,user_name:u,home_score:h,away_score:a});
+  const skEl=document.getElementById("stk_"+mid);
+  if(skEl){
+    const cs=parseInt(skEl.value);
+    const mx=M.find(x=>x.id===mid);
+    if(mx){
+      const cur=mx.settlement?JSON.parse(mx.settlement):{};
+      if(!cur.stakes) cur.stakes={};
+      cur.stakes[u]=cs;
+      try{await fetch(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});}catch(e){}
+      mx.settlement=JSON.stringify(cur);
+    }
+  }
   renderAll();showToast(`✅ 已提交 ${m.home} ${h}-${a} ${m.away}`);
 }
 
@@ -491,12 +500,10 @@ async function addMatch(){
   const h=document.getElementById('addHome').value.trim();
   const a=document.getElementById('addAway').value.trim();
   const dv=document.getElementById('addDate').value;
-  const se=document.querySelector('input[name="addStake"]:checked');
-  const sk=se?parseInt(se.value):10;
-  if(!h||!a){showToast('请输入球队名称');return;}
+if(!h||!a){showToast('请输入球队名称');return;}
   if(!dv){showToast('请选择比赛时间');return;}
   const id='m_'+Date.now();
-  const nm={id,league:lg,home:h,away:a,stake:sk,date:new Date(dv).getTime(),home_score:null,away_score:null,settled:false,settlement:null};
+  const nm={id,league:lg,home:h,away:a,stake:10,date:new Date(dv).getTime(),home_score:null,away_score:null,settled:false,settlement:null};
   await sbPost('matches',nm);
   M.push(nm);
   document.getElementById('addHome').value='';document.getElementById('addAway').value='';document.getElementById('addDate').value='';
