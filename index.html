@@ -549,7 +549,7 @@ function renderMatches(){
   }).join('');
 }
 
-const PAST_CUTOFF = 3 * 60 * 60 * 1000; // 开赛后3小时(含2h比赛+30min缓冲)移入历史
+const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 开赛后4小时(含加时+结束1h)移入历史
 
 function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
