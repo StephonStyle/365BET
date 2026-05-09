@@ -314,7 +314,7 @@ let avatars = {};
 let curUser = localStorage.getItem('zuipao_user')!==null ? parseInt(localStorage.getItem('zuipao_user')) : null;
 let isAdmin = false;
 let loaded = false;
-const PREDICT_CUTOFF = 600000; // 10 min in ms
+const PREDICT_CUTOFF = 60000; // 1 min in ms
 
 function cu() { return (curUser!==null&&curUser!==undefined) ? USERS[curUser] : null; }
 
@@ -581,7 +581,7 @@ function renderAll(){renderMatches();renderBill();renderRank();renderDebt();upda
 async function submitPred(mid){
   const u=cu(); if(!u){showToast('请先选择身份');showUserSelect();return;}
   const m=M.find(x=>x.id===mid); if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
-  if(Date.now()>m.date-PREDICT_CUTOFF){showToast('预测已截止（比赛开始前10分钟停止预测）');return;}
+  if(Date.now()>m.date-PREDICT_CUTOFF){showToast('预测已截止（比赛开始前1分钟停止预测）');return;}
   const h=parseInt(document.getElementById('ph_'+mid)?.value);
   const a=parseInt(document.getElementById('pa_'+mid)?.value);
   if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
