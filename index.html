@@ -208,6 +208,7 @@ body {
   <button class="settings-btn" id="adminBtn" title="管理员模式">⚙</button>
 </div>
 
+<div id="tabPast" class="content"><div id="pastContent"></div></div>
 <div id="tabMatches" class="content active">
   <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;" id="leagueFilters">
     <button class="btn btn-outline btn-small active" data-league="all">全部</button>
@@ -239,6 +240,7 @@ body {
 
 <div class="footer">© 2026-2030 Stephon · v2.0.0 · 365BET</div>
 <div class="tabs">
+  <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
   <button class="tab" data-tab="Bill"><span class="icon">💰</span><span>账单</span></button>
   <button class="tab" data-tab="Rank"><span class="icon">🏆</span><span>排行榜</span></button>
@@ -503,6 +505,7 @@ function renderMatches(){
   const el=document.getElementById('matchList'); if(!loaded) return;
   const lg=document.querySelector('#leagueFilters .active')?.dataset?.league||'all';
   const u=cu(); let f=M; if(lg!=='all') f=f.filter(m=>m.league===lg);
+  f=f.filter(m=>m.date>=Date.now()-PAST_CUTOFF);
   f.sort((a,b)=>a.date-b.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';return;}
   el.innerHTML=f.map(m=>{
@@ -534,6 +537,31 @@ function renderMatches(){
     else if(p&&!m.home_score) act=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${p.home_score}:${p.away_score}</span>`;
     else if(!isAdmin && !m.home_score && Date.now()>m.date) act=`<span style="font-size:11px;color:var(--text2);">⏳ 等待管理员录入比分</span>`;
     return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span><span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${pi}${np}${act}</div>`;
+  }).join('');
+}
+
+const PAST_CUTOFF = 48 * 60 * 60 * 1000;
+
+function renderPast(){
+  const el=document.getElementById('pastContent'); if(!loaded) return;
+  const cutoff=Date.now()-PAST_CUTOFF;
+  let f=M.filter(m=>m.date<cutoff);
+  f.sort((a,b)=>b.date-a.date);
+  if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
+  el.innerHTML=f.map(m=>{
+    const st=gs(m);
+    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString('zh-CN',{weekday:'short'});
+    const tmStr=new Date(m.date).toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)'};
+    const ls=m.settlement;const lh=ls?.live_home,la=ls?.live_away;
+    let wi='';
+    if(m.settled&&m.settlement?.type==='settled'&&m.settlement.individual) wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 奖池¥${m.settlement.totalPot} · ${m.settlement.winners.map(n=>n+'得¥'+Math.round(m.settlement.individual[n])).join(', ')}</div>`;
+    else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，抱歉</div>`;
+    let rd='';
+    if(m.home_score!=null) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
+    else rd=`<div class="match-score"><span class="vs">VS</span></div>`;
+    let pi='';const mp=getPreds(m.id);if(mp.length>0){const wl=m.settled&&m.settlement?m.settlement.winners:[];const stks=m.settlement?.stakes||{};const ds=m.stake||10;pi='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 预测详情<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:4px;">'+mp.map(x=>{const pt=x.created_at?new Date(x.created_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}):'';const sk=stks[x.user_name]||ds;const iw=wl.length&&wl.includes(x.user_name);const imp=(lh!==undefined&&la!==undefined)&&(x.home_score<lh||x.away_score<la);return'<span style="background:'+(iw?'rgba(255,50,50,0.22)':'var(--card2)')+';padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;position:relative;"><span style="font-weight:600;font-size:11px;">'+x.user_name+' <span style="font-weight:800;font-size:13px;color:var(--text);">'+x.home_score+':'+x.away_score+'</span></span><div style="display:flex;gap:2px;font-size:10px;"><span style="'+(sk>=30?'color:var(--red);font-weight:800;':sk>=15?'color:var(--red);':'color:var(--text2);')+'">¥'+sk+'</span><span style="color:var(--text2);"> · '+pt+'</span></div>'+(imp?'<span style="position:absolute;top:-4px;right:2px;font-size:20px;font-weight:900;color:#ff1744;opacity:0.8;line-height:1;text-shadow:0 0 4px rgba(255,23,68,0.4);">✗</span>':'')+'</span>';}).join('')+'</div></div>';}
+    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span><span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${pi}</div>`;
   }).join('');
 }
 
@@ -584,7 +612,7 @@ function renderDebt(){
   el.innerHTML=`<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📋 结算概况</div><div class="debt-summary"><div class="debt-box"><div class="label">✅ 已结算场次</div><div class="value" style="color:var(--primary);">${sc}</div></div><div class="debt-box"><div class="label">💤 流局场次</div><div class="value" style="color:var(--text2);">${vc}</div></div></div><div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">🔄 结算关系</div>${dh}<div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">📜 结算记录</div>${lh}`;
 }
 
-function renderAll(){renderMatches();renderBill();renderRank();renderDebt();updateUI();}
+function renderAll(){renderMatches();renderBill();renderRank();renderDebt();renderPast();updateUI();}
 
 // ======================== ACTIONS ========================
 async function submitPred(mid){
