@@ -84,6 +84,8 @@ body {
 .league-badge.英超 { background:var(--primary-dim); color:var(--primary); }
 .league-badge.欧冠 { background:var(--blue-dim); color:var(--blue); }
 .league-badge.世界杯 { background:var(--gold-dim); color:var(--gold); }
+.league-badge.西甲 { background:rgba(255,100,50,0.2); color:#ff6432; }
+.league-badge.中超 { background:rgba(255,200,50,0.2); color:#ffc832; }
 .match-time { font-size:11px; color:var(--text2); flex:1; text-align:right; }
 .match-status { font-size:10px; font-weight:600; padding:2px 8px; border-radius:8px; background:var(--card2); }
 .match-status.待预测 { color:var(--blue); background:var(--blue-dim); }
@@ -198,13 +200,15 @@ body {
     <button class="btn btn-outline btn-small active" data-league="all">全部</button>
     <button class="btn btn-outline btn-small" data-league="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</button>
     <button class="btn btn-outline btn-small" data-league="欧冠">🏆 欧冠</button>
+    <button class="btn btn-outline btn-small" data-league="西甲">🇪🇸 西甲</button>
+    <button class="btn btn-outline btn-small" data-league="中超">🇨🇳 中超</button>
     <button class="btn btn-outline btn-small" data-league="世界杯">🌍 世界杯</button>
   </div>
   <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
   <div class="admin-toggle"><label class="switch"><input type="checkbox" id="adminSwitch"><span class="slider"></span></label><label for="adminSwitch">管理员模式</label></div>
   <div class="admin-panel" id="adminPanel">
     <h3>🛠 管理员面板</h3>
-    <label>联赛</label><select id="addLeague"><option value="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</option><option value="欧冠">🏆 欧冠</option><option value="世界杯">🌍 世界杯</option></select>
+    <label>联赛</label><select id="addLeague"><option value="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</option><option value="西甲">🇪🇸 西甲</option><option value="中超">🇨🇳 中超</option><option value="欧冠">🏆 欧冠</option><option value="世界杯">🌍 世界杯</option></select>
     <div class="admin-row"><div><label>主队</label><input id="addHome" placeholder="主队名称"></div><div><label>客队</label><input id="addAway" placeholder="客队名称"></div></div>
     <label>比赛时间</label><input type="datetime-local" id="addDate">
     <button class="btn btn-gold" id="addMatchBtn" style="width:100%;margin-top:4px;">➕ 添加比赛</button>
@@ -220,7 +224,7 @@ body {
   <div class="modal"><button class="modal-close" id="closeModalBtn">✕</button><h2>👤 选择你的身份</h2><div class="user-grid" id="userGrid"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v1.2.0 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.0.0 · 365BET</div>
 <div class="tabs">
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
   <button class="tab" data-tab="Bill"><span class="icon">💰</span><span>账单</span></button>
@@ -278,6 +282,9 @@ const TEAMS = {
   曼联:['👹','曼联'],热刺:['🐓','热刺'],纽卡斯尔:['⚫','纽卡斯尔'],维拉:['🟣','维拉'],
   布莱顿:['⚡','布莱顿'],布伦特福德:['🐝','布伦特福德'],皇马:['👑','皇马'],拜仁:['🇩🇪','拜仁'],
   巴黎:['⭐','巴黎'],巴萨:['🩵','巴萨'],国米:['🐍','国米'],AC米兰:['🖤','AC米兰'],
+  马竞:['🔴','马竞'],塞维利亚:['🔴','塞维利亚'],毕尔巴鄂:['⚪','毕尔巴鄂'],比利亚雷亚尔:['💛','比利亚雷亚尔'],
+  上海申花:['⚪','申花'],成都蓉城:['🐼','成都'],上海海港:['⚓','海港'],
+  山东泰山:['⛰️','泰山'],北京国安:['🏹','国安'],深圳:['🔵','深圳'],
   巴西:['🇧🇷','巴西'],阿根廷:['🇦🇷','阿根廷'],德国:['🇩🇪','德国'],法国:['🇫🇷','法国'],
   英格兰:['🏴󠁧󠁢󠁥󠁮󠁧󠁿','英格兰'],西班牙:['🇪🇸','西班牙'],葡萄牙:['🇵🇹','葡萄牙'],荷兰:['🇳🇱','荷兰'],
 };
@@ -392,20 +399,33 @@ async function loadData(){
     let matches = await sbGet('matches','?order=date');
     if(!matches||matches.length===0){
       const SEED = [
-        {id:'m1',league:'英超',home:'阿森纳',away:'切尔西',date:new Date('2026-05-03T22:00').getTime(),home_score:2,away_score:1,stake:15,settled:false,settlement:null},
-        {id:'m2',league:'英超',home:'曼城',away:'利物浦',date:new Date('2026-05-04T20:30').getTime(),home_score:3,away_score:0,stake:10,settled:false,settlement:null},
-        {id:'m3',league:'英超',home:'曼联',away:'热刺',date:new Date('2026-05-05T23:00').getTime(),home_score:1,away_score:1,stake:20,settled:false,settlement:null},
-        {id:'m4',league:'英超',home:'纽卡斯尔',away:'维拉',date:new Date('2026-05-06T22:00').getTime(),home_score:2,away_score:2,stake:10,settled:false,settlement:null},
-        {id:'m5',league:'英超',home:'布莱顿',away:'布伦特福德',date:new Date('2026-05-10T22:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
-        {id:'m6',league:'英超',home:'阿森纳',away:'曼联',date:new Date('2026-05-12T23:00').getTime(),home_score:null,away_score:null,stake:25,settled:false,settlement:null},
-        {id:'m7',league:'欧冠',home:'皇马',away:'拜仁',date:new Date('2026-05-01T03:00').getTime(),home_score:2,away_score:2,stake:20,settled:false,settlement:null},
-        {id:'m8',league:'欧冠',home:'巴黎',away:'巴萨',date:new Date('2026-05-02T03:00').getTime(),home_score:3,away_score:1,stake:15,settled:false,settlement:null},
-        {id:'m9',league:'欧冠',home:'国米',away:'AC米兰',date:new Date('2026-05-07T03:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
-        {id:'m10',league:'欧冠',home:'皇马',away:'巴黎',date:new Date('2026-05-14T03:00').getTime(),home_score:null,away_score:null,stake:30,settled:false,settlement:null},
-        {id:'m11',league:'世界杯',home:'巴西',away:'阿根廷',date:new Date('2026-06-15T21:00').getTime(),home_score:null,away_score:null,stake:20,settled:false,settlement:null},
-        {id:'m12',league:'世界杯',home:'德国',away:'法国',date:new Date('2026-06-16T18:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
-        {id:'m13',league:'世界杯',home:'英格兰',away:'西班牙',date:new Date('2026-06-17T21:00').getTime(),home_score:null,away_score:null,stake:25,settled:false,settlement:null},
-        {id:'m14',league:'世界杯',home:'葡萄牙',away:'荷兰',date:new Date('2026-06-18T18:00').getTime(),home_score:null,away_score:null,stake:20,settled:false,settlement:null}
+        // ===== 英超 (Premier League) - 曼城/曼联/阿森纳/利物浦/切尔西/热刺/纽卡/维拉 =====
+        {id:'m1',league:'英超',home:'曼城',away:'纽卡斯尔',date:new Date('2026-05-09T22:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m2',league:'英超',home:'阿森纳',away:'利物浦',date:new Date('2026-05-10T20:30').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m3',league:'英超',home:'曼联',away:'切尔西',date:new Date('2026-05-10T23:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m4',league:'英超',home:'热刺',away:'维拉',date:new Date('2026-05-10T23:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        {id:'m5',league:'英超',home:'利物浦',away:'热刺',date:new Date('2026-05-12T03:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m6',league:'英超',home:'维拉',away:'曼城',date:new Date('2026-05-12T03:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m7',league:'英超',home:'切尔西',away:'阿森纳',date:new Date('2026-05-13T03:00').getTime(),home_score:null,away_score:null,stake:20,settled:false,settlement:null},
+        {id:'m8',league:'英超',home:'纽卡斯尔',away:'曼联',date:new Date('2026-05-13T03:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m9',league:'英超',home:'曼联',away:'利物浦',date:new Date('2026-05-16T19:30').getTime(),home_score:null,away_score:null,stake:25,settled:false,settlement:null},
+        {id:'m10',league:'英超',home:'阿森纳',away:'曼城',date:new Date('2026-05-16T22:00').getTime(),home_score:null,away_score:null,stake:25,settled:false,settlement:null},
+        {id:'m11',league:'英超',home:'热刺',away:'纽卡斯尔',date:new Date('2026-05-16T22:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        {id:'m12',league:'英超',home:'切尔西',away:'维拉',date:new Date('2026-05-17T00:30').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        // ===== 西甲 (La Liga) - 皇马/巴萨/马竞 =====
+        {id:'m13',league:'西甲',home:'皇马',away:'巴萨',date:new Date('2026-05-09T22:00').getTime(),home_score:null,away_score:null,stake:30,settled:false,settlement:null},
+        {id:'m14',league:'西甲',home:'马竞',away:'塞维利亚',date:new Date('2026-05-10T20:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m15',league:'西甲',home:'巴萨',away:'马竞',date:new Date('2026-05-12T21:00').getTime(),home_score:null,away_score:null,stake:20,settled:false,settlement:null},
+        {id:'m16',league:'西甲',home:'皇马',away:'毕尔巴鄂',date:new Date('2026-05-13T20:00').getTime(),home_score:null,away_score:null,stake:15,settled:false,settlement:null},
+        {id:'m17',league:'西甲',home:'马竞',away:'皇马',date:new Date('2026-05-16T22:00').getTime(),home_score:null,away_score:null,stake:25,settled:false,settlement:null},
+        {id:'m18',league:'西甲',home:'巴萨',away:'比利亚雷亚尔',date:new Date('2026-05-17T20:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        // ===== 中超 (Chinese Super League) - 申花/成都/上港 =====
+        {id:'m19',league:'中超',home:'上海申花',away:'成都蓉城',date:new Date('2026-05-10T19:35').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        {id:'m20',league:'中超',home:'上海海港',away:'山东泰山',date:new Date('2026-05-10T19:35').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        {id:'m21',league:'中超',home:'成都蓉城',away:'上海海港',date:new Date('2026-05-13T19:35').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        {id:'m22',league:'中超',home:'上海申花',away:'北京国安',date:new Date('2026-05-13T19:35').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        {id:'m23',league:'中超',home:'上海海港',away:'上海申花',date:new Date('2026-05-17T19:35').getTime(),home_score:null,away_score:null,stake:20,settled:false,settlement:null},
+        {id:'m24',league:'中超',home:'成都蓉城',away:'深圳',date:new Date('2026-05-17T19:35').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null}
       ];
       await sbPost('matches', SEED);
       matches = await sbGet('matches','?order=date');
