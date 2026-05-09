@@ -112,6 +112,7 @@ body {
 .btn-primary { background:var(--primary); color:#000; }
 .btn-gold { background:var(--gold); color:#000; }
 .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
+.btn-outline.active { background:var(--primary); border-color:var(--primary); color:#000; }
 .btn-small { padding:4px 12px; font-size:11px; }
 .stake-btns { display:flex; gap:5px; }
 .stake-btn { padding:6px 8px; border-radius:8px; background:var(--card2); border:1px solid var(--border); color:var(--text); font-size:12px; font-weight:600; cursor:pointer; text-align:center; min-width:34px; transition:all .2s; user-select:none; }
@@ -400,7 +401,7 @@ async function settleMatch(m){
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({settled:true,settlement:JSON.stringify(s)})
   });
-  const det=s.type==='void'?`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 无人猜中，本场流局`:`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 总奖池¥${s.totalPot} · 赢家按比例分配`;
+  const det=s.type==='void'?`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 无人猜中，抱歉`:`${m.home} ${m.home_score}-${m.away_score} ${m.away} · 总奖池¥${s.totalPot} · 赢家按比例分配`;
   await ft(SB_URL+'/rest/v1/settlement_logs',{
     method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({match_id:m.id,detail:det})
@@ -513,7 +514,7 @@ function renderMatches(){
     const ls=m.settlement;const lh=ls?.live_home,la=ls?.live_away;
     let wi='';
     if(m.settled&&m.settlement?.type==='settled'&&m.settlement.individual) wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 奖池¥${m.settlement.totalPot} · ${m.settlement.winners.map(n=>n+'得¥'+Math.round(m.settlement.individual[n])).join(', ')}</div>`;
-    else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，本场流局</div>`;
+    else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 无人猜中，抱歉</div>`;
     let rd='';
     if(m.home_score!=null&&m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
     else if(lh!==undefined&&la!==undefined&&!m.settled) rd=`<div class="match-score" style="color:var(--gold);">${lh} - ${la}<span style="display:block;font-size:10px;color:var(--red);font-weight:600;">🔴 LIVE</span></div>`;
