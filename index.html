@@ -86,7 +86,7 @@ body {
 .league-badge.世界杯 { background:var(--gold-dim); color:var(--gold); }
 .league-badge.西甲 { background:rgba(255,100,50,0.2); color:#ff6432; }
 .league-badge.中超 { background:rgba(255,200,50,0.2); color:#ffc832; }
-.match-time { font-size:11px; color:var(--text2); flex:1; text-align:right; }
+.match-time { font-size:12px; color:var(--text2); flex:1; text-align:right; font-weight:500; }
 .match-status { font-size:10px; font-weight:600; padding:2px 8px; border-radius:8px; background:var(--card2); }
 .match-status.待预测 { color:var(--blue); background:var(--blue-dim); }
 .match-status.进行中 { color:var(--red); background:var(--red-dim); animation: pulse 1.5s ease-in-out infinite; }
@@ -309,6 +309,11 @@ const TEAMS = {
 };
 function te(n){return TEAMS[n]?.[0]||'⚽'}
 function ts(n){return TEAMS[n]?.[1]||n}
+function tzName(){
+  const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const m={'Asia/Shanghai':'上海时间','Asia/Hong_Kong':'香港时间','Asia/Taipei':'台北时间','Asia/Tokyo':'东京时间','Asia/Seoul':'首尔时间','Europe/London':'伦敦时间','Europe/Dublin':'都柏林时间','Europe/Paris':'巴黎时间','Europe/Berlin':'柏林时间','Europe/Madrid':'马德里时间','Europe/Rome':'罗马时间','Europe/Moscow':'莫斯科时间','America/New_York':'纽约时间','America/Chicago':'芝加哥时间','America/Los_Angeles':'洛杉矶时间','America/Toronto':'多伦多时间','Australia/Sydney':'悉尼时间','Pacific/Auckland':'奥克兰时间'};
+  return m[tz]||tz.split('/').pop().replace(/_/g,' ');
+}
 const AVATAR_MAP={'老章':'章','大毛':'毛','王彬':'彬','王玺':'玺','三瓶':'三','二红':'胸','糖糖':'糖','隔离':'隔'};
 function ac(n){return AVATAR_MAP[n]||n[0]}
 
@@ -505,7 +510,7 @@ function renderMatches(){
   el.innerHTML=f.map(m=>{
     const st=gs(m);const isP=Date.now()>m.date-PREDICT_CUTOFF||m.home_score!=null;
     const p=u?getPred(m.id,u):null;const cP=!isP&&!p&&u;const stk=m.stake||10;
-    const ds=new Date(m.date).toLocaleString(undefined,{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const ds=tzName()+' '+new Date(m.date).toLocaleString(undefined,{weekday:'short',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
     const ls=m.settlement;const lh=ls?.live_home,la=ls?.live_away;
     let wi='';
     if(m.settled&&m.settlement?.type==='settled'&&m.settlement.individual) wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 奖池¥${m.settlement.totalPot} · ${m.settlement.winners.map(n=>n+'得¥'+Math.round(m.settlement.individual[n])).join(', ')}</div>`;
