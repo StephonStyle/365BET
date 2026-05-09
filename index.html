@@ -78,8 +78,11 @@ body {
   margin-bottom:12px; border:1px solid var(--border);
 }
 .match-header {
-  display:flex; align-items:center; gap:8px; margin-bottom:10px;
+  display:flex; align-items:center; gap:6px; margin-bottom:10px;
 }
+.match-date { font-size:13px; font-weight:700; white-space:nowrap; }
+.match-time-center { font-size:20px; font-weight:800; text-align:center; flex:1; min-width:44px; letter-spacing:1px; }
+.match-tz { font-size:10px; color:var(--text2); white-space:nowrap; }
 .league-badge { font-size:10px; font-weight:600; padding:2px 10px; border-radius:10px; }
 .league-badge.英超 { background:var(--primary-dim); color:var(--primary); }
 .league-badge.欧冠 { background:var(--blue-dim); color:var(--blue); }
@@ -510,7 +513,10 @@ function renderMatches(){
   el.innerHTML=f.map(m=>{
     const st=gs(m);const isP=Date.now()>m.date-PREDICT_CUTOFF||m.home_score!=null;
     const p=u?getPred(m.id,u):null;const cP=!isP&&!p&&u;const stk=m.stake||10;
-    const ds=tzName()+' '+new Date(m.date).toLocaleString(undefined,{weekday:'short',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+    const dtStr=new Date(m.date).toLocaleString(undefined,{weekday:'short',month:'2-digit',day:'2-digit'});
+    const tmStr=new Date(m.date).toLocaleString(undefined,{hour:'2-digit',minute:'2-digit',hour12:false});
+    const tz=tzName();
+    const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)'};
     const ls=m.settlement;const lh=ls?.live_home,la=ls?.live_away;
     let wi='';
     if(m.settled&&m.settlement?.type==='settled'&&m.settlement.individual) wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 奖池¥${m.settlement.totalPot} · ${m.settlement.winners.map(n=>n+'得¥'+Math.round(m.settlement.individual[n])).join(', ')}</div>`;
@@ -533,7 +539,7 @@ function renderMatches(){
     else if(p&&!isP) act=`<div class="stake-row"><span class="stake-label">金额</span><div class="stake-btns" id="stk_${m.id}">${[10,15,20,25,30].map(v=>'<span class="stake-btn'+(v===(m.settlement?.stakes?.[u]||m.stake||10)?' active':'')+'" data-stake="'+v+'" onclick="selectStake(\''+m.id+'\','+v+')">¥'+v+'</span>').join('')}</div><button class="btn btn-primary btn-small" onclick="submitPred('${m.id}')">修改预测</button></div>`;
     else if(p&&!m.home_score) act=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${p.home_score}:${p.away_score}</span>`;
     else if(!isAdmin && !m.home_score && Date.now()>m.date) act=`<span style="font-size:11px;color:var(--text2);">⏳ 等待管理员录入比分</span>`;
-    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span class="match-time">${ds}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${pi}${np}${act}</div>`;
+    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span><span class="match-time-center">${tmStr}</span><span class="match-tz">${tz}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${pi}${np}${act}</div>`;
   }).join('');
 }
 
