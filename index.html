@@ -52,6 +52,8 @@ body {
   color:var(--text); font-size:13px; cursor:pointer; white-space:nowrap;
 }
 .user-btn .avatar { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; background:var(--primary-dim); color:var(--primary); }
+.refresh-btn { background:none; border:none; color:var(--text2); font-size:16px; cursor:pointer; padding:4px; line-height:1; }
+.refresh-btn:hover { color:var(--primary); }
 .settings-btn { background:none; border:none; color:var(--text2); font-size:18px; cursor:pointer; padding:4px; line-height:1; }
 .cam-btn { background:none; border:none; color:var(--text2); font-size:16px; cursor:pointer; padding:4px; line-height:1; }
 .cam-btn:hover { color:var(--primary); }
@@ -88,6 +90,8 @@ body {
 .league-badge.世界杯 { background:var(--gold-dim); color:var(--gold); }
 .league-badge.西甲 { background:rgba(255,100,50,0.2); color:#ff6432; }
 .league-badge.中超 { background:rgba(255,200,50,0.2); color:#ffc832; }
+.league-badge.欧联 { background:rgba(0,200,150,0.2); color:#00c896; }
+.league-badge.欧协联 { background:rgba(100,100,255,0.2); color:#6666ff; }
 .match-time { font-size:12px; color:var(--text2); flex:1; text-align:right; font-weight:500; }
 .match-status { font-size:10px; font-weight:600; padding:2px 8px; border-radius:8px; background:var(--card2); }
 .match-status.待预测 { color:var(--blue); background:var(--blue-dim); }
@@ -203,6 +207,7 @@ body {
 <body>
 <div class="header">
   <h1 style="font-size:20px;flex:1;">365BET</h1>
+	  <button class="refresh-btn" id="refreshBtn" title="刷新数据" onclick="location.reload()">🔄</button>
   <button class="user-btn" id="userBtn"><span class="avatar" id="userAvatar">?</span><span id="userName">选择用户</span></button>
   <button class="cam-btn" id="camBtn" title="上传头像">📷</button>
   <button class="settings-btn" id="adminBtn" title="管理员模式">⚙</button>
@@ -213,7 +218,7 @@ body {
   <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;" id="leagueFilters">
     <button class="btn btn-outline btn-small active" data-league="all">全部</button>
     <button class="btn btn-outline btn-small" data-league="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</button>
-    <button class="btn btn-outline btn-small" data-league="欧冠">🏆 欧冠</button>
+    <button class="btn btn-outline btn-small" data-league="欧战">🏆 欧战</button>
     <button class="btn btn-outline btn-small" data-league="西甲">🇪🇸 西甲</button>
     <button class="btn btn-outline btn-small" data-league="中超">🇨🇳 中超</button>
     <button class="btn btn-outline btn-small" data-league="世界杯">🌍 世界杯</button>
@@ -311,6 +316,7 @@ const TEAMS = {
   大连英博:['⚓','大连英博'],辽宁铁人:['🦁','辽宁铁人'],青岛西海岸:['🌊','青岛西海岸'],
   巴西:['🇧🇷','巴西'],阿根廷:['🇦🇷','阿根廷'],德国:['🇩🇪','德国'],法国:['🇫🇷','法国'],
   英格兰:['🏴󠁧󠁢󠁥󠁮󠁧󠁿','英格兰'],西班牙:['🇪🇸','西班牙'],葡萄牙:['🇵🇹','葡萄牙'],荷兰:['🇳🇱','荷兰'],
+  弗赖堡:['🦅','弗赖堡'],巴列卡诺:['🔴','巴列卡诺'],
 };
 function te(n){return TEAMS[n]?.[0]||'⚽'}
 function ts(n){return TEAMS[n]?.[1]||n}
@@ -473,7 +479,10 @@ async function loadData(){
         {id:'m42',league:'中超',home:'上海申花',away:'深圳新鹏城',date:new Date('2026-05-24T20:00+08:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
         {id:'m43',league:'中超',home:'辽宁铁人',away:'上海海港',date:new Date('2026-05-29T19:35+08:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
         {id:'m44',league:'中超',home:'青岛西海岸',away:'上海申花',date:new Date('2026-05-30T18:00+08:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
-        {id:'m45',league:'中超',home:'成都蓉城',away:'山东泰山',date:new Date('2026-05-30T19:35+08:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null}
+        {id:'m45',league:'中超',home:'成都蓉城',away:'山东泰山',date:new Date('2026-05-30T19:35+08:00').getTime(),home_score:null,away_score:null,stake:10,settled:false,settlement:null},
+        {id:'m46',league:'欧联',home:'弗赖堡',away:'维拉',date:new Date('2026-05-21T03:00+08:00').getTime(),home_score:null,away_score:null,stake:30,settled:false,settlement:null},
+        {id:'m47',league:'欧协联',home:'水晶宫',away:'巴列卡诺',date:new Date('2026-05-28T03:00+08:00').getTime(),home_score:null,away_score:null,stake:30,settled:false,settlement:null},
+        {id:'m48',league:'欧冠',home:'巴黎',away:'阿森纳',date:new Date('2026-05-31T03:00+08:00').getTime(),home_score:null,away_score:null,stake:30,settled:false,settlement:null}
       ];
       await sbPost('matches', SEED);
       matches = await sbGet('matches','?order=date');
@@ -504,7 +513,7 @@ function gs(m){
 function renderMatches(){
   const el=document.getElementById('matchList'); if(!loaded) return;
   const lg=document.querySelector('#leagueFilters .active')?.dataset?.league||'all';
-  const u=cu(); let f=M; if(lg!=='all') f=f.filter(m=>m.league===lg);
+  const u=cu(); let f=M; if(lg==='欧战') f=f.filter(m=>m.league==='欧冠'||m.league==='欧联'||m.league==='欧协联'); else if(lg!=='all') f=f.filter(m=>m.league===lg);
   f=f.filter(m=>m.date>=Date.now()-PAST_CUTOFF);
   f.sort((a,b)=>a.date-b.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';return;}
@@ -513,7 +522,7 @@ function renderMatches(){
     const p=u?getPred(m.id,u):null;const cP=!isP&&!p&&u;const stk=m.stake||10;
     const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString('zh-CN',{weekday:'short'});
     const tmStr=new Date(m.date).toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit'});
-    const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)'};
+    const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)','欧联':'#00c896','欧协联':'#6666ff'};
     const ls=m.settlement;const lh=ls?.live_home,la=ls?.live_away;
     let wi='';
     if(m.settled&&m.settlement?.type==='settled'&&m.settlement.individual) wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 奖池¥${m.settlement.totalPot} · ${m.settlement.winners.map(n=>n+'得¥'+Math.round(m.settlement.individual[n])).join(', ')}</div>`;
@@ -552,7 +561,7 @@ function renderPast(){
     const st=gs(m);
     const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString('zh-CN',{weekday:'short'});
     const tmStr=new Date(m.date).toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit'});
-    const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)'};
+    const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)','欧联':'#00c896','欧协联':'#6666ff'};
     const ls=m.settlement;const lh=ls?.live_home,la=ls?.live_away;
     let wi='';
     if(m.settled&&m.settlement?.type==='settled'&&m.settlement.individual) wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 奖池¥${m.settlement.totalPot} · ${m.settlement.winners.map(n=>n+'得¥'+Math.round(m.settlement.individual[n])).join(', ')}</div>`;
