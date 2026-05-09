@@ -216,6 +216,7 @@ body {
 <div id="tabPast" class="content">
   <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;" id="pastLeagueFilters">
     <button class="btn btn-outline btn-small active" data-league="all">全部</button>
+    <button class="btn btn-outline btn-small" data-league="bet">🎯 已投</button>
     <button class="btn btn-outline btn-small" data-league="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</button>
     <button class="btn btn-outline btn-small" data-league="欧战">🏆 欧战</button>
     <button class="btn btn-outline btn-small" data-league="西甲">🇪🇸 西甲</button>
@@ -227,6 +228,7 @@ body {
 <div id="tabMatches" class="content active">
   <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;" id="leagueFilters">
     <button class="btn btn-outline btn-small active" data-league="all">全部</button>
+    <button class="btn btn-outline btn-small" data-league="bet">🎯 已投</button>
     <button class="btn btn-outline btn-small" data-league="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</button>
     <button class="btn btn-outline btn-small" data-league="欧战">🏆 欧战</button>
     <button class="btn btn-outline btn-small" data-league="西甲">🇪🇸 西甲</button>
@@ -523,7 +525,7 @@ function gs(m){
 function renderMatches(){
   const el=document.getElementById('matchList'); if(!loaded) return;
   const lg=document.querySelector('#leagueFilters .active')?.dataset?.league||'all';
-  const u=cu(); let f=M; if(lg==='欧战') f=f.filter(m=>m.league==='欧冠'||m.league==='欧联'||m.league==='欧协联'); else if(lg!=='all') f=f.filter(m=>m.league===lg);
+  const u=cu(); let f=M; if(lg==='欧战') f=f.filter(m=>m.league==='欧冠'||m.league==='欧联'||m.league==='欧协联'); else if(lg==='bet') f=f.filter(m=>u&&getPred(m.id,u)); else if(lg!=='all') f=f.filter(m=>m.league===lg);
   f=f.filter(m=>m.date>=Date.now()-PAST_CUTOFF);
   f.sort((a,b)=>a.date-b.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';return;}
@@ -566,7 +568,7 @@ function renderPast(){
   const cutoff=Date.now()-PAST_CUTOFF;
   let f=M.filter(m=>m.date<cutoff);
   const lg=document.querySelector('#pastLeagueFilters .active')?.dataset?.league||'all';
-  if(lg==='欧战') f=f.filter(m=>m.league==='欧冠'||m.league==='欧联'||m.league==='欧协联'); else if(lg!=='all') f=f.filter(m=>m.league===lg);
+  if(lg==='欧战') f=f.filter(m=>m.league==='欧冠'||m.league==='欧联'||m.league==='欧协联'); else if(lg==='bet') f=f.filter(m=>u&&getPred(m.id,u)); else if(lg!=='all') f=f.filter(m=>m.league===lg);
   f.sort((a,b)=>b.date-a.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
   el.innerHTML=f.map(m=>{
