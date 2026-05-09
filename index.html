@@ -766,9 +766,9 @@ function restoreInputs(saved){
   });
 }
 
+let _lastHash = '';
 function startPoll(){
   pollTimer = setInterval(async ()=>{
-    const saved=saveInputs();
     try{
       const mRaw = await sbGet('matches','?order=date');
       M = (mRaw||[]).map(m => { if(typeof m.settlement === 'string') try{ m.settlement=JSON.parse(m.settlement); }catch(e){} return m; });
@@ -777,6 +777,10 @@ function startPoll(){
       await loadAvatars();
       await settleAll();
       if(!loaded) loaded=true;
+      const h = JSON.stringify(M)+JSON.stringify(P)+JSON.stringify(L);
+      if(h === _lastHash) return;
+      _lastHash = h;
+      const saved=saveInputs();
       renderAll();
       restoreInputs(saved);
     }catch(e){
