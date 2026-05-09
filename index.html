@@ -81,7 +81,7 @@ body {
   display:flex; align-items:center; gap:6px; margin-bottom:10px;
 }
 .match-date { font-size:13px; font-weight:700; white-space:nowrap; }
-.match-time-center { font-size:20px; font-weight:800; text-align:center; flex:1; min-width:44px; letter-spacing:1px; }
+.match-time-center { font-size:13px; font-weight:700; text-align:center; flex:1; min-width:44px; letter-spacing:0; }
 .match-tz { font-size:10px; color:var(--text2); white-space:nowrap; }
 .league-badge { font-size:10px; font-weight:600; padding:2px 10px; border-radius:10px; }
 .league-badge.英超 { background:var(--primary-dim); color:var(--primary); }
@@ -513,8 +513,8 @@ function renderMatches(){
   el.innerHTML=f.map(m=>{
     const st=gs(m);const isP=Date.now()>m.date-PREDICT_CUTOFF||m.home_score!=null;
     const p=u?getPred(m.id,u):null;const cP=!isP&&!p&&u;const stk=m.stake||10;
-    const dtStr=new Date(m.date).toLocaleString(undefined,{weekday:'short',month:'2-digit',day:'2-digit'});
-    const tmStr=new Date(m.date).toLocaleString(undefined,{hour:'2-digit',minute:'2-digit',hour12:false});
+    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString('zh-CN',{weekday:'short'});
+    const tmStr=new Date(m.date).toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit'});
     const tz=tzName();
     const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)'};
     const ls=m.settlement;const lh=ls?.live_home,la=ls?.live_away;
