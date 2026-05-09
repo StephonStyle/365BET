@@ -213,7 +213,17 @@ body {
   <button class="settings-btn" id="adminBtn" title="管理员模式">⚙</button>
 </div>
 
-<div id="tabPast" class="content"><div id="pastContent"></div></div>
+<div id="tabPast" class="content">
+  <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;" id="pastLeagueFilters">
+    <button class="btn btn-outline btn-small active" data-league="all">全部</button>
+    <button class="btn btn-outline btn-small" data-league="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</button>
+    <button class="btn btn-outline btn-small" data-league="欧战">🏆 欧战</button>
+    <button class="btn btn-outline btn-small" data-league="西甲">🇪🇸 西甲</button>
+    <button class="btn btn-outline btn-small" data-league="中超">🇨🇳 中超</button>
+    <button class="btn btn-outline btn-small" data-league="世界杯">🌍 世界杯</button>
+  </div>
+  <div id="pastContent"></div>
+</div>
 <div id="tabMatches" class="content active">
   <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;" id="leagueFilters">
     <button class="btn btn-outline btn-small active" data-league="all">全部</button>
@@ -555,6 +565,8 @@ function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
   const cutoff=Date.now()-PAST_CUTOFF;
   let f=M.filter(m=>m.date<cutoff);
+  const lg=document.querySelector('#pastLeagueFilters .active')?.dataset?.league||'all';
+  if(lg==='欧战') f=f.filter(m=>m.league==='欧冠'||m.league==='欧联'||m.league==='欧协联'); else if(lg!=='all') f=f.filter(m=>m.league===lg);
   f.sort((a,b)=>b.date-a.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
   el.innerHTML=f.map(m=>{
@@ -835,6 +847,9 @@ function init(){
   }));
   document.querySelectorAll('#leagueFilters .btn').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#leagueFilters .btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderMatches();
+  }));
+  document.querySelectorAll('#pastLeagueFilters .btn').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#pastLeagueFilters .btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderPast();
   }));
   document.getElementById('userBtn').addEventListener('click',showUserSelect);
   document.querySelector('#userModal .modal-close').addEventListener('click',()=>document.getElementById('userModal').classList.remove('show'));
