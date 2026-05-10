@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -585,7 +585,10 @@ function renderPast(){
     if(m.home_score!=null) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
     else rd=`<div class="match-score"><span class="vs">VS</span></div>`;
     let pi='';const mp=getPreds(m.id);if(mp.length>0){const wl=m.settled&&m.settlement?m.settlement.winners:[];const stks=m.settlement?.stakes||{};const ds=m.stake||10;pi='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 预测详情<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:4px;">'+mp.map(x=>{const pt=x.created_at?new Date(x.created_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}):'';const sk=stks[x.user_name]||ds;const iw=wl.length&&wl.includes(x.user_name);const imp=(lh!==undefined&&la!==undefined)&&(x.home_score<lh||x.away_score<la);return'<span style="background:'+(iw?'rgba(255,50,50,0.22)':'var(--card2)')+';padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;position:relative;"><span style="font-weight:600;font-size:11px;">'+x.user_name+' <span style="font-weight:800;font-size:13px;color:var(--text);">'+x.home_score+':'+x.away_score+'</span></span><div style="display:flex;gap:2px;font-size:10px;"><span style="'+(sk>=30?'color:var(--red);font-weight:800;':sk>=15?'color:var(--red);':'color:var(--text2);')+'">¥'+sk+'</span><span style="color:var(--text2);"> · '+pt+'</span></div>'+(imp?'<span style="position:absolute;top:-4px;right:2px;font-size:20px;font-weight:900;color:#ff1744;opacity:0.8;line-height:1;text-shadow:0 0 4px rgba(255,23,68,0.4);">✗</span>':'')+'</span>';}).join('')+'</div></div>';}
-    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span><span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${pi}</div>`;
+    let act='';
+    if(isAdmin&&m.settled) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}_p" value="${m.home_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}_p" value="${m.away_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="adminEditResultPast('${m.id}')">修改</button></div>`;
+    else if(isAdmin&&!m.home_score) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}_p" placeholder="主" style="width:36px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}_p" placeholder="客" style="width:36px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="enterResultPast('${m.id}')">录入比分</button></div>`;
+    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span><span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${pi}${act}</div>`;
   }).join('');
 }
 
@@ -703,6 +706,37 @@ async function adminEditResult(mid){
   const m=M.find(x=>x.id===mid); if(!m) return;
   const h=parseInt(document.getElementById('rh_'+mid)?.value);
   const a=parseInt(document.getElementById('ra_'+mid)?.value);
+  if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
+  await ft(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
+    method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({settled:false,settlement:null})
+  });
+  m.settled=false;m.settlement=null;m.home_score=h;m.away_score=a;
+  await settleMatch(m);
+  renderAll();showToast(`✅ ${m.home} ${h}-${a} ${m.away} 已修改并重新结算`);
+  L = await sbGet('settlement_logs','?order=created_at.desc');
+}
+
+async function enterResultPast(mid){
+  if(!isAdmin) return;
+  const m=M.find(x=>x.id===mid); if(!m) return;
+  const h=parseInt(document.getElementById('rh_'+mid+'_p')?.value);
+  const a=parseInt(document.getElementById('ra_'+mid+'_p')?.value);
+  if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
+  await ft(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
+    method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({home_score:h,away_score:a})
+  });
+  m.home_score=h;m.away_score=a;
+  await settleMatch(m);renderAll();showToast(`✅ ${m.home} ${h}-${a} ${m.away} 已录入并结算`);
+  L = await sbGet('settlement_logs','?order=created_at.desc');
+}
+
+async function adminEditResultPast(mid){
+  if(!isAdmin) return;
+  const m=M.find(x=>x.id===mid); if(!m) return;
+  const h=parseInt(document.getElementById('rh_'+mid+'_p')?.value);
+  const a=parseInt(document.getElementById('ra_'+mid+'_p')?.value);
   if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
   await ft(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
