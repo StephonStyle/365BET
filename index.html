@@ -1367,7 +1367,7 @@ function openPlayer(teamName, num){
   document.getElementById('squadModal').classList.remove('show');
   document.getElementById('playerModal').classList.add('show');
 }
-function closePlayer(){document.getElementById('playerModal').classList.remove('show');}
+function closePlayer(){document.getElementById('playerModal').classList.remove('show');document.getElementById('squadModal').classList.add('show');}
 
 // Modal click-outside close
 document.addEventListener('click', function(e){
@@ -1644,6 +1644,7 @@ document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
+
 
 
 
