@@ -1346,7 +1346,7 @@ function openSquad(teamName){
   const coach = WC_COACHES[teamName]||{en:'',cn:''};
   document.getElementById('squadTitle').textContent = (WC_FLAGS[teamName]||'')+' '+teamName;
   document.getElementById('squadContent').innerHTML =
-        sq.map(p => '<div class="player-item" onclick="openPlayer(\''+teamName.replace(/'/g,"\\'")+'\','+p.num+')"><span class="pnum">'+p.num+'</span><div class="pinfo"><div class="pname">'+p.name+'</div><div class="ppos">'+(p.cn&&p.cn!=''?p.cn+' \u00b7 ':'')+p.pos+' \u00b7 '+p.age+'\u5c81</div></div><div class="pclub">'+p.club+'<span style="font-size:9px;color:var(--text2);display:block;">'+(WC_LEAGUES[p.club]||'')+'</span></div><div class="pvalue">'+(p.value||'\u2014')+'</div></div>').join('');
+        sq.map(p => '<div class="player-item" onclick="openPlayer(\''+teamName.replace(/'/g,"\\'")+'\','+p.num+')"><span class="pnum">'+p.num+'</span><div class="pinfo"><div class="pname">'+(p.name.indexOf(' ')>0?p.name.slice(0,p.name.indexOf(' '))+'<span style="font-size:10px;color:var(--text2);display:block;">'+p.name.slice(p.name.indexOf(' ')+1)+'</span>':p.name)+'</div><div class="ppos">'+(p.cn&&p.cn!=''?p.cn+' \u00b7 ':'')+p.pos+' \u00b7 '+p.age+'\u5c81</div></div><div class="pclub">'+p.club+'<span style="font-size:9px;color:var(--text2);display:block;">'+(WC_LEAGUES[p.club]||'')+'</span></div><div class="pvalue">'+(p.value||'\u2014')+'</div></div>').join('');
   document.getElementById('squadModal').classList.add('show');
 }function closeSquad(){document.getElementById('squadModal').classList.remove('show');}
 
