@@ -868,9 +868,8 @@ function renderGroups(){
         }
         return 0;
       });
-      const maxPld = Math.max(...sorted.map(x=>x.pld), 1);
       return '<table class="group-table"><colgroup><col style="width:28px;"><col><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:22px;"></colgroup><tr><th>#</th><th>球队</th><th>胜</th><th>平</th><th>负</th><th style="color:var(--primary);">进</th><th style="color:var(--red);">失</th><th style="color:var(--blue);">净</th><th style="color:var(--gold);">分</th></tr>' +
-        sorted.map((x,i) => '<tr class="'+(maxPld>0&&x.pld>0?'highlight':'')+'"><td class="pos">'+g.id+'</td><td class="team-cell" style="cursor:pointer;" onclick="openSquad(\''+x.name+'\')"><span class="flag">'+(WC_FLAGS[x.name]||'')+'</span>'+x.name+'<span class="rank"> '+(WC_RANK[x.name]||'')+'</span></td><td style="color:var(--gold);font-weight:600;">'+x.w+'</td><td style="color:var(--gold);font-weight:600;">'+x.d+'</td><td style="color:var(--gold);font-weight:600;">'+x.l+'</td><td style="color:var(--primary);font-weight:600;">'+x.gf+'</td><td style="color:var(--primary);font-weight:600;">'+x.ga+'</td><td style="color:var(--primary);font-weight:600;">'+(x.gd>0?'+':'')+x.gd+'</td><td class="pts-cell">'+x.pts+'</td></tr>').join('') +
+        sorted.map((x,i) => '<tr class="'+(i<2?'highlight':'')+'"><td class="pos">'+g.id+'</td><td class="team-cell" style="cursor:pointer;" onclick="openSquad(\''+x.name+'\')"><span class="flag">'+(WC_FLAGS[x.name]||'')+'</span>'+x.name+'<span class="rank"> '+(WC_RANK[x.name]||'')+'</span></td><td style="color:var(--gold);font-weight:600;">'+x.w+'</td><td style="color:var(--gold);font-weight:600;">'+x.d+'</td><td style="color:var(--gold);font-weight:600;">'+x.l+'</td><td style="color:var(--primary);font-weight:600;">'+x.gf+'</td><td style="color:var(--primary);font-weight:600;">'+x.ga+'</td><td style="color:var(--primary);font-weight:600;">'+(x.gd>0?'+':'')+x.gd+'</td><td class="pts-cell">'+x.pts+'</td></tr>').join('') +
         '</table></div>';
     }).join('') +
     // Third-placed teams
