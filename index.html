@@ -199,7 +199,8 @@ body {
 .group-table .team-cell .flag { font-size:16px; }
 .group-table .pos { width:22px; color:var(--text2); font-weight:600; }
 .group-table .pts-cell { font-weight:800; font-size:14px; color:var(--gold); }
-.group-table .highlight { background:var(--primary-dim); }
+.group-table .qualify { background:rgba(0,230,118,0.06); }
+.group-table .elim { background:rgba(255,82,82,0.04); }
 .group-table .rank { font-size:9px; color:var(--text2); font-weight:400; }
 .team-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .team-grid .team-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:all .2s; }
@@ -869,7 +870,7 @@ function renderGroups(){
         return 0;
       });
       return '<table class="group-table"><colgroup><col style="width:28px;"><col><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:22px;"></colgroup><tr><th>#</th><th>球队</th><th>胜</th><th>平</th><th>负</th><th style="color:var(--primary);">进</th><th style="color:var(--red);">失</th><th style="color:var(--blue);">净</th><th style="color:var(--gold);">分</th></tr>' +
-        sorted.map((x,i) => '<tr class="'+(i<2?'highlight':'')+'"><td class="pos">'+g.id+'</td><td class="team-cell" style="cursor:pointer;" onclick="openSquad(\''+x.name+'\')"><span class="flag">'+(WC_FLAGS[x.name]||'')+'</span>'+x.name+'<span class="rank"> '+(WC_RANK[x.name]||'')+'</span></td><td style="color:var(--gold);font-weight:600;">'+x.w+'</td><td style="color:var(--gold);font-weight:600;">'+x.d+'</td><td style="color:var(--gold);font-weight:600;">'+x.l+'</td><td style="color:var(--primary);font-weight:600;">'+x.gf+'</td><td style="color:var(--primary);font-weight:600;">'+x.ga+'</td><td style="color:var(--primary);font-weight:600;">'+(x.gd>0?'+':'')+x.gd+'</td><td class="pts-cell">'+x.pts+'</td></tr>').join('') +
+        sorted.map((x,i) => '<tr class="'+(i<2?'qualify':'elim')+'"><td class="pos">'+g.id+'</td><td class="team-cell" style="cursor:pointer;" onclick="openSquad(\''+x.name+'\')"><span class="flag">'+(WC_FLAGS[x.name]||'')+'</span>'+x.name+'<span class="rank"> '+(WC_RANK[x.name]||'')+'</span></td><td style="color:var(--gold);font-weight:600;">'+x.w+'</td><td style="color:var(--gold);font-weight:600;">'+x.d+'</td><td style="color:var(--gold);font-weight:600;">'+x.l+'</td><td style="color:var(--primary);font-weight:600;">'+x.gf+'</td><td style="color:var(--primary);font-weight:600;">'+x.ga+'</td><td style="color:var(--primary);font-weight:600;">'+(x.gd>0?'+':'')+x.gd+'</td><td class="pts-cell">'+x.pts+'</td></tr>').join('') +
         '</table></div>';
     }).join('') +
     // Third-placed teams
@@ -887,7 +888,7 @@ function renderGroups(){
         if(s.length>=3) t.push({group:g.id,...s[2]});
       });
       t.sort((a,b) => b.pts-a.pts || b.gd-a.gd || b.gf-a.gf);
-      return '<div style="border-top:2px solid var(--border);margin:16px 0;"></div><div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📊 小组第三排名 · 前8名晋级32强</div><table class="group-table"><colgroup><col style="width:28px;"><col style="width:24px;"><col><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:22px;"></colgroup><tr><th>#</th><th>组</th><th>球队</th><th>胜</th><th>平</th><th>负</th><th style="color:var(--primary);">进</th><th style="color:var(--red);">失</th><th style="color:var(--blue);">净</th><th style="color:var(--gold);">分</th></tr>' + t.map((x,i) => '<tr class="'+(i<8?'highlight':'')+'"><td class="pos">'+(i+1)+'</td><td style="font-weight:700;color:var(--gold);">'+x.group+'</td><td class="team-cell" style="cursor:pointer;" onclick="openSquad(\''+x.name+'\')"><span class="flag">'+(WC_FLAGS[x.name]||'')+'</span>'+x.name+'</td><td style="color:var(--gold);font-weight:600;">'+x.w+'</td><td style="color:var(--gold);font-weight:600;">'+x.d+'</td><td style="color:var(--gold);font-weight:600;">'+x.l+'</td><td style="color:var(--primary);font-weight:600;">'+x.gf+'</td><td style="color:var(--primary);font-weight:600;">'+x.ga+'</td><td style="color:var(--primary);font-weight:600;">'+(x.gd>0?'+':'')+x.gd+'</td><td class="pts-cell">'+x.pts+'</td></tr>').join('') + '</table>';
+      return '<div style="border-top:2px solid var(--border);margin:16px 0;"></div><div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📊 小组第三排名 · 前8名晋级32强</div><table class="group-table"><colgroup><col style="width:28px;"><col style="width:24px;"><col><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:20px;"><col style="width:22px;"></colgroup><tr><th>#</th><th>组</th><th>球队</th><th>胜</th><th>平</th><th>负</th><th style="color:var(--primary);">进</th><th style="color:var(--red);">失</th><th style="color:var(--blue);">净</th><th style="color:var(--gold);">分</th></tr>' + t.map((x,i) => '<tr class="'+(i<8?'qualify':'elim')+'"><td class="pos">'+(i+1)+'</td><td style="font-weight:700;color:var(--gold);">'+x.group+'</td><td class="team-cell" style="cursor:pointer;" onclick="openSquad(\''+x.name+'\')"><span class="flag">'+(WC_FLAGS[x.name]||'')+'</span>'+x.name+'</td><td style="color:var(--gold);font-weight:600;">'+x.w+'</td><td style="color:var(--gold);font-weight:600;">'+x.d+'</td><td style="color:var(--gold);font-weight:600;">'+x.l+'</td><td style="color:var(--primary);font-weight:600;">'+x.gf+'</td><td style="color:var(--primary);font-weight:600;">'+x.ga+'</td><td style="color:var(--primary);font-weight:600;">'+(x.gd>0?'+':'')+x.gd+'</td><td class="pts-cell">'+x.pts+'</td></tr>').join('') + '</table>';
     })();
 }
 
@@ -1195,4 +1196,5 @@ document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
+
 
