@@ -188,6 +188,43 @@ body {
 .empty-state p { font-size:13px; }
 .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:var(--card2); color:var(--text); padding:10px 20px; border-radius:10px; font-size:13px; z-index:300; border:1px solid var(--border); box-shadow:var(--shadow); animation: toastIn .3s ease; }
 @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+.group-section { margin-bottom:20px; }
+.group-title { font-size:15px; font-weight:700; margin-bottom:8px; padding:8px 12px; background:var(--card2); border-radius:8px; border-left:4px solid var(--gold); }
+.group-table { width:100%; border-collapse:collapse; font-size:12px; background:var(--card); border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); margin-bottom:8px; }
+.group-table th { background:var(--card2); color:var(--text2); font-weight:600; padding:8px 4px; text-align:center; font-size:10px; }
+.group-table th:first-child { text-align:left; padding-left:8px; }
+.group-table td { padding:6px 4px; text-align:center; border-top:1px solid var(--border); }
+.group-table td:first-child { text-align:left; padding-left:8px; font-weight:600; }
+.group-table .team-cell { display:flex; align-items:center; gap:6px; }
+.group-table .team-cell .flag { font-size:16px; }
+.group-table .pos { width:22px; color:var(--text2); font-weight:600; }
+.group-table .pts-cell { font-weight:800; font-size:14px; color:var(--gold); }
+.group-table .highlight { background:var(--primary-dim); }
+.team-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.team-grid .team-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:all .2s; }
+.team-grid .team-card:active { transform:scale(.97); }
+.team-grid .team-card .flag { font-size:28px; }
+.team-grid .team-card .tname { font-size:13px; font-weight:600; }
+.team-grid .team-card .tinfo { font-size:10px; color:var(--text2); }
+.squad-modal { max-width:500px; max-height:85vh; }
+.player-item { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--card2); border-radius:8px; margin-bottom:6px; cursor:pointer; transition:all .2s; border:1px solid transparent; }
+.player-item:active { transform:scale(.98); }
+.player-item:hover { border-color:var(--primary-dim); }
+.player-item .pnum { width:24px; height:24px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--text2); flex-shrink:0; }
+.player-item .pinfo { flex:1; min-width:0; }
+.player-item .pname { font-size:13px; font-weight:600; }
+.player-item .ppos { font-size:10px; color:var(--text2); }
+.player-item .pclub { font-size:11px; color:var(--text2); }
+.player-item .pvalue { font-size:12px; font-weight:700; color:var(--gold); white-space:nowrap; }
+.player-detail-card { text-align:center; padding:8px 0; }
+.player-detail-card .big-avatar { width:80px; height:80px; border-radius:50%; background:var(--card2); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:700; margin:0 auto 12px; color:var(--gold); }
+.player-detail-card .pd-name { font-size:20px; font-weight:800; }
+.player-detail-card .pd-number { font-size:14px; color:var(--text2); margin-bottom:8px; }
+.player-detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.player-detail-grid .pd-item { background:var(--card2); border-radius:8px; padding:10px; text-align:center; }
+.player-detail-grid .pd-item .pd-label { font-size:10px; color:var(--text2); }
+.player-detail-grid .pd-item .pd-value { font-size:14px; font-weight:700; margin-top:2px; }
+
 .admin-toggle { display:flex; align-items:center; justify-content:center; gap:6px; padding:8px; margin-top:4px; border-top:1px solid var(--border); }
 .admin-toggle label { font-size:11px; color:var(--text2); cursor:pointer; }
 .switch { position:relative; display:inline-block; width:36px; height:20px; cursor:pointer; }
@@ -251,18 +288,28 @@ body {
 <div id="tabRank" class="content"><div id="rankContent"></div></div>
 <div id="tabDebt" class="content"><div id="debtContent"></div></div>
 
+<div id="tabGroups" class="content"><div id="groupsContent"></div></div>
+
 <input type="file" id="avatarUpload" accept="image/*" style="display:none">
 <div class="modal-overlay" id="userModal">
   <div class="modal"><button class="modal-close" id="closeModalBtn">✕</button><h2>👤 选择你的身份</h2><div class="user-grid" id="userGrid"></div></div>
+</div>
+
+<div class="modal-overlay" id="squadModal">
+  <div class="modal squad-modal"><button class="modal-close" onclick="closeSquad()">✕</button><h2 id="squadTitle">球队阵容</h2><div id="squadContent"></div></div>
+</div>
+
+<div class="modal-overlay" id="playerModal">
+  <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
 <div class="footer">© 2026-2030 Stephon · v2.0.0 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
+  <button class="tab" data-tab="Groups"><span class="icon">🌍</span><span>分组</span></button>
   <button class="tab" data-tab="Bill"><span class="icon">💰</span><span>账单</span></button>
   <button class="tab" data-tab="Rank"><span class="icon">🏆</span><span>排行榜</span></button>
-  <button class="tab" data-tab="Debt"><span class="icon">📋</span><span>结算</span></button>
 </div>
 
 <script>
@@ -335,6 +382,347 @@ function te(n){return TEAMS[n]?.[0]||'⚽'}
 function ts(n){return TEAMS[n]?.[1]||n}
 const AVATAR_MAP={'老章':'章','大毛':'毛','王彬':'彬','王玺':'玺','三瓶':'三','二红':'胸','糖糖':'糖','隔离':'隔'};
 function ac(n){return AVATAR_MAP[n]||n[0]}
+
+// ======================== WORLD CUP 2026 ========================
+const WC_FLAGS = {
+  'Mexico':'🇲🇽','South Africa':'🇿🇦','South Korea':'🇰🇷','Czechia':'🇨🇿',
+  'Canada':'🇨🇦','Bosnia':'🇧🇦','Qatar':'🇶🇦','Switzerland':'🇨🇭',
+  'Brazil':'🇧🇷','Morocco':'🇲🇦','Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+  'USA':'🇺🇸','Paraguay':'🇵🇾','Australia':'🇦🇺','Turkey':'🇹🇷',
+  'Germany':'🇩🇪','Curaçao':'🇨🇼','Ivory Coast':'🇨🇮','Ecuador':'🇪🇨',
+  'Netherlands':'🇳🇱','Japan':'🇯🇵','Sweden':'🇸🇪','Tunisia':'🇹🇳',
+  'Belgium':'🇧🇪','Egypt':'🇪🇬','Iran':'🇮🇷','New Zealand':'🇳🇿',
+  'Spain':'🇪🇸','Cape Verde':'🇨🇻','Saudi Arabia':'🇸🇦','Uruguay':'🇺🇾',
+  'France':'🇫🇷','Senegal':'🇸🇳','Iraq':'🇮🇶','Norway':'🇳🇴',
+  'Argentina':'🇦🇷','Algeria':'🇩🇿','Austria':'🇦🇹','Jordan':'🇯🇴',
+  'Portugal':'🇵🇹','DR Congo':'🇨🇩','Uzbekistan':'🇺🇿','Colombia':'🇨🇴',
+  'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croatia':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦'
+};
+const WC_GROUPS = [
+  {id:'A',teams:['Mexico','South Africa','South Korea','Czechia']},
+  {id:'B',teams:['Canada','Bosnia','Qatar','Switzerland']},
+  {id:'C',teams:['Brazil','Morocco','Haiti','Scotland']},
+  {id:'D',teams:['USA','Paraguay','Australia','Turkey']},
+  {id:'E',teams:['Germany','Curaçao','Ivory Coast','Ecuador']},
+  {id:'F',teams:['Netherlands','Japan','Sweden','Tunisia']},
+  {id:'G',teams:['Belgium','Egypt','Iran','New Zealand']},
+  {id:'H',teams:['Spain','Cape Verde','Saudi Arabia','Uruguay']},
+  {id:'I',teams:['France','Senegal','Iraq','Norway']},
+  {id:'J',teams:['Argentina','Algeria','Austria','Jordan']},
+  {id:'K',teams:['Portugal','DR Congo','Uzbekistan','Colombia']},
+  {id:'L',teams:['England','Croatia','Ghana','Panama']}
+];
+const WC_TEAM_GROUP = {}; WC_GROUPS.forEach(g=>g.teams.forEach(t=>WC_TEAM_GROUP[t]=g.id));
+
+// Squad data (partial - populated from official sources)
+const WC_SQUADS = {
+  'Argentina':[
+    {num:1,name:'Emiliano Martínez',pos:'GK',age:33,club:'Aston Villa',value:'€28M'},
+    {num:12,name:'Gerónimo Rulli',pos:'GK',age:34,club:'Marseille',value:'€5M'},
+    {num:23,name:'Franco Armani',pos:'GK',age:39,club:'River Plate',value:'€2M'},
+    {num:2,name:'Nahuel Molina',pos:'DF',age:28,club:'Atlético Madrid',value:'€25M'},
+    {num:3,name:'Cristian Romero',pos:'DF',age:28,club:'Tottenham',value:'€45M'},
+    {num:13,name:'Germán Pezzella',pos:'DF',age:35,club:'River Plate',value:'€3M'},
+    {num:4,name:'Nicolás Tagliafico',pos:'DF',age:33,club:'Lyon',value:'€8M'},
+    {num:19,name:'Nicolás Otamendi',pos:'DF',age:38,club:'Benfica',value:'€2M'},
+    {num:6,name:'Gonzalo Montiel',pos:'DF',age:29,club:'Sevilla',value:'€12M'},
+    {num:8,name:'Marcos Acuña',pos:'DF',age:34,club:'River Plate',value:'€4M'},
+    {num:5,name:'Leandro Paredes',pos:'MF',age:32,club:'Roma',value:'€8M'},
+    {num:7,name:'Rodrigo De Paul',pos:'MF',age:32,club:'Atlético Madrid',value:'€30M'},
+    {num:14,name:'Enzo Fernández',pos:'MF',age:25,club:'Chelsea',value:'€55M'},
+    {num:20,name:'Alexis Mac Allister',pos:'MF',age:27,club:'Liverpool',value:'€65M'},
+    {num:16,name:'Giovani Lo Celso',pos:'MF',age:30,club:'Real Betis',value:'€15M'},
+    {num:18,name:'Nicolás González',pos:'FW',age:28,club:'Juventus',value:'€35M'},
+    {num:10,name:'Lionel Messi (c)',pos:'FW',age:39,club:'Inter Miami',value:'€20M'},
+    {num:9,name:'Julián Álvarez',pos:'FW',age:26,club:'Atlético Madrid',value:'€70M'},
+    {num:11,name:'Lautaro Martínez',pos:'FW',age:28,club:'Inter Milan',value:'€90M'},
+    {num:15,name:'Ángel Di María',pos:'FW',age:38,club:'Benfica',value:'€5M'},
+    {num:22,name:'Paulo Dybala',pos:'FW',age:32,club:'Roma',value:'€18M'},
+    {num:21,name:'Alejandro Garnacho',pos:'FW',age:22,club:'Manchester United',value:'€45M'}
+  ],
+  'Brazil':[
+    {num:1,name:'Alisson',pos:'GK',age:33,club:'Liverpool',value:'€28M'},
+    {num:23,name:'Ederson',pos:'GK',age:32,club:'Manchester City',value:'€30M'},
+    {num:12,name:'Bento',pos:'GK',age:27,club:'Al-Nassr',value:'€15M'},
+    {num:4,name:'Marquinhos',pos:'DF',age:32,club:'PSG',value:'€35M'},
+    {num:3,name:'Éder Militão',pos:'DF',age:28,club:'Real Madrid',value:'€45M'},
+    {num:6,name:'Danilo',pos:'DF',age:34,club:'Fluminense',value:'€4M'},
+    {num:2,name:'Vanderson',pos:'DF',age:25,club:'Monaco',value:'€22M'},
+    {num:13,name:'Caio Henrique',pos:'DF',age:28,club:'Monaco',value:'€18M'},
+    {num:14,name:'Bremer',pos:'DF',age:29,club:'Juventus',value:'€40M'},
+    {num:5,name:'Bruno Guimarães',pos:'MF',age:28,club:'Manchester City',value:'€60M'},
+    {num:8,name:'João Gomes',pos:'MF',age:25,club:'Wolverhampton',value:'€30M'},
+    {num:15,name:'Douglas Luiz',pos:'MF',age:28,club:'Juventus',value:'€35M'},
+    {num:18,name:'Raphinha',pos:'FW',age:29,club:'Barcelona',value:'€60M'},
+    {num:10,name:'Vinícius Jr',pos:'FW',age:25,club:'Real Madrid',value:'€180M'},
+    {num:7,name:'Rodrygo',pos:'FW',age:25,club:'Real Madrid',value:'€80M'},
+    {num:9,name:'Endrick',pos:'FW',age:20,club:'Real Madrid',value:'€40M'},
+    {num:11,name:'Gabriel Martinelli',pos:'FW',age:25,club:'Arsenal',value:'€55M'},
+    {num:20,name:'Matheus Cunha',pos:'FW',age:27,club:'Wolverhampton',value:'€35M'},
+    {num:17,name:'Lucas Paquetá',pos:'MF',age:28,club:'West Ham',value:'€40M'},
+    {num:19,name:'Gabriel Jesus',pos:'FW',age:29,club:'Arsenal',value:'€30M'}
+  ],
+  'England':[
+    {num:1,name:'Jordan Pickford',pos:'GK',age:32,club:'Everton',value:'€22M'},
+    {num:13,name:'Dean Henderson',pos:'GK',age:29,club:'Crystal Palace',value:'€12M'},
+    {num:23,name:'Aaron Ramsdale',pos:'GK',age:28,club:'Southampton',value:'€15M'},
+    {num:2,name:'Kyle Walker',pos:'DF',age:36,club:'AC Milan',value:'€5M'},
+    {num:5,name:'John Stones',pos:'DF',age:32,club:'Manchester City',value:'€22M'},
+    {num:6,name:'Harry Maguire',pos:'DF',age:33,club:'Manchester United',value:'€10M'},
+    {num:12,name:'Kieran Trippier',pos:'DF',age:35,club:'Newcastle',value:'€6M'},
+    {num:3,name:'Luke Shaw',pos:'DF',age:30,club:'Manchester United',value:'€15M'},
+    {num:15,name:'Jarrad Branthwaite',pos:'DF',age:24,club:'Everton',value:'€40M'},
+    {num:14,name:'Trent Alexander-Arnold',pos:'DF',age:27,club:'Liverpool',value:'€50M'},
+    {num:4,name:'Declan Rice',pos:'MF',age:27,club:'Arsenal',value:'€100M'},
+    {num:8,name:'Jude Bellingham',pos:'MF',age:23,club:'Real Madrid',value:'€200M'},
+    {num:10,name:'Phil Foden',pos:'MF',age:26,club:'Manchester City',value:'€120M'},
+    {num:7,name:'Bukayo Saka',pos:'MF',age:24,club:'Arsenal',value:'€110M'},
+    {num:19,name:'Cole Palmer',pos:'MF',age:24,club:'Chelsea',value:'€90M'},
+    {num:16,name:'Conor Gallagher',pos:'MF',age:26,club:'Chelsea',value:'€40M'},
+    {num:18,name:'Eberechi Eze',pos:'MF',age:28,club:'Crystal Palace',value:'€35M'},
+    {num:9,name:'Harry Kane (c)',pos:'FW',age:32,club:'Bayern Munich',value:'€80M'},
+    {num:11,name:'Marcus Rashford',pos:'FW',age:28,club:'Aston Villa',value:'€35M'},
+    {num:20,name:'Ivan Toney',pos:'FW',age:30,club:'Al-Ahli',value:'€20M'},
+    {num:21,name:'Anthony Gordon',pos:'FW',age:25,club:'Newcastle',value:'€55M'},
+    {num:17,name:'Kobbie Mainoo',pos:'MF',age:21,club:'Manchester United',value:'€45M'}
+  ],
+  'France':[
+    {num:1,name:'Alphonse Aréola',pos:'GK',age:33,club:'West Ham',value:'€6M'},
+    {num:16,name:'Mike Maignan',pos:'GK',age:30,club:'AC Milan',value:'€35M'},
+    {num:23,name:'Brice Samba',pos:'GK',age:32,club:'Lens',value:'€10M'},
+    {num:2,name:'Benjamin Pavard',pos:'DF',age:30,club:'Inter Milan',value:'€15M'},
+    {num:4,name:'Dayot Upamecano',pos:'DF',age:27,club:'Bayern Munich',value:'€40M'},
+    {num:3,name:'Lucas Hernandez',pos:'DF',age:30,club:'PSG',value:'€25M'},
+    {num:22,name:'Theo Hernandez',pos:'DF',age:28,club:'AC Milan',value:'€50M'},
+    {num:5,name:'Jules Koundé',pos:'DF',age:27,club:'Barcelona',value:'€45M'},
+    {num:17,name:'William Saliba',pos:'DF',age:25,club:'Arsenal',value:'€75M'},
+    {num:21,name:'Lucas Digne',pos:'DF',age:32,club:'Aston Villa',value:'€8M'},
+    {num:13,name:'Ibrahima Konaté',pos:'DF',age:27,club:'Liverpool',value:'€40M'},
+    {num:6,name:'Eduardo Camavinga',pos:'MF',age:23,club:'Real Madrid',value:'€70M'},
+    {num:8,name:'Aurélien Tchouaméni',pos:'MF',age:26,club:'Real Madrid',value:'€70M'},
+    {num:14,name:'Adrien Rabiot',pos:'MF',age:31,club:'Marseille',value:'€18M'},
+    {num:19,name:'Youssouf Fofana',pos:'MF',age:27,club:'AC Milan',value:'€25M'},
+    {num:7,name:'Kylian Mbappé',pos:'FW',age:27,club:'Real Madrid',value:'€160M'},
+    {num:10,name:'Ousmane Dembélé',pos:'FW',age:29,club:'PSG',value:'€55M'},
+    {num:12,name:'Randal Kolo Muani',pos:'FW',age:27,club:'PSG',value:'€40M'},
+    {num:9,name:'Marcus Thuram',pos:'FW',age:28,club:'Inter Milan',value:'€55M'},
+    {num:20,name:'Kingsley Coman',pos:'FW',age:30,club:'Bayern Munich',value:'€30M'},
+    {num:11,name:'Christopher Nkunku',pos:'FW',age:28,club:'Chelsea',value:'€45M'},
+    {num:15,name:'Warren Zaïre-Emery',pos:'MF',age:20,club:'PSG',value:'€55M'}
+  ],
+  'Germany':[
+    {num:1,name:'Manuel Neuer (c)',pos:'GK',age:40,club:'Bayern Munich',value:'€3M'},
+    {num:12,name:'Marc-André ter Stegen',pos:'GK',age:34,club:'Barcelona',value:'€15M'},
+    {num:22,name:'Oliver Baumann',pos:'GK',age:36,club:'TSG Hoffenheim',value:'€3M'},
+    {num:2,name:'Antonio Rüdiger',pos:'DF',age:33,club:'Real Madrid',value:'€20M'},
+    {num:4,name:'Jonathan Tah',pos:'DF',age:30,club:'Bayer Leverkusen',value:'€30M'},
+    {num:5,name:'Niklas Süle',pos:'DF',age:30,club:'Borussia Dortmund',value:'€15M'},
+    {num:6,name:'Joshua Kimmich',pos:'DF',age:31,club:'Bayern Munich',value:'€40M'},
+    {num:3,name:'David Raum',pos:'DF',age:28,club:'RB Leipzig',value:'€18M'},
+    {num:15,name:'Nico Schlotterbeck',pos:'DF',age:26,club:'Borussia Dortmund',value:'€30M'},
+    {num:7,name:'Kai Havertz',pos:'MF',age:27,club:'Arsenal',value:'€55M'},
+    {num:8,name:'İlkay Gündoğan',pos:'MF',age:35,club:'Manchester City',value:'€10M'},
+    {num:10,name:'Jamal Musiala',pos:'MF',age:23,club:'Bayern Munich',value:'€130M'},
+    {num:17,name:'Florian Wirtz',pos:'MF',age:23,club:'Bayer Leverkusen',value:'€120M'},
+    {num:21,name:'Leroy Sané',pos:'MF',age:30,club:'Bayern Munich',value:'€40M'},
+    {num:14,name:'Felix Nmecha',pos:'MF',age:25,club:'Borussia Dortmund',value:'€22M'},
+    {num:19,name:'Aleksandar Pavlović',pos:'MF',age:22,club:'Bayern Munich',value:'€30M'},
+    {num:9,name:'Niclas Füllkrug',pos:'FW',age:33,club:'West Ham',value:'€12M'},
+    {num:11,name:'Serge Gnabry',pos:'FW',age:30,club:'Bayern Munich',value:'€28M'},
+    {num:13,name:'Karim Adeyemi',pos:'FW',age:24,club:'Borussia Dortmund',value:'€28M'},
+    {num:18,name:'Maximilian Beier',pos:'FW',age:23,club:'Borussia Dortmund',value:'€25M'},
+    {num:20,name:'Jamie Leweling',pos:'FW',age:25,club:'VfB Stuttgart',value:'€18M'},
+    {num:23,name:'Angelo Stiller',pos:'MF',age:25,club:'VfB Stuttgart',value:'€25M'}
+  ],
+  'Portugal':[
+    {num:1,name:'Diogo Costa',pos:'GK',age:26,club:'FC Porto',value:'€30M'},
+    {num:22,name:'Rui Patrício',pos:'GK',age:38,club:'Roma',value:'€2M'},
+    {num:12,name:'José Sá',pos:'GK',age:33,club:'Wolverhampton',value:'€5M'},
+    {num:2,name:'Diogo Dalot',pos:'DF',age:27,club:'Manchester United',value:'€30M'},
+    {num:3,name:'Rúben Dias',pos:'DF',age:29,club:'Manchester City',value:'€65M'},
+    {num:4,name:'Gonçalo Inácio',pos:'DF',age:24,club:'Sporting CP',value:'€35M'},
+    {num:5,name:'Nuno Mendes',pos:'DF',age:24,club:'PSG',value:'€45M'},
+    {num:13,name:'Nélson Semedo',pos:'DF',age:32,club:'Wolverhampton',value:'€8M'},
+    {num:14,name:'António Silva',pos:'DF',age:22,club:'Benfica',value:'€30M'},
+    {num:10,name:'Bernardo Silva',pos:'MF',age:31,club:'Manchester City',value:'€60M'},
+    {num:8,name:'Bruno Fernandes',pos:'MF',age:31,club:'Manchester United',value:'€55M'},
+    {num:23,name:'Vitinha',pos:'MF',age:26,club:'PSG',value:'€50M'},
+    {num:6,name:'João Palhinha',pos:'MF',age:30,club:'Bayern Munich',value:'€35M'},
+    {num:18,name:'Rúben Neves',pos:'MF',age:29,club:'Al-Hilal',value:'€25M'},
+    {num:16,name:'Matheus Nunes',pos:'MF',age:27,club:'Manchester City',value:'€25M'},
+    {num:11,name:'João Félix',pos:'FW',age:26,club:'Chelsea',value:'€30M'},
+    {num:17,name:'Rafael Leão',pos:'FW',age:27,club:'AC Milan',value:'€60M'},
+    {num:7,name:'Cristiano Ronaldo (c)',pos:'FW',age:41,club:'Al-Nassr',value:'€10M'},
+    {num:9,name:'Gonçalo Ramos',pos:'FW',age:25,club:'PSG',value:'€40M'},
+    {num:21,name:'Diogo Jota',pos:'FW',age:29,club:'Liverpool',value:'€40M'},
+    {num:19,name:'Francisco Trincão',pos:'FW',age:26,club:'Sporting CP',value:'€20M'},
+    {num:20,name:'João Neves',pos:'MF',age:21,club:'PSG',value:'€55M'}
+  ],
+  'Netherlands':[
+    {num:1,name:'Mark Flekken',pos:'GK',age:33,club:'Brentford',value:'€8M'},
+    {num:23,name:'Bart Verbruggen',pos:'GK',age:23,club:'Brighton',value:'€30M'},
+    {num:13,name:'Justin Bijlow',pos:'GK',age:28,club:'Feyenoord',value:'€8M'},
+    {num:2,name:'Lutsharel Geertruida',pos:'DF',age:25,club:'RB Leipzig',value:'€30M'},
+    {num:4,name:'Virgil van Dijk (c)',pos:'DF',age:34,club:'Liverpool',value:'€20M'},
+    {num:5,name:'Nathan Aké',pos:'DF',age:31,club:'Manchester City',value:'€25M'},
+    {num:6,name:'Jurriën Timber',pos:'DF',age:25,club:'Arsenal',value:'€40M'},
+    {num:12,name:'Denzel Dumfries',pos:'DF',age:30,club:'Inter Milan',value:'€20M'},
+    {num:3,name:'Matthijs de Ligt',pos:'DF',age:26,club:'Manchester United',value:'€35M'},
+    {num:15,name:'Jan Paul van Hecke',pos:'DF',age:26,club:'Brighton',value:'€22M'},
+    {num:22,name:'Micky van de Ven',pos:'DF',age:25,club:'Tottenham',value:'€40M'},
+    {num:16,name:'Joey Veerman',pos:'MF',age:27,club:'PSV',value:'€25M'},
+    {num:14,name:'Tijjani Reijnders',pos:'MF',age:27,club:'AC Milan',value:'€45M'},
+    {num:8,name:'Frenkie de Jong',pos:'MF',age:29,club:'Barcelona',value:'€50M'},
+    {num:17,name:'Ryan Gravenberch',pos:'MF',age:24,club:'Liverpool',value:'€30M'},
+    {num:10,name:'Marten de Roon',pos:'MF',age:35,club:'Atalanta',value:'€5M'},
+    {num:7,name:'Xavi Simons',pos:'FW',age:23,club:'RB Leipzig',value:'€70M'},
+    {num:11,name:'Cody Gakpo',pos:'FW',age:27,club:'Liverpool',value:'€45M'},
+    {num:9,name:'Memphis Depay',pos:'FW',age:32,club:'Corinthians',value:'€8M'},
+    {num:18,name:'Brian Brobbey',pos:'FW',age:24,club:'Ajax',value:'€25M'},
+    {num:20,name:'Donyell Malen',pos:'FW',age:27,club:'Aston Villa',value:'€30M'},
+    {num:19,name:'Jeremie Frimpong',pos:'DF',age:25,club:'Bayer Leverkusen',value:'€40M'}
+  ],
+  'Spain':[
+    {num:23,name:'Unai Simón',pos:'GK',age:29,club:'Athletic Bilbao',value:'€25M'},
+    {num:1,name:'David Raya',pos:'GK',age:30,club:'Arsenal',value:'€30M'},
+    {num:13,name:'Álex Remiro',pos:'GK',age:31,club:'Real Sociedad',value:'€15M'},
+    {num:2,name:'Dani Carvajal',pos:'DF',age:34,club:'Real Madrid',value:'€6M'},
+    {num:4,name:'Robin Le Normand',pos:'DF',age:29,club:'Real Madrid',value:'€25M'},
+    {num:14,name:'Aymeric Laporte',pos:'DF',age:32,club:'Al-Nassr',value:'€12M'},
+    {num:5,name:'Pau Torres',pos:'DF',age:29,club:'Aston Villa',value:'€25M'},
+    {num:3,name:'Alejandro Grimaldo',pos:'DF',age:30,club:'Bayer Leverkusen',value:'€35M'},
+    {num:22,name:'Jesús Navas',pos:'DF',age:40,club:'Sevilla',value:'€1M'},
+    {num:16,name:'Marc Cucurella',pos:'DF',age:27,club:'Chelsea',value:'€20M'},
+    {num:8,name:'Pedri',pos:'MF',age:23,club:'Barcelona',value:'€70M'},
+    {num:10,name:'Dani Olmo',pos:'MF',age:28,club:'Barcelona',value:'€50M'},
+    {num:6,name:'Mikel Merino',pos:'MF',age:30,club:'Arsenal',value:'€25M'},
+    {num:18,name:'Martín Zubimendi',pos:'MF',age:27,club:'Real Sociedad',value:'€45M'},
+    {num:20,name:'Fabián Ruiz',pos:'MF',age:30,club:'PSG',value:'€25M'},
+    {num:15,name:'Álex Baena',pos:'MF',age:24,club:'Villarreal',value:'€35M'},
+    {num:21,name:'Nico Williams',pos:'FW',age:23,club:'Athletic Bilbao',value:'€60M'},
+    {num:19,name:'Lamine Yamal',pos:'FW',age:18,club:'Barcelona',value:'€150M'},
+    {num:7,name:'Álvaro Morata',pos:'FW',age:33,club:'AC Milan',value:'€10M'},
+    {num:9,name:'Joselu',pos:'FW',age:36,club:'Al-Gharafa',value:'€3M'},
+    {num:11,name:'Ferran Torres',pos:'FW',age:26,club:'Barcelona',value:'€25M'},
+    {num:17,name:'Yéremy Pino',pos:'FW',age:23,club:'Villarreal',value:'€25M'}
+  ],
+  'Scotland':[
+    {num:1,name:'Angus Gunn',pos:'GK',age:30,club:'Norwich',value:'€5M'},
+    {num:12,name:'Liam Kelly',pos:'GK',age:30,club:'Rangers',value:'€2M'},
+    {num:21,name:'Cieran Slicker',pos:'GK',age:23,club:'Hibernian',value:'€1M'},
+    {num:2,name:'Anthony Ralston',pos:'DF',age:27,club:'Celtic',value:'€4M'},
+    {num:15,name:'Ryan Porteous',pos:'DF',age:27,club:'Watford',value:'€6M'},
+    {num:5,name:'John Souttar',pos:'DF',age:29,club:'Rangers',value:'€4M'},
+    {num:3,name:'Kieran Tierney',pos:'DF',age:29,club:'Celtic',value:'€10M'},
+    {num:6,name:'Grant Hanley',pos:'DF',age:34,club:'Birmingham',value:'€2M'},
+    {num:13,name:'Jack Hendry',pos:'DF',age:31,club:'Al-Ettifaq',value:'€5M'},
+    {num:22,name:'Max Johnston',pos:'DF',age:22,club:'Sturm Graz',value:'€4M'},
+    {num:8,name:'Scott McTominay',pos:'MF',age:29,club:'Napoli',value:'€35M'},
+    {num:4,name:'Billy Gilmour',pos:'MF',age:25,club:'Napoli',value:'€20M'},
+    {num:23,name:'Kenny McLean',pos:'MF',age:34,club:'Norwich',value:'€3M'},
+    {num:7,name:'John McGinn',pos:'MF',age:31,club:'Aston Villa',value:'€18M'},
+    {num:14,name:'Lewis Ferguson',pos:'MF',age:26,club:'Bologna',value:'€20M'},
+    {num:17,name:'Ryan Christie',pos:'MF',age:31,club:'Bournemouth',value:'€8M'},
+    {num:9,name:'Lyndon Dykes',pos:'FW',age:30,club:'Birmingham',value:'€3M'},
+    {num:10,name:'Che Adams',pos:'FW',age:29,club:'Southampton',value:'€10M'},
+    {num:18,name:'Kevin Nisbet',pos:'FW',age:29,club:'Bristol City',value:'€3M'},
+    {num:19,name:'Ben Doak',pos:'FW',age:20,club:'Middlesbrough',value:'€12M'},
+    {num:11,name:'Ryan Gauld',pos:'FW',age:30,club:'Vancouver',value:'€4M'},
+    {num:20,name:'Lawrence Shankland',pos:'FW',age:30,club:'Hearts',value:'€5M'},
+    {num:16,name:'Tommy Conway',pos:'FW',age:23,club:'Bristol City',value:'€6M'}
+  ],
+  'South Korea':[
+    {num:1,name:'Kim Seung-gyu',pos:'GK',age:35,club:'FC Tokyo',value:'€1M'},
+    {num:21,name:'Jo Hyeon-woo',pos:'GK',age:34,club:'Ulsan HD',value:'€1M'},
+    {num:12,name:'Song Bum-keun',pos:'GK',age:28,club:'Jeonbuk Motors',value:'€1M'},
+    {num:4,name:'Kim Min-jae',pos:'DF',age:29,club:'Bayern Munich',value:'€40M'},
+    {num:15,name:'Kim Moon-hwan',pos:'DF',age:30,club:'Daejeon Citizen',value:'€1M'},
+    {num:23,name:'Jens Castrop',pos:'DF',age:22,club:'Gladbach',value:'€4M'},
+    {num:2,name:'Lee Han-beom',pos:'DF',age:23,club:'Midtjylland',value:'€2M'},
+    {num:22,name:'Seol Young-woo',pos:'DF',age:27,club:'Red Star',value:'€3M'},
+    {num:13,name:'Lee Tae-seok',pos:'DF',age:23,club:'Austria Wien',value:'€1M'},
+    {num:6,name:'Hwang In-beom',pos:'MF',age:29,club:'Feyenoord',value:'€8M'},
+    {num:10,name:'Lee Jae-sung',pos:'MF',age:33,club:'Mainz',value:'€4M'},
+    {num:8,name:'Paik Seung-ho',pos:'MF',age:29,club:'Birmingham',value:'€2M'},
+    {num:19,name:'Lee Kang-in',pos:'MF',age:25,club:'PSG',value:'€22M'},
+    {num:17,name:'Bae Jun-ho',pos:'MF',age:22,club:'Stoke City',value:'€5M'},
+    {num:11,name:'Hwang Hee-chan',pos:'MF',age:30,club:'Wolves',value:'€18M'},
+    {num:7,name:'Son Heung-min (c)',pos:'FW',age:33,club:'LAFC',value:'€20M'},
+    {num:9,name:'Cho Gue-sung',pos:'FW',age:28,club:'Midtjylland',value:'€3M'},
+    {num:18,name:'Oh Hyeon-gyu',pos:'FW',age:25,club:'Besiktas',value:'€4M'},
+    {num:20,name:'Yang Hyun-jun',pos:'FW',age:24,club:'Celtic',value:'€3M'},
+    {num:16,name:'Eom Ji-sung',pos:'FW',age:24,club:'Swansea',value:'€2M'}
+  ],
+  'Japan':[
+    {num:12,name:'Keisuke Osako',pos:'GK',age:26,club:'Sanfrecce',value:'€1M'},
+    {num:1,name:'Kosuke Nakamura',pos:'GK',age:31,club:'Portimonense',value:'€1M'},
+    {num:23,name:'Zion Suzuki',pos:'GK',age:23,club:'Parma',value:'€5M'},
+    {num:22,name:'Maya Yoshida (c)',pos:'DF',age:37,club:'LA Galaxy',value:'€1M'},
+    {num:4,name:'Ko Itakura',pos:'DF',age:29,club:'Gladbach',value:'€10M'},
+    {num:3,name:'Shogo Taniguchi',pos:'DF',age:34,club:'Al-Rayyan',value:'€1M'},
+    {num:2,name:'Yukinari Sugawara',pos:'DF',age:26,club:'Southampton',value:'€12M'},
+    {num:5,name:'Hiroki Ito',pos:'DF',age:27,club:'Bayern Munich',value:'€15M'},
+    {num:21,name:'Koki Machida',pos:'DF',age:27,club:'Union SG',value:'€8M'},
+    {num:6,name:'Wataru Endo',pos:'MF',age:33,club:'Liverpool',value:'€10M'},
+    {num:14,name:'Junya Ito',pos:'MF',age:33,club:'Reims',value:'€6M'},
+    {num:17,name:'Ao Tanaka',pos:'MF',age:27,club:'Leeds Utd',value:'€12M'},
+    {num:10,name:'Ritsu Doan',pos:'MF',age:28,club:'Freiburg',value:'€12M'},
+    {num:8,name:'Takumi Minamino',pos:'MF',age:31,club:'Monaco',value:'€8M'},
+    {num:20,name:'Takefusa Kubo',pos:'FW',age:25,club:'Sociedad',value:'€30M'},
+    {num:9,name:'Kyogo Furuhashi',pos:'FW',age:31,club:'Celtic',value:'€12M'},
+    {num:7,name:'Kaoru Mitoma',pos:'FW',age:29,club:'Brighton',value:'€30M'},
+    {num:18,name:'Daichi Hayashi',pos:'FW',age:27,club:'Koln',value:'€2M'},
+    {num:19,name:'Keito Nakamura',pos:'FW',age:25,club:'Reims',value:'€8M'},
+    {num:11,name:'Koki Ogawa',pos:'FW',age:27,club:'NEC',value:'€3M'}
+  ],
+  'USA':[
+    {num:1,name:'Matt Turner',pos:'GK',age:32,club:'New England',value:'€5M'},
+    {num:18,name:'Ethan Horvath',pos:'GK',age:31,club:'Cardiff',value:'€2M'},
+    {num:12,name:'Patrick Schulte',pos:'GK',age:25,club:'Columbus',value:'€3M'},
+    {num:2,name:'Sergino Dest',pos:'DF',age:25,club:'PSV',value:'€8M'},
+    {num:3,name:'Chris Richards',pos:'DF',age:26,club:'C Palace',value:'€15M'},
+    {num:13,name:'Tim Ream',pos:'DF',age:38,club:'Charlotte',value:'€1M'},
+    {num:5,name:'Antonee Robinson',pos:'DF',age:28,club:'Fulham',value:'€20M'},
+    {num:4,name:'Miles Robinson',pos:'DF',age:29,club:'Cincinnati',value:'€6M'},
+    {num:16,name:'Joe Scally',pos:'DF',age:23,club:'Gladbach',value:'€12M'},
+    {num:6,name:'Yunus Musah',pos:'MF',age:23,club:'Milan',value:'€20M'},
+    {num:8,name:'Weston McKennie',pos:'MF',age:27,club:'Juventus',value:'€20M'},
+    {num:14,name:'Tyler Adams',pos:'MF',age:27,club:'Bournemouth',value:'€15M'},
+    {num:17,name:'Malik Tillman',pos:'MF',age:24,club:'PSV',value:'€18M'},
+    {num:7,name:'Giovanni Reyna',pos:'MF',age:23,club:'Dortmund',value:'€18M'},
+    {num:10,name:'Christian Pulisic (c)',pos:'FW',age:27,club:'Chelsea',value:'€35M'},
+    {num:11,name:'Brenden Aaronson',pos:'FW',age:25,club:'Leeds Utd',value:'€12M'},
+    {num:9,name:'Ricardo Pepi',pos:'FW',age:23,club:'PSV',value:'€15M'},
+    {num:20,name:'Folarin Balogun',pos:'FW',age:24,club:'Monaco',value:'€25M'},
+    {num:21,name:'Timothy Weah',pos:'FW',age:26,club:'Juventus',value:'€12M'},
+    {num:19,name:'Haji Wright',pos:'FW',age:28,club:'Coventry',value:'€6M'},
+    {num:15,name:'Josh Sargent',pos:'FW',age:26,club:'Norwich',value:'€10M'}
+  ],
+  'Mexico':[
+    {num:1,name:'Raul Rangel',pos:'GK',age:26,club:'Guadalajara',value:'€3M'},
+    {num:13,name:'Guillermo Ochoa',pos:'GK',age:40,club:'AEL',value:'€1M'},
+    {num:12,name:'Carlos Acevedo',pos:'GK',age:30,club:'Santos',value:'€2M'},
+    {num:2,name:'Jorge Sanchez',pos:'DF',age:28,club:'PAOK',value:'€3M'},
+    {num:3,name:'Cesar Montes',pos:'DF',age:29,club:'Lokomotiv',value:'€6M'},
+    {num:4,name:'Edson Alvarez (c)',pos:'DF',age:28,club:'Fenerbahce',value:'€25M'},
+    {num:5,name:'Johan Vasquez',pos:'DF',age:27,club:'Genoa',value:'€8M'},
+    {num:23,name:'Jesus Gallardo',pos:'DF',age:31,club:'Toluca',value:'€4M'},
+    {num:15,name:'Israel Reyes',pos:'DF',age:26,club:'America',value:'€4M'},
+    {num:20,name:'Mateo Chavez',pos:'DF',age:22,club:'AZ',value:'€5M'},
+    {num:6,name:'Erik Lira',pos:'MF',age:26,club:'Cruz Azul',value:'€4M'},
+    {num:7,name:'Luis Romo',pos:'MF',age:31,club:'Guadalajara',value:'€3M'},
+    {num:8,name:'Alvaro Fidalgo',pos:'MF',age:29,club:'Betis',value:'€6M'},
+    {num:18,name:'Obed Vargas',pos:'MF',age:20,club:'Atletico Madrid',value:'€4M'},
+    {num:17,name:'Orbelin Pineda',pos:'MF',age:30,club:'AEK',value:'€5M'},
+    {num:24,name:'Luis Chavez',pos:'MF',age:30,club:'Dynamo Moscow',value:'€6M'},
+    {num:9,name:'Raul Jimenez',pos:'FW',age:35,club:'Fulham',value:'€3M'},
+    {num:11,name:'Santiago Gimenez',pos:'FW',age:25,club:'Milan',value:'€30M'},
+    {num:10,name:'Alexis Vega',pos:'FW',age:28,club:'Toluca',value:'€5M'},
+    {num:16,name:'Julian Quinones',pos:'FW',age:29,club:'Al-Qadsiah',value:'€6M'},
+    {num:21,name:'Cesar Huerta',pos:'FW',age:25,club:'Anderlecht',value:'€5M'},
+    {num:14,name:'Armando Gonzalez',pos:'FW',age:23,club:'Guadalajara',value:'€3M'}
+  ]
+};
 
 // ======================== STATE ========================
 let M=[], P=[], L=[];
@@ -606,7 +994,22 @@ function renderBill(){
     return `<div class="bill-item"><div class="match-info"><div class="teams">${ts(m.home)} ${m.home_score}:${m.away_score} ${ts(m.away)}</div><div class="detail">${m.league} · 预测 ${p?p.home_score+' : '+p.away_score:'未预测'} · ${iw?'🏆 赢了':'💸 输了'}</div></div><div class="bill-amount ${amt>=0?'positive':'negative'}">${amt>=0?'+':''}¥${Math.abs(Math.round(amt))}</div></div>`;
   }).filter(Boolean).join('');
   if(!bi) bi='<div class="empty-state"><div class="icon">📊</div><p>暂无已结算的比赛</p></div>';
-  el.innerHTML=`<div class="summary-card"><div style="font-size:14px;color:var(--text2);">💰 ${u} 的累计账单</div><div class="big-num ${st.balance>0?'positive':st.balance<0?'negative':'zero'}">${st.balance>=0?'+':''}¥${Math.round(Math.abs(st.balance))}</div><div class="summary-row"><div class="summary-item"><div class="label">🏆 赢</div><div class="value" style="color:var(--primary);">+¥${Math.max(0,Math.round(st.balance))}</div></div><div class="summary-item"><div class="label">💸 输</div><div class="value" style="color:var(--red);">-¥${Math.max(0,Math.round(-st.balance))}</div></div><div class="summary-item"><div class="label">🎯 猜对</div><div class="value" style="color:var(--gold);">${st.wins}次</div></div><div class="summary-item"><div class="label">场次</div><div class="value">${sm.length}</div></div></div></div><div style="font-size:13px;font-weight:600;margin:0 0 8px 4px;">📋 明细</div>${bi}`;
+  el.innerHTML=`<div class="summary-card"><div style="font-size:14px;color:var(--text2);">💰 ${u} 的累计账单</div><div class="big-num ${st.balance>0?'positive':st.balance<0?'negative':'zero'}">${st.balance>=0?'+':''}¥${Math.round(Math.abs(st.balance))}</div><div class="summary-row"><div class="summary-item"><div class="label">🏆 赢</div><div class="value" style="color:var(--primary);">${Math.max(0,Math.round(st.balance))}</div></div><div class="summary-item"><div class="label">💸 输</div><div class="value" style="color:var(--red);">${Math.max(0,Math.round(-st.balance))}</div></div><div class="summary-item"><div class="label">🎯 猜对</div><div class="value" style="color:var(--gold);">${st.wins}次</div></div><div class="summary-item"><div class="label">场次</div><div class="value">${sm.length}</div></div></div></div><div style="font-size:13px;font-weight:600;margin:0 0 8px 4px;">📋 明细</div>${bi}`;
+
+  // Settlement info merged into Bill
+  const all=USERS.map(n=>{const s=getStats(n);return{name:n,...s};}).filter(x=>x.balance!==0).sort((a,b)=>b.balance-a.balance);
+  const cr=all.filter(x=>x.balance>0).map(x=>({...x}));
+  const dr=all.filter(x=>x.balance<0).map(x=>({...x}));
+  const sts=[];let ci=0,di=0;
+  while(ci<cr.length&&di<dr.length){const amt=Math.min(cr[ci].balance,-dr[di].balance);if(amt>0.01)sts.push({from:dr[di].name,to:cr[ci].name,amount:Math.round(amt*100)/100});cr[ci].balance=Math.round((cr[ci].balance-amt)*100)/100;dr[di].balance=Math.round((dr[di].balance+amt)*100)/100;if(cr[ci].balance<0.01)ci++;if(dr[di].balance>-0.01)di++;}
+  const sc=M.filter(m=>m.settled&&m.settlement?.type==='settled').length;
+  const vc=M.filter(m=>m.settlement?.type==='void').length;
+  let dh='';
+  if(sts.length===0) dh='<div class="empty-state"><div class="icon">🤝</div><p>暂无欠款，大家两清！</p></div>';
+  else dh=sts.map(s=>{const mf=u&&s.from===u,mt=u&&s.to===u;return'<div class="debt-item"><span style="font-weight:600;">'+s.from+'</span><span class="arrow">➜</span><span style="font-weight:600;">'+s.to+'</span><div class="debt-amount negative" style="margin-left:8px;">¥'+Math.round(s.amount)+(mf?'<span style="font-size:10px;color:var(--text2);">(你欠)</span>':'')+(mt?'<span style="font-size:10px;color:var(--primary);">(应收)</span>':'')+'</div></div>';}).join('');
+  const logs=L.slice(0,20);
+  let lh=logs.length?logs.map(l=>'<div class="bill-item" style="padding:10px 14px;"><div class="match-info"><div class="detail">'+l.detail+'</div><div style="font-size:10px;color:var(--text2);margin-top:2px;">'+(l.created_at?new Date(l.created_at).toLocaleString('zh-CN'):'')+'</div></div></div>').join(''):'<div class="empty-state"><div class="icon">📭</div><p>暂无结算记录</p></div>';
+  el.innerHTML+=`<div style="border-top:2px solid var(--border);margin:16px 0;"></div><div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📋 结算概况</div><div class="debt-summary"><div class="debt-box"><div class="label">✅ 已结算场次</div><div class="value" style="color:var(--primary);">${sc}</div></div><div class="debt-box"><div class="label">💤 流局场次</div><div class="value" style="color:var(--text2);">${vc}</div></div></div><div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">🔄 结算关系</div>${dh}<div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">📜 结算记录</div>${lh}`;
 }
 
 function renderRank(){
@@ -621,25 +1024,82 @@ function renderRank(){
   }).join('');
 }
 
-function renderDebt(){
-  const el=document.getElementById('debtContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
-  const al=USERS.map(n=>{const s=getStats(n);return{name:n,...s};}).filter(x=>x.balance!==0).sort((a,b)=>b.balance-a.balance);
-  const cr=al.filter(x=>x.balance>0).map(x=>({...x}));
-  const dr=al.filter(x=>x.balance<0).map(x=>({...x}));
-  const sts=[];let ci=0,di=0;
-  while(ci<cr.length&&di<dr.length){const amt=Math.min(cr[ci].balance,-dr[di].balance);if(amt>0.01)sts.push({from:dr[di].name,to:cr[ci].name,amount:Math.round(amt*100)/100});cr[ci].balance=Math.round((cr[ci].balance-amt)*100)/100;dr[di].balance=Math.round((dr[di].balance+amt)*100)/100;if(cr[ci].balance<0.01)ci++;if(dr[di].balance>-0.01)di++;}
-  const u=cu();
-  const sc=M.filter(m=>m.settled&&m.settlement?.type==='settled').length;
-  const vc=M.filter(m=>m.settlement?.type==='void').length;
-  let dh='';
-  if(sts.length===0) dh='<div class="empty-state"><div class="icon">🤝</div><p>暂无欠款，大家两清！</p></div>';
-  else dh=sts.map(s=>{const mf=u&&s.from===u,mt=u&&s.to===u;return`<div class="debt-item"><span style="font-weight:600;">${s.from}</span><span class="arrow">➜</span><span style="font-weight:600;">${s.to}</span><div class="debt-amount negative" style="margin-left:8px;">¥${Math.round(s.amount)}${mf?'<span style="font-size:10px;color:var(--text2);">(你欠)</span>':''}${mt?'<span style="font-size:10px;color:var(--primary);">(应收)</span>':''}</div></div>`;}).join('');
-  const logs=L.slice(0,20);
-  let lh=logs.length?logs.map(l=>`<div class="bill-item" style="padding:10px 14px;"><div class="match-info"><div class="detail">${l.detail}</div><div style="font-size:10px;color:var(--text2);margin-top:2px;">${l.created_at?new Date(l.created_at).toLocaleString('zh-CN'):''}</div></div></div>`).join(''):'<div class="empty-state"><div class="icon">📭</div><p>暂无结算记录</p></div>';
-  el.innerHTML=`<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📋 结算概况</div><div class="debt-summary"><div class="debt-box"><div class="label">✅ 已结算场次</div><div class="value" style="color:var(--primary);">${sc}</div></div><div class="debt-box"><div class="label">💤 流局场次</div><div class="value" style="color:var(--text2);">${vc}</div></div></div><div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">🔄 结算关系</div>${dh}<div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">📜 结算记录</div>${lh}`;
+function renderGroups(){
+  const el=document.getElementById('groupsContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  // Calculate standings from settled WC matches
+  const standings = {};
+  WC_GROUPS.forEach(g => {
+    standings[g.id] = {};
+    g.teams.forEach(t => {
+      standings[g.id][t] = {pld:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0};
+    });
+  });
+  M.filter(m => m.league==='世界杯' && m.settled && m.home_score!=null).forEach(m => {
+    const grp = WC_TEAM_GROUP[m.home] || WC_TEAM_GROUP[m.away];
+    if(!grp || !standings[grp]) return;
+    const homeTeam = m.home, awayTeam = m.away;
+    if(!standings[grp][homeTeam] || !standings[grp][awayTeam]) return;
+    const hg = m.home_score, ag = m.away_score;
+    standings[grp][homeTeam].pld++; standings[grp][awayTeam].pld++;
+    standings[grp][homeTeam].gf += hg; standings[grp][homeTeam].ga += ag;
+    standings[grp][awayTeam].gf += ag; standings[grp][awayTeam].ga += hg;
+    if(hg > ag) { standings[grp][homeTeam].w++; standings[grp][homeTeam].pts += 3; standings[grp][awayTeam].l++; }
+    else if(hg < ag) { standings[grp][awayTeam].w++; standings[grp][awayTeam].pts += 3; standings[grp][homeTeam].l++; }
+    else { standings[grp][homeTeam].d++; standings[grp][awayTeam].d++; standings[grp][homeTeam].pts++; standings[grp][awayTeam].pts++; }
+  });
+  // Recalculate GD
+  Object.keys(standings).forEach(g => {
+    Object.keys(standings[g]).forEach(t => {
+      standings[g][t].gd = standings[g][t].gf - standings[g][t].ga;
+    });
+  });
+
+  el.innerHTML = '<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🌍 2026世界杯 · 小组赛积分榜</div>' +
+    '<div style="font-size:11px;color:var(--text2);margin-bottom:12px;">🏁 2026.6.11 - 7.19 · 美国/加拿大/墨西哥合办 · 48队12组</div>' +
+    WC_GROUPS.map(g => {
+      const sorted = g.teams.map(t => ({name:t,...standings[g.id][t]})).sort((a,b) => b.pts-a.pts || b.gd-a.gd || b.gf-a.gf);
+      const maxPld = Math.max(...sorted.map(x=>x.pld), 1);
+      return '<div class="group-section"><div class="group-title">Group '+g.id+'</div><table class="group-table"><tr><th style="width:24px;">#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th style="color:var(--gold);">分</th></tr>' +
+        sorted.map((x,i) => '<tr class="'+(maxPld>0&&x.pld>0?'highlight':'')+'"><td class="pos">'+(i+1)+'</td><td><div class="team-cell"><span class="flag">'+(WC_FLAGS[x.name]||'')+'</span>'+x.name+'</div></td><td>'+x.pld+'</td><td>'+x.w+'</td><td>'+x.d+'</td><td>'+x.l+'</td><td>'+x.gf+'</td><td>'+x.ga+'</td><td>'+(x.gd>0?'+':'')+x.gd+'</td><td class="pts-cell">'+x.pts+'</td></tr>').join('') +
+        '</table><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">' +
+        g.teams.map(t => '<span class="btn btn-outline btn-small" style="cursor:pointer;" onclick="openSquad(\''+t+'\')">'+(WC_FLAGS[t]||'')+' '+t+' 阵容</span>').join('') +
+        '</div></div>';
+    }).join('');
 }
 
-function renderAll(){renderMatches();renderBill();renderRank();renderDebt();renderPast();updateUI();}
+function openSquad(teamName){
+  const sq = WC_SQUADS[teamName];
+  if(!sq || !sq.length){showToast('暂未收录 '+teamName+' 的阵容数据');return;}
+  document.getElementById('squadTitle').textContent = (WC_FLAGS[teamName]||'')+' '+teamName+' 阵容';
+  document.getElementById('squadContent').innerHTML =
+    sq.map(p => '<div class="player-item" onclick="openPlayer(\''+teamName.replace(/'/g,"\\'")+'\','+p.num+')"><span class="pnum">'+p.num+'</span><div class="pinfo"><div class="pname">'+p.name+'</div><div class="ppos">'+p.pos+' · '+p.age+'岁</div></div><div class="pclub">'+p.club+'</div><div class="pvalue">'+(p.value||'—')+'</div></div>').join('');
+  document.getElementById('squadModal').classList.add('show');
+}
+function closeSquad(){document.getElementById('squadModal').classList.remove('show');}
+
+function openPlayer(teamName, num){
+  const sq = WC_SQUADS[teamName]; if(!sq) return;
+  const p = sq.find(x=>x.num===num); if(!p) return;
+  document.getElementById('playerContent').innerHTML =
+    '<div class="player-detail-card"><div class="big-avatar">'+(p.pos==='GK'?'🧤':'⚽')+'</div><div class="pd-name">'+(WC_FLAGS[teamName]||'')+' '+p.name+'</div><div class="pd-number">#'+p.num+' · '+p.pos+'</div>' +
+    '<div class="player-detail-grid"><div class="pd-item"><div class="pd-label">年龄</div><div class="pd-value">'+p.age+'岁</div></div>' +
+    '<div class="pd-item"><div class="pd-label">位置</div><div class="pd-value">'+p.pos+'</div></div>' +
+    '<div class="pd-item"><div class="pd-label">俱乐部</div><div class="pd-value">'+p.club+'</div></div>' +
+    '<div class="pd-item"><div class="pd-label">身价</div><div class="pd-value" style="color:var(--gold);">'+(p.value||'—')+'</div></div>' +
+    '<div class="pd-item" style="grid-column:1/-1;"><div class="pd-label">球衣号码</div><div class="pd-value">#'+p.num+'</div></div></div></div>';
+  document.getElementById('squadModal').classList.remove('show');
+  document.getElementById('playerModal').classList.add('show');
+}
+function closePlayer(){document.getElementById('playerModal').classList.remove('show');}
+
+// Modal click-outside close
+document.addEventListener('click', function(e){
+  if(e.target.classList.contains('modal-overlay')){
+    e.target.classList.remove('show');
+  }
+});
+
+function renderAll(){renderMatches();renderBill();renderRank();renderGroups();renderPast();updateUI();}
 
 // ======================== ACTIONS ========================
 async function submitPred(mid){
