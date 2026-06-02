@@ -894,10 +894,7 @@ function openSquad(teamName){
   const coach = WC_COACHES[teamName]||{en:'',cn:''};
   document.getElementById('squadTitle').textContent = (WC_FLAGS[teamName]||'')+' '+teamName;
   document.getElementById('squadContent').innerHTML =
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:10px 12px;background:var(--card2);border-radius:10px;">' +
-    '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:32px;">'+(WC_FLAGS[teamName]||'\u26bd')+'</span><div><div style="font-size:16px;font-weight:700;">'+teamName+'</div><div style="font-size:11px;color:var(--text2);">平均年龄 '+avgAge+'\u5c81 \u00b7 '+sq.length+'\u4eba</div></div></div>' +
-    '<div style="text-align:right;"><div style="font-size:10px;color:var(--text2);">\u4e3b\u6559\u7ec3</div><div style="font-size:13px;font-weight:600;">'+coach.en+'</div><div style="font-size:11px;color:var(--gold);">'+coach.cn+'</div></div></div>' +
-    sq.map(p => '<div class="player-item" onclick="openPlayer(\''+teamName.replace(/'/g,"\\'")+'\','+p.num+')"><span class="pnum">'+p.num+'</span><div class="pinfo"><div class="pname">'+p.name+'</div><div class="ppos">'+(p.cn&&p.cn!=''?p.cn+' \u00b7 ':'')+p.pos+' \u00b7 '+p.age+'\u5c81</div></div><div class="pclub">'+p.club+'</div><div class="pvalue">'+(p.value||'\u2014')+'</div></div>').join('');
+        sq.map(p => '<div class="player-item" onclick="openPlayer(\''+teamName.replace(/'/g,"\\'")+'\','+p.num+')"><span class="pnum">'+p.num+'</span><div class="pinfo"><div class="pname">'+p.name+'</div><div class="ppos">'+(p.cn&&p.cn!=''?p.cn+' \u00b7 ':'')+p.pos+' \u00b7 '+p.age+'\u5c81</div></div><div class="pclub">'+p.club+'</div><div class="pvalue">'+(p.value||'\u2014')+'</div></div>').join('');
   document.getElementById('squadModal').classList.add('show');
 }function closeSquad(){document.getElementById('squadModal').classList.remove('show');}
 
