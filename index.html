@@ -800,11 +800,9 @@ function renderGroups(){
     WC_GROUPS.map(g => {
       const sorted = g.teams.map(t => ({name:t,...standings[g.id][t]})).sort((a,b) => b.pts-a.pts || b.gd-a.gd || b.gf-a.gf);
       const maxPld = Math.max(...sorted.map(x=>x.pld), 1);
-      return '<div class="group-section"><div class="group-title">Group '+g.id+'</div><table class="group-table"><tr><th style="width:24px;">#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th style="color:var(--gold);">分</th></tr>' +
-        sorted.map((x,i) => '<tr class="'+(maxPld>0&&x.pld>0?'highlight':'')+'"><td class="pos">'+(i+1)+'</td><td><div class="team-cell"><span class="flag">'+(WC_FLAGS[x.name]||'')+'</span>'+x.name+'</div></td><td>'+x.pld+'</td><td>'+x.w+'</td><td>'+x.d+'</td><td>'+x.l+'</td><td>'+x.gf+'</td><td>'+x.ga+'</td><td>'+(x.gd>0?'+':'')+x.gd+'</td><td class="pts-cell">'+x.pts+'</td></tr>').join('') +
-        '</table><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">' +
-        g.teams.map(t => '<span class="btn btn-outline btn-small" style="cursor:pointer;" onclick="openSquad(\''+t+'\')">'+(WC_FLAGS[t]||'')+' '+t+' 阵容</span>').join('') +
-        '</div></div>';
+      return '<div class="group-section"><div class="group-title">Group '+g.id+'</div><table class="group-table"><tr><th style="width:24px;">#</th><th>球队</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th style="color:var(--gold);">分</th></tr>' +
+        sorted.map((x,i) => '<tr class="'+(maxPld>0&&x.pld>0?'highlight':'')+'"><td class="pos">'+(i+1)+'</td><td class="team-cell" style="cursor:pointer;" onclick="openSquad(\''+x.name+'\')"><span class="flag">'+(WC_FLAGS[x.name]||'')+'</span>'+x.name+'</td><td style="color:var(--primary);font-weight:600;">'+x.w+'</td><td style="color:var(--blue);font-weight:600;">'+x.d+'</td><td style="color:var(--red);font-weight:600;">'+x.l+'</td><td style="color:var(--primary);font-weight:600;">'+x.gf+'</td><td style="color:var(--red);font-weight:600;">'+x.ga+'</td><td style="color:'+(x.gd>0?'var(--primary)':x.gd<0?'var(--red)':'var(--text2)')+';font-weight:600;">'+(x.gd>0?'+':'')+x.gd+'</td><td class="pts-cell">'+x.pts+'</td></tr>').join('') +
+        '</table></div>';
     }).join('');
 }
 
