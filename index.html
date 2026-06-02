@@ -259,15 +259,6 @@ body {
 
 </div>
 <div id="tabMatches" class="content active">
-  <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;" id="leagueFilters">
-    <button class="btn btn-outline btn-small active" data-league="all">全部</button>
-    <button class="btn btn-outline btn-small" data-league="bet">🎯 已投</button>
-    <button class="btn btn-outline btn-small" data-league="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</button>
-    <button class="btn btn-outline btn-small" data-league="欧战">🏆 欧战</button>
-    <button class="btn btn-outline btn-small" data-league="西甲">🇪🇸 西甲</button>
-    <button class="btn btn-outline btn-small" data-league="中超">🇨🇳 中超</button>
-    <button class="btn btn-outline btn-small" data-league="世界杯">🌍 世界杯</button>
-  </div>
   <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
   <div class="admin-toggle"><label class="switch"><input type="checkbox" id="adminSwitch"><span class="slider"></span></label><label for="adminSwitch">管理员模式</label></div>
   <div class="admin-panel" id="adminPanel">
@@ -716,8 +707,7 @@ function gs(m){
 
 function renderMatches(){
   const el=document.getElementById('matchList'); if(!loaded) return;
-  const lg=document.querySelector('#leagueFilters .active')?.dataset?.league||'all';
-  const u=cu(); let f=M; if(lg==='欧战') f=f.filter(m=>m.league==='欧冠'||m.league==='欧联'||m.league==='欧协联'); else if(lg==='bet') f=f.filter(m=>u&&getPred(m.id,u)); else if(lg!=='all') f=f.filter(m=>m.league===lg);
+  const u=cu(); let f=M;
   f=f.filter(m=>m.date>=Date.now()-PAST_CUTOFF);
   f.sort((a,b)=>a.date-b.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';return;}
@@ -749,7 +739,7 @@ function renderMatches(){
     else if(p&&!isP) act=`<div class="stake-row"><span class="stake-label">金额</span><div class="stake-btns" id="stk_${m.id}">${[10,15,20,25,30].map(v=>'<span class="stake-btn'+(v===(m.settlement?.stakes?.[u]||m.stake||10)?' active':'')+'" data-stake="'+v+'" onclick="selectStake(\''+m.id+'\','+v+')">¥'+v+'</span>').join('')}</div><button class="btn btn-primary btn-small" onclick="submitPred('${m.id}')">修改预测</button></div>`;
     else if(p&&!m.home_score) act=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${p.home_score}:${p.away_score}</span>`;
     else if(!isAdmin && !m.home_score && Date.now()>m.date) act=`<span style="font-size:11px;color:var(--text2);">⏳ 等待管理员录入比分</span>`;
-    return `<div class="match-card"><div class="match-header"><span class="league-badge ${m.league}">${m.league}</span><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span><span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${pi}${np}${act}</div>`;
+    return `<div class="match-card"><div class="match-header"><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span><span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);margin-left:3px;">${WC_TEAM_GROUP[m.home]||''} ${WC_RANK[m.home]||''}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);margin-left:3px;">${WC_TEAM_GROUP[m.away]||''} ${WC_RANK[m.away]||''}</span></div></div>${wi}${pi}${np}${act}</div>`;
   }).join('');
 }
 
@@ -776,7 +766,7 @@ function renderPast(){
     let act='';
     if(isAdmin&&m.settled) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}_p" value="${m.home_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}_p" value="${m.away_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="adminEditResultPast('${m.id}')">修改</button></div>`;
     else if(isAdmin&&!m.home_score) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}_p" placeholder="主" style="width:36px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}_p" placeholder="客" style="width:36px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="enterResultPast('${m.id}')">录入比分</button></div>`;
-    return `<div class="match-card"><div class="match-header"><span class="league-badge 世界杯">🌍 世界杯</span><span class="match-date" style="color:var(--gold);">${dtStr}</span><span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span></div></div>${wi}${pi}${act}</div>`;
+    return `<div class="match-card"><div class="match-header"><span class="match-date" style="color:var(--gold);">${dtStr}</span><span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="logo">${te(m.home)}</span><span class="name">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);margin-left:3px;">${WC_TEAM_GROUP[m.home]||''} ${WC_RANK[m.home]||''}</span></div>${rd}<div class="team away"><span class="logo">${te(m.away)}</span><span class="name">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);margin-left:3px;">${WC_TEAM_GROUP[m.away]||''} ${WC_RANK[m.away]||''}</span></div></div>${wi}${pi}${act}</div>`;
   }).join('');
 }
 
@@ -1201,6 +1191,8 @@ document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
+
+
 
 
 
