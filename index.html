@@ -345,7 +345,7 @@ async function sbPatch(table, data) {
 async function ft(url,opts){return Promise.race([fetch(url,opts),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))]);}
 
 // ======================== CONSTANTS ========================
-const USERS = ['老章','大毛','王彬','王玺','三瓶','糖糖','二红','隔离','Stephon'];
+const USERS = ['老章','大毛','王彬','王玺','三瓶','糖糖','二红','隔离'];
 const COLORS = ['#00e676','#448aff','#ffd740','#ff5252','#ab47bc','#26c6da','#ff7043','#7e57c2'];
 const TEAMS = {
   阿森纳:['🎯','阿森纳'],切尔西:['🦁','切尔西'],曼城:['💙','曼城'],利物浦:['🔴','利物浦'],
