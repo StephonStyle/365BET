@@ -293,7 +293,7 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.1.01 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.1.02 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1260,13 +1260,14 @@ function renderBill(){
 
 function renderRank(){
   const el=document.getElementById('rankContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
-  const al=USERS.map((n,i)=>{const s=getStats(n);return{id:i,name:n,...s};}).sort((a,b)=>b.balance-a.balance);
+  const BASE=10000;
+  const al=USERS.map((n,i)=>{const s=getStats(n);return{id:i,name:n,pts:BASE+Math.round(s.balance),wins:s.wins,losses:s.losses};}).sort((a,b)=>b.pts-a.pts);
   const u=cu();
-  el.innerHTML='<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 消保委排名</div>'+al.map((x,i)=>{
+  el.innerHTML='<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 积分排名</div>'+al.map((x,i)=>{
     const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'normal';
     const md=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
     const me=u&&x.name===u;
-    return `<div class="rank-card" style="${me?'border-color:var(--primary-dim);':''}"><div class="rank-num ${rc}">${md}</div><div class="rank-info"><div class="name">${x.name}${me?'<span style="font-size:10px;color:var(--primary);">(你)</span>':''}</div><div class="stats">🏆 赢 ${x.wins}次 · 💸 输 ${x.losses}次</div></div><div class="rank-score"><div class="pts">${x.balance>=0?'+':''}¥${Math.round(Math.abs(x.balance))}</div><div class="label">盈亏</div></div></div>`;
+    return `<div class="rank-card" style="${me?'border-color:var(--primary-dim);':''}"><div class="rank-num ${rc}">${md}</div><div class="rank-info"><div class="name">${x.name}${me?'<span style="font-size:10px;color:var(--primary);">(你)</span>':''}</div><div class="stats">🏆 赢 ${x.wins}次 · 💸 输 ${x.losses}次</div></div><div class="rank-score"><div class="pts">${x.pts}</div><div class="label">积分</div></div></div>`;
   }).join('');
 }
 
