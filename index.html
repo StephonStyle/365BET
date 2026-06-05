@@ -301,7 +301,7 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.1.29 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.1.30 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1365,7 +1365,9 @@ function renderGroups(){
 }
 
 function openSquad(teamName){
-  const sq = WC_SQUADS[teamName];
+  var tn = teamName;
+  if(tn==='Curaçao') tn='Curacao';
+  const sq = WC_SQUADS[tn];
   if(!sq || !sq.length){showToast('\u6682\u672a\u6536\u5f55 '+teamName+' \u7684\u9635\u5bb9\u6570\u636e');return;}
   const avgAge = sq.length ? Math.round(sq.reduce((s,p)=>s+p.age,0)/sq.length) : 0;
   const coach = WC_COACHES[teamName]||{en:'',cn:''};
