@@ -1747,7 +1747,7 @@ function subPredModal(){
     if(e){url+='?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u);fetch(url,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});}
     else{fetch(url,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(Object.assign({match_id:mid,user_name:u,created_at:new Date().toISOString()},body))});P.push({match_id:mid,user_name:u,pick:pick,home_score:null,away_score:null});}
     if(e){var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});if(idx>=0)P[idx].pick=pick;}else{P.push({match_id:mid,user_name:u,pick:pick,home_score:null,away_score:null});}
-    showToast('预测已提交');
+    showToast('预测已提交');loadData();
     var ss=document.querySelector('#predModal .stake-btn.active');if(ss){ss.classList.remove('active');ss.classList.add('stake-set');}
     var sp=document.querySelector('#predModal .wdl-btn.active');if(sp){sp.classList.remove('active');sp.classList.add('pick-set');}
     // Update display with prediction result
