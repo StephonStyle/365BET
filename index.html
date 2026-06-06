@@ -165,7 +165,6 @@ body {
 .user-option.selected { border-color:var(--primary); background:var(--primary-dim); }
 .user-option .avatar-big { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; }
 .user-option .un { font-size:13px; font-weight:600; }
-
 .admin-row { display:flex; gap:8px; }
 .admin-row input { flex:1; }
 .stake-option input:checked+span { background:var(--gold)!important; color:#000!important; border-color:var(--gold)!important; }
@@ -227,7 +226,6 @@ body {
 .player-detail-grid .pd-item .pd-label { font-size:10px; color:var(--text2); }
 .player-detail-grid .pd-item .pd-value { font-size:14px; font-weight:700; margin-top:2px; }
 
-
 .loading { text-align:center; padding:60px 20px; color:var(--text2); }
 .loading .spin { display:inline-block; width:32px; height:32px; border:3px solid var(--card2); border-top-color:var(--primary); border-radius:50%; animation: spin .8s linear infinite; margin-bottom:12px; }
 @keyframes spin { to{transform:rotate(360deg)} }
@@ -242,16 +240,6 @@ body {
   100% { background: transparent; box-shadow: none; }
 }
 .group-table tr.flash-row { animation: rowFlash 1.5s ease-out; }
-
-
-.wdl-wrap { display:flex; gap:4px; justify-content:center; margin:1px 0; }
-.wdl-col { display:flex; flex-direction:column; align-items:center; gap:1px; flex:0 0 72px; }
-.wdl-btn { width:100%; text-align:center; padding:1px 0; border-radius:3px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:9px; font-weight:600; transition:all .15s; }
-.wdl-btn.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
-.wdl-btn[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
-.wdl-btn[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
-.wdl-btn[data-pick="A"]:hover { border-color:var(--red); color:var(--red); background:var(--red-dim); }
-.odds-text { font-size:9px; color:var(--text2); font-weight:400; line-height:1.2; }
 
 </style>
 </head>
@@ -270,14 +258,7 @@ body {
 </div>
 <div id="tabMatches" class="content active">
   <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
-  <div class="modal-overlay" id="adminModal">
-    <div class="modal" style="max-width:420px;">
-      <button class="modal-close" onclick="document.getElementById('adminModal').classList.remove('show')">&#10005;</button>
-      <h2>&#128736; 管理员</h2>
-      <div id="adminContent" style="min-height:80px;max-height:60vh;overflow-y:auto;font-size:13px;color:var(--text2);">内容待定</div>
-    </div>
-  </div>
-  <div class="modal-overlay" id="pwdModal">
+    <div class="modal-overlay" id="pwdModal">
     <div class="modal" style="max-width:300px;">
       <h2 style="font-size:16px;margin-bottom:12px;">&#128274; 管理员密码</h2>
       <input type="password" id="pwdInput" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:16px;text-align:center;outline:none;margin-bottom:16px;box-sizing:border-box;">
@@ -285,6 +266,13 @@ body {
         <button class="btn btn-primary" style="flex:1;" onclick="submitPwd()">确定</button>
         <button class="btn" style="flex:1;background:var(--card2);color:var(--text2);" onclick="cancelPwd()">取消</button>
       </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal" style="max-width:420px;">
+      <button class="modal-close" onclick="document.getElementById('adminModal').classList.remove('show')">&#10005;</button>
+      <h2>&#128736; 管理员</h2>
+      <div id="adminContent" style="min-height:80px;max-height:60vh;overflow-y:auto;font-size:13px;color:var(--text2);">内容待定</div>
     </div>
   </div></div>
 
@@ -307,7 +295,15 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.25 · 365BET</div>
+<div class="modal-overlay" id="predModal">
+  <div class="modal" style="max-width:400px;">
+    <button class="modal-close" onclick="closePredModal()">&#10005;</button>
+    <h2 id="predModalTitle"></h2>
+    <div id="predModalContent"></div>
+  </div>
+</div>
+
+<div class="footer">© 2026-2030 Stephon · v2.2.50 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1081,8 +1077,7 @@ async function settleMatch(m){
   if(m.home_score==null||m.home_score==null||m.away_score==null||m.settled) return;
   const ps=getPreds(m.id);
   const predictors=ps.map(p=>p.user_name);
-  const result=m.home_score>m.away_score?'H':m.home_score<m.away_score?'A':'D';
-  const wnrs=ps.filter(p=>{if(p.pick)return p.pick===result;return p.home_score===m.home_score&&p.away_score===m.away_score;}).map(p=>p.user_name);
+  const wnrs=ps.filter(p=>p.home_score===m.home_score&&p.away_score===m.away_score).map(p=>p.user_name);
   const losrs=predictors.filter(n=>!wnrs.includes(n));
   let s;
   const defStake=m.stake||10;
@@ -1227,11 +1222,11 @@ function renderMatches(){
     if(m.home_score!=null&&m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
     else if(lh!==undefined&&la!==undefined&&!m.settled) rd=`<div class="match-score" style="color:var(--gold);">${lh} - ${la}<span style="display:block;font-size:10px;color:var(--red);font-weight:600;">🔴 LIVE</span></div>`;
     else if(m.home_score!=null&&isAdmin&&!m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
-    else if(cP) rd=`<div class="match-score-input"><div class="wdl-wrap" id="wdl_${m.id}"><div class="wdl-col"><span class="wdl-btn" data-pick="H" onclick="selectWDL('${m.id}','H')">胜</span><input type="text" inputmode="decimal" class="odds-box" id="odds_h_${m.id}" value="${m.odds_h||2.0}" ${isAdmin?'':'readonly'}></div><div class="wdl-col"><span class="wdl-btn" data-pick="D" onclick="selectWDL('${m.id}','D')">平</span><input type="text" inputmode="decimal" class="odds-box" id="odds_d_${m.id}" value="${m.odds_d||2.0}" ${isAdmin?'':'readonly'}></div><div class="wdl-col"><span class="wdl-btn" data-pick="A" onclick="selectWDL('${m.id}','A')">负</span><input type="text" inputmode="decimal" class="odds-box" id="odds_a_${m.id}" value="${m.odds_a||2.0}" ${isAdmin?'':'readonly'}></div></div></div>`;
-    else if(p&&!isP) rd=`<div class="match-score-input"><div class="wdl-wrap" id="wdl_${m.id}"><div class="wdl-col"><span class="wdl-btn ${p.pick==='H'?'active':''}" data-pick="H" onclick="selectWDL('${m.id}','H')">胜</span><input type="text" inputmode="decimal" class="odds-box" id="odds_h_${m.id}" value="${m.odds_h||2.0}" ${isAdmin?'':'readonly'}></div><div class="wdl-col"><span class="wdl-btn ${p.pick==='D'?'active':''}" data-pick="D" onclick="selectWDL('${m.id}','D')">平</span><input type="text" inputmode="decimal" class="odds-box" id="odds_d_${m.id}" value="${m.odds_d||2.0}" ${isAdmin?'':'readonly'}></div><div class="wdl-col"><span class="wdl-btn ${p.pick==='A'?'active':''}" data-pick="A" onclick="selectWDL('${m.id}','A')">负</span><input type="text" inputmode="decimal" class="odds-box" id="odds_a_${m.id}" value="${m.odds_a||2.0}" ${isAdmin?'':'readonly'}></div></div></div>`;
-    else if(p) rd=`<div class="match-score"><span class="vs">VS</span></div>`;
+    else if(cP) rd=`<button class="btn btn-primary btn-small" style="padding:4px 16px;font-size:12px;white-space:nowrap;" onclick="showPredModal('${m.id}')">预测</button>`;
+    else if(p&&!isP) rd=`<button class="btn btn-primary btn-small" style="padding:4px 16px;font-size:12px;white-space:nowrap;" onclick="showPredModal('${m.id}')">✅ 已预测</button>`;
+    else if(p) rd=`<button class="btn btn-primary btn-small" style="padding:4px 16px;font-size:12px;white-space:nowrap;" onclick="showPredModal('${m.id}')">查看</button>`;
     else rd=`<div class="match-score"><span class="vs">VS</span></div>`;
-    let pi='';const mp=getPreds(m.id);if(mp.length>0){const wl=m.settled&&m.settlement?m.settlement.winners:[];const stks=m.settlement?.stakes||{};const ds=m.stake||10;pi='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 预测详情<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:4px;">'+mp.map(x=>{const pt=x.created_at?new Date(x.created_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}):'';const sk=stks[x.user_name]||ds;const iw=wl.length&&wl.includes(x.user_name);const imp=(lh!==undefined&&la!==undefined)&&(x.home_score<lh||x.away_score<la);return'<span style="background:'+(iw?'rgba(255,50,50,0.22)':'var(--card2)')+';padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;position:relative;"><span style="font-weight:600;font-size:11px;">'+x.user_name+' <span style="font-weight:800;font-size:13px;color:var(--text);">'+(x.pick?{H:'胜',D:'平',A:'负'}[x.pick]:x.home_score+':'+x.away_score)+'</span></span><div style="display:flex;gap:2px;font-size:10px;"><span style="'+(sk>=30?'color:var(--red);font-weight:800;':sk>=15?'color:var(--red);':'color:var(--text2);')+'">¥'+sk+'</span><span style="color:var(--text2);"> · '+pt+'</span></div>'+(imp?'<span style="position:absolute;top:-4px;right:2px;font-size:20px;font-weight:900;color:#ff1744;opacity:0.8;line-height:1;text-shadow:0 0 4px rgba(255,23,68,0.4);">✗</span>':'')+'</span>';}).join('')+'</div></div>';}
+    let pi='';const mp=getPreds(m.id);if(mp.length>0){const wl=m.settled&&m.settlement?m.settlement.winners:[];const stks=m.settlement?.stakes||{};const ds=m.stake||10;pi='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 预测详情<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:4px;">'+mp.map(x=>{const pt=x.created_at?new Date(x.created_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}):'';const sk=stks[x.user_name]||ds;const iw=wl.length&&wl.includes(x.user_name);const imp=(lh!==undefined&&la!==undefined)&&(x.home_score<lh||x.away_score<la);return'<span style="background:'+(iw?'rgba(255,50,50,0.22)':'var(--card2)')+';padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;position:relative;"><span style="font-weight:600;font-size:11px;">'+x.user_name+' <span style="font-weight:800;font-size:13px;color:var(--text);">'+x.home_score+':'+x.away_score+'</span></span><div style="display:flex;gap:2px;font-size:10px;"><span style="'+(sk>=30?'color:var(--red);font-weight:800;':sk>=15?'color:var(--red);':'color:var(--text2);')+'">¥'+sk+'</span><span style="color:var(--text2);"> · '+pt+'</span></div>'+(imp?'<span style="position:absolute;top:-4px;right:2px;font-size:20px;font-weight:900;color:#ff1744;opacity:0.8;line-height:1;text-shadow:0 0 4px rgba(255,23,68,0.4);">✗</span>':'')+'</span>';}).join('')+'</div></div>';}
     let np='';if(!m.home_score&&Date.now()<m.date){const nl=u?USERS.filter(n=>!getPred(m.id,n)&&n!==u):USERS.filter(n=>!getPred(m.id,n));if(nl.length>0)np='<div style="font-size:10px;color:var(--text2);margin-top:6px;display:flex;align-items:center;gap:3px;flex-wrap:wrap;"><span>⏳ 未预测:</span>'+nl.map(n=>'<span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:'+COLORS[USERS.indexOf(n)]+'33;color:'+COLORS[USERS.indexOf(n)]+';font-size:10px;align-items:center;justify-content:center;font-weight:700;">'+ac(n)+'</span>').join('')+'</div>';}
     let act='';
     if(isAdmin&&m.settled) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}" value="${m.home_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}" value="${m.away_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="adminEditResult('${m.id}')">修改</button></div>`;
@@ -1239,7 +1234,7 @@ function renderMatches(){
     else if(isAdmin&&!m.home_score&&isP) act=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"><div style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;color:var(--gold);font-weight:600;">🔴</span><input type="number" min="0" max="20" id="lvh_${m.id}" value="${lh!==undefined?lh:''}" placeholder="-" style="width:32px;padding:2px;border-radius:6px;border:1px solid var(--gold-dim);background:var(--card2);color:var(--gold);text-align:center;font-size:13px;font-weight:600;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="lva_${m.id}" value="${la!==undefined?la:''}" placeholder="-" style="width:32px;padding:2px;border-radius:6px;border:1px solid var(--gold-dim);background:var(--card2);color:var(--gold);text-align:center;font-size:13px;font-weight:600;"><button class="btn btn-small" style="background:var(--gold);color:#000;font-weight:600;font-size:11px;padding:3px 10px;" onclick="updateLiveScore('${m.id}')">实时</button></div><div style="display:flex;align-items:center;gap:5px;"><input type="number" min="0" max="20" id="rh_${m.id}" placeholder="终" style="width:32px;padding:2px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:13px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}" placeholder="终" style="width:32px;padding:2px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:13px;"><button class="btn btn-gold btn-small" style="font-size:11px;padding:3px 10px;" onclick="enterResult('${m.id}')">终场</button></div></div>`;
     else if(cP) act=`<div class="stake-row"><span class="stake-label">金额</span><div class="stake-btns" id="stk_${m.id}">${[10,15,20,25,30].map(v=>'<span class="stake-btn" data-stake="'+v+'" onclick="selectStake(\''+m.id+'\','+v+')">¥'+v+'</span>').join('')}</div><button class="btn btn-primary btn-small" onclick="submitPred('${m.id}')">提交</button></div>`;
     else if(p&&!isP) act=`<div class="stake-row"><span class="stake-label">金额</span><div class="stake-btns" id="stk_${m.id}">${[10,15,20,25,30].map(v=>'<span class="stake-btn'+(v===(m.settlement?.stakes?.[u]||m.stake||10)?' active':'')+'" data-stake="'+v+'" onclick="selectStake(\''+m.id+'\','+v+')">¥'+v+'</span>').join('')}</div><button class="btn btn-primary btn-small" onclick="submitPred('${m.id}')">修改预测</button></div>`;
-    else if(p&&!m.home_score) act=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${p.pick==='H'?'胜':p.pick==='D'?'平':'负'}${p.pick?' · 赔率 '+(m['odds_'+p.pick.toLowerCase()]||2.0):''}</span><button class="btn btn-small" style="background:var(--red);color:#fff;font-size:10px;padding:2px 6px;margin-left:4px;" onclick="deleteMyPred('${m.id}')">删除</button>`;
+    else if(p&&!m.home_score) act=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${p.home_score}:${p.away_score}</span><button class="btn btn-small" style="background:var(--red);color:#fff;font-size:10px;padding:2px 6px;margin-left:4px;" onclick="deleteMyPred('${m.id}')">删除</button>`;
     else if(!isAdmin && !m.home_score && Date.now()>m.date) act=`<span style="font-size:11px;color:var(--text2);">⏳ 等待管理员录入比分</span>`;
     return `<div class="match-card"><div class="match-header"><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span>${(grp=WC_TEAM_GROUP[m.home]||WC_TEAM_GROUP[CN_RANK[m.home]]||"")?'<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+grp+'组</span>':''}<span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.home)}');">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''?''+(WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''):''}</span></div>${rd}<div class="team away"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.away)}');">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''?''+(WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''):''}</span></div></div>${wi}${pi}${np}${act}</div>`;
   }).join('');
@@ -1448,40 +1443,16 @@ document.addEventListener('click', function(e){
   }
 });
 
-function renderAll(){renderMatches();renderBill();renderRank();renderGroups();renderPast();updateUI();}
+function renderAll(){try{renderMatches();}catch(e){}try{renderBill();}catch(e){}try{renderRank();}catch(e){}try{renderGroups();}catch(e){}try{renderPast();}catch(e){}try{updateUI();}catch(e){}}
 
 // ======================== ACTIONS ========================
-var SELECTED_WDL={};
-function selectWDL(mid,pick){
-  SELECTED_WDL[mid]=pick;
-  document.querySelectorAll('#wdl_'+mid+' .wdl-btn').forEach(function(b){b.classList.remove('active');});
-  var el=document.querySelector('#wdl_'+mid+' .wdl-btn[data-pick="'+pick+'"]');
-  if(el)el.classList.add('active');
-}
-async function editOdds(mid){
-  if(!isAdmin) return;
-  const m=M.find(x=>x.id===mid); if(!m) return;
-  const oh=prompt('胜赔率 (当前: '+m.odds_h+')',m.odds_h);
-  if(oh===null) return;
-  const od=prompt('平赔率 (当前: '+m.odds_d+')',m.odds_d);
-  if(od===null) return;
-  const oa=prompt('负赔率 (当前: '+m.odds_a+')',m.odds_a);
-  if(oa===null) return;
-  const ohf=parseFloat(oh),odf=parseFloat(od),oaf=parseFloat(oa);
-  if(isNaN(ohf)||isNaN(odf)||isNaN(oaf)){showToast('请输入有效数字');return;}
-  await ft(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
-    method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-    body:JSON.stringify({odds_h:ohf,odds_d:odf,odds_a:oaf})
-  });
-  m.odds_h=ohf;m.odds_d=odf;m.odds_a=oaf;
-  renderAll();showToast('赔率已保存');
-}
 async function submitPred(mid){
   const u=cu(); if(!u){showToast('请先选择身份');showUserSelect();return;}
   const m=M.find(x=>x.id===mid); if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
   if(Date.now()>m.date-PREDICT_CUTOFF){showToast('预测已截止（比赛开始前1分钟停止预测）');return;}
-  var pick=SELECTED_WDL[mid];
-  if(!pick){showToast('请选择 胜/平/负');return;}
+  const h=parseInt(document.getElementById('ph_'+mid)?.value);
+  const a=parseInt(document.getElementById('pa_'+mid)?.value);
+  if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
   const skBtn=document.querySelector('#stk_'+mid+' .stake-btn.active');
   if(!skBtn){showToast('请选择金额');return;}
   const cs=parseInt(skBtn.dataset.stake);
@@ -1490,7 +1461,7 @@ async function submitPred(mid){
     if(existing){
       await ft(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{
         method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-        body:JSON.stringify({pick:pick,home_score:null,away_score:null})
+        body:JSON.stringify({home_score:h,away_score:a})
       });
       existing.home_score=h;existing.away_score=a;
     }else{
@@ -1659,18 +1630,67 @@ function updateUI(){
 
 function showToast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
 
+
+var PRED_CURRENT_MID=null;
+function showPredModal(mid){
+  var m=M.find(function(x){return x.id===mid;}); if(!m) return;
+  var u=cu(); if(!u){showToast('请先选择身份');showUserSelect();return;}
+  var p=getPred(mid,u);
+  PRED_CURRENT_MID=mid;
+  document.getElementById('predModalTitle').textContent=m.home+' vs '+m.away;
+  var skHtml=function(sel){return [10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===sel?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('');};
+  var wdlStake=p?10:10;
+  document.getElementById('predModalContent').innerHTML=
+    '<div style="font-size:15px;font-weight:700;margin:6px 0 8px;text-align:center;">胜平负</div>'+
+    '<div class="wdl-wrap" style="margin-bottom:6px;"><div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWdl(this,&#39;H&#39;)">胜</span></div>'+
+    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWdl(this,&#39;D&#39;)">平</span></div>'+
+    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWdl(this,&#39;A&#39;)">负</span></div></div>'+
+    '<div class="stake-row" style="margin-bottom:6px;"><span class="stake-label">积分</span><div class="stake-btns" id="stk_'+mid+'">'+skHtml(wdlStake)+'</div><button class="btn btn-primary" onclick="subPredModal()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
+    '<div style="font-size:13px;font-weight:600;color:var(--text2);margin-top:4px;text-align:center;">比分预测功能待完善</div>';
+  document.getElementById('predModal').classList.add('show');
+}
+function closePredModal(){document.getElementById('predModal').classList.remove('show');}
+function selWdl(btn,p){
+  var parent=btn.closest('.wdl-wrap')||btn.parentNode;
+  parent.querySelectorAll('.wdl-btn').forEach(function(b){b.classList.remove('active','pick-set');});
+  btn.classList.add('active');
+}
+function selStake(btn,v){
+  btn.closest('.stake-row').querySelectorAll('.stake-btn').forEach(function(b){b.classList.remove('active','stake-set');});
+  btn.classList.add('active');
+}
+function subPredModal(){
+  var mid=PRED_CURRENT_MID; if(!mid)return;
+  var pick=document.querySelector('#predModal .wdl-btn.active')?.dataset?.pick;
+  if(!pick){showToast('请选择胜平负');return;}
+  var sk=document.querySelector('#predModal .stake-btn.active')?.dataset?.stake;
+  if(!sk){showToast('请选择积分');return;}
+  var u=cu();if(!u)return;
+  var m=M.find(function(x){return x.id===mid;});if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
+  var e=getPred(mid,u);
+  var body={pick:pick,home_score:null,away_score:null};
+  try{
+    var url=SB_URL+'/rest/v1/predictions';
+    if(e){url+='?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u);fetch(url,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});}
+    else{fetch(url,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(Object.assign({match_id:mid,user_name:u,created_at:new Date().toISOString()},body))});}
+    closePredModal();showToast('预测已提交');loadData();
+    var ss=document.querySelector('#predModal .stake-btn.active');if(ss){ss.classList.remove('active');ss.classList.add('stake-set');}
+    var sp=document.querySelector('#predModal .wdl-btn.active');if(sp){sp.classList.remove('active');sp.classList.add('pick-set');}
+  }catch(e){showToast('提交失败');}
+}
 const ADMIN_PWD='321';
 function toggleAdmin(){
-  if(!isAdmin){const p=prompt('请输入管理员密码:');if(p!==ADMIN_PWD){showToast('密码错误');return;}}
-  isAdmin=!isAdmin;
-  document.getElementById('adminSwitch').checked=isAdmin;
-  document.getElementById('adminPanel').classList.toggle('show',isAdmin);
-  renderAll();
+  if(!isAdmin){document.getElementById('pwdModal').classList.add('show');document.getElementById('pwdInput').value='';document.getElementById('pwdInput').focus();document.getElementById('pwdInput').onkeydown=function(e){if(e.key==='Enter')submitPwd();};return;}
+  isAdmin=false;document.getElementById('adminModal').classList.remove('show');renderAll();
 }
-
-// ======================== REAL-TIME POLL ========================
-let pollTimer = null;
-
+function submitPwd(){
+  var v=document.getElementById('pwdInput').value;
+  if(v!==ADMIN_PWD){showToast('密码错误');document.getElementById('pwdInput').value='';return;}
+  document.getElementById('pwdModal').classList.remove('show');
+  isAdmin=true;document.getElementById('adminModal').classList.add('show');
+}
+function cancelPwd(){document.getElementById('pwdModal').classList.remove('show');}
+function closeAdmin(){document.getElementById('adminModal').classList.remove('show');isAdmin=false;renderAll();}
 function saveInputs(){
   const saved={};
   document.querySelectorAll('.match-score-input input').forEach(el=>{saved[el.id]=el.value;});
