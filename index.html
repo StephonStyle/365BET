@@ -294,6 +294,17 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
+<div class="modal-overlay" id="pwdModal">
+  <div class="modal" style="max-width:300px;">
+    <h2 style="font-size:16px;margin-bottom:12px;">&#128274; 管理员密码</h2>
+    <input type="password" id="pwdInput" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:16px;text-align:center;outline:none;margin-bottom:16px;box-sizing:border-box;">
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="submitPwd()">确定</button>
+      <button class="btn" style="flex:1;background:var(--card2);color:var(--text2);" onclick="cancelPwd()">取消</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="adminModal">
   <div class="modal" style="max-width:420px;">
     <button class="modal-close" onclick="document.getElementById('adminModal').classList.remove('show')">&#10005;</button>
@@ -302,7 +313,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.27 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.28 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1671,9 +1682,16 @@ function showToast(m){const t=document.createElement('div');t.className='toast';
 
 const ADMIN_PWD='321';
 function toggleAdmin(){
-  if(!isAdmin){const p=prompt('请输入管理员密码:');if(p!==ADMIN_PWD){showToast('密码错误');return;}isAdmin=true;}else{isAdmin=false;document.getElementById('adminModal').classList.remove('show');renderAll();return;}
-  document.getElementById('adminModal').classList.add('show');
+  if(!isAdmin){document.getElementById('pwdModal').classList.add('show');document.getElementById('pwdInput').value='';document.getElementById('pwdInput').focus();document.getElementById('pwdInput').onkeydown=function(e){if(e.key==='Enter')submitPwd();};return;}
+  isAdmin=false;document.getElementById('adminModal').classList.remove('show');renderAll();
 }
+function submitPwd(){
+  var v=document.getElementById('pwdInput').value;
+  if(v!==ADMIN_PWD){showToast('密码错误');document.getElementById('pwdInput').value='';return;}
+  document.getElementById('pwdModal').classList.remove('show');
+  isAdmin=true;document.getElementById('adminModal').classList.add('show');
+}
+function cancelPwd(){document.getElementById('pwdModal').classList.remove('show');}
 
 // ======================== REAL-TIME POLL ========================
 let pollTimer = null;
