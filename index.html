@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.70 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.71 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1692,9 +1692,9 @@ function showPredModal(mid){
   }
   document.getElementById('predModalContent').innerHTML=
     
-    '<div class="wdl-wrap" style="margin-bottom:10px;"><div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWdl(this,\'H\')">胜</span><input type="text" style="display:block;width:100%;text-align:center;font-size:13px;color:#FFD700;font-weight:700;background:transparent;border:none;cursor:text;padding:2px 0;" value="'+oh+'" '+(isAdmin?'':'readonly')+'></div>'+
-    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWdl(this,\'D\')">平</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+odv+'</span></div>'+
-    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWdl(this,\'A\')">负</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+oa+'</span></div></div>'+
+    '<div class="wdl-wrap" style="margin-bottom:10px;"><div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWdl(this,\'H\')">胜</span><input type="text" style="display:block;width:100%;text-align:center;font-size:13px;color:#FFD700;font-weight:700;background:transparent;border-bottom:1px solid '+(isAdmin?'var(--gold-dim)':'transparent')+';cursor:text;padding:2px 0;" value="'+oh+'" '+(isAdmin?'':'readonly')+' onchange="fetch(SB_URL+\'/rest/v1/matches?id=eq.\'+mid,{method:\'PATCH\',headers:{\'apikey\':SB_KEY,\'Authorization\':\'Bearer \'+SB_KEY,\'Content-Type\':\'application/json\',\'Prefer\':\'return=minimal\'},body:JSON.stringify({odds_h:parseFloat(this.value)||2.0})}).catch(function(e){})"></div>'+
+    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWdl(this,\'D\')">平</span><input type="text" style="display:block;width:100%;text-align:center;font-size:13px;color:#FFD700;font-weight:700;background:transparent;border:none;cursor:text;padding:2px 0;" value="'+odv+'" '+(isAdmin?'':'readonly')+'></div>'+
+    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWdl(this,\'A\')">负</span><input type="text" style="display:block;width:100%;text-align:center;font-size:13px;color:#FFD700;font-weight:700;background:transparent;border:none;cursor:text;padding:2px 0;" value="'+oa+'" '+(isAdmin?'':'readonly')+'></div></div>'+
     '<div class="stake-row" style="margin-bottom:8px;">'+skHtml(wdlStake,'wdl_'+mid)+'</div>'+
     '<div id="wdlResult" style="min-height:36px;">'+wdlPred+'</div>'+
     
