@@ -348,7 +348,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.43 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.44 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1641,6 +1641,7 @@ document.addEventListener('click', function(e){
 });
 
 function renderAll(){
+  document.getElementById('groupsContent').innerHTML='<div style="padding:10px;color:var(--gold);font-size:12px;">renderAll被调用</div>';
   try{renderMatches();}catch(e){console.error('Matches:',e);}
   try{renderBill();}catch(e){console.error('Bill:',e);var el=document.getElementById('billContent');if(el)el.innerHTML='<div style="padding:20px;color:var(--red);text-align:center;">账单加载错误</div>';}
   try{renderRank();}catch(e){console.error('Rank:',e);var el=document.getElementById('rankContent');if(el)el.innerHTML='<div style="padding:20px;color:var(--red);text-align:center;">排行加载错误</div>';}
