@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.75 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.76 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1717,7 +1717,7 @@ function showPredModal(mid){
   var score=el.querySelector('.s-lg').textContent;
   var sk=document.querySelector('#scr_'+mid+' .stake-btn.active')?.dataset?.stake;
   if(!sk){showToast('请选择积分');return;}
-  showToast('比分预测已提交');
+  
   var scrDiv=document.getElementById('scrResult');
   if(scrDiv){scrDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">已经预测 '+sk+'分 '+score+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred('+PRED_CURRENT_MID+')">删除</button></div>';}
 }
@@ -1747,7 +1747,7 @@ function subPredModal(){
     if(e){url+='?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u);fetch(url,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});}
     else{fetch(url,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(Object.assign({match_id:mid,user_name:u,created_at:new Date().toISOString()},body))});P.push({match_id:mid,user_name:u,pick:pick,home_score:null,away_score:null});}
     if(e){var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});if(idx>=0)P[idx].pick=pick;}else{P.push({match_id:mid,user_name:u,pick:pick,home_score:null,away_score:null});}
-    showToast('预测已提交');renderAll();loadData();
+    renderAll();loadData();
     var ss=document.querySelector('#predModal .stake-btn.active');if(ss){ss.classList.remove('active');ss.classList.add('stake-set');}
     var sp=document.querySelector('#predModal .wdl-btn.active');if(sp){sp.classList.remove('active');sp.classList.add('pick-set');}
     // Update display with prediction result
