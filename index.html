@@ -302,11 +302,11 @@ body {
 <div id="tabMatches" class="content active">
   <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
 
-<div id="tabBill" class="content"><div id="billContent"></div></div>
-<div id="tabRank" class="content"><div id="rankContent"></div></div>
+<div id="tabBill" class="content"><div id="billContent"><div style="padding:20px;text-align:center;color:var(--gold);">账单加载中...</div></div></div>
+<div id="tabRank" class="content"><div id="rankContent"><div style="padding:20px;text-align:center;color:var(--gold);">排行榜加载中...</div></div></div>
 <div id="tabDebt" class="content"><div id="debtContent"></div></div>
 
-<div id="tabGroups" class="content"><div id="groupsContent"></div></div>
+<div id="tabGroups" class="content"><div id="groupsContent"><div style="padding:20px;text-align:center;color:var(--gold);">分组加载中...</div></div></div>
 
 <input type="file" id="avatarUpload" accept="image/*" style="display:none">
 <div class="modal-overlay" id="userModal">
@@ -348,7 +348,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.38 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.39 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1462,7 +1462,8 @@ function renderPast(){
 }
 
 function renderBill(){
-  const el=document.getElementById('billContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const el=document.getElementById('billContent'); if(!el)return;
+  if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
   const u=cu(); if(!u){el.innerHTML='<div class="empty-state"><div class="icon">👤</div><p>请先选择身份</p><button class="btn btn-primary" onclick="showUserSelect()" style="margin-top:12px;">选择身份</button></div>';return;}
   const st=getStats(u); const sm=M.filter(m=>m.settled);
   let bi=sm.map(m=>{
@@ -1494,7 +1495,8 @@ function renderBill(){
 }
 
 function renderRank(){
-  const el=document.getElementById('rankContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const el=document.getElementById('rankContent'); if(!el)return;
+  if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
   const al=USERS.map((n,i)=>{const s=getStats(n);return{id:i,name:n,...s};}).sort((a,b)=>b.balance-a.balance);
   const u=cu();
   el.innerHTML='<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 消保委排名</div>'+al.map((x,i)=>{
@@ -1506,7 +1508,8 @@ function renderRank(){
 }
 
 function renderGroups(){
-  const el=document.getElementById('groupsContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const el=document.getElementById('groupsContent'); if(!el)return;
+  if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
   // Calculate standings from settled WC matches
   const standings = {};
   WC_GROUPS.forEach(g => {
