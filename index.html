@@ -283,8 +283,8 @@ body {
       <h2 style="font-size:16px;margin-bottom:12px;">&#128274; 管理员密码</h2>
       <input type="password" id="pwdInput" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:16px;text-align:center;outline:none;margin-bottom:16px;box-sizing:border-box;">
       <div style="display:flex;gap:10px;">
-        <button class="btn btn-primary" style="flex:1;" onclick="submitPwd()">确定</button>
         <button class="btn" style="flex:1;background:var(--card2);color:var(--text2);" onclick="cancelPwd()">取消</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="submitPwd()">确定</button>
       </div>
     </div>
   </div>
@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.64 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.65 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1672,7 +1672,7 @@ function showPredModal(mid){
   var u=cu(); if(!u){showToast('请先选择身份');showUserSelect();return;}
   var p=getPred(mid,u);
   PRED_CURRENT_MID=mid;
-  document.getElementById('predModalTitle').textContent=m.home+' vs '+m.away;document.getElementById('predModalTitle').style.textAlign='center';
+  document.getElementById('predModalTitle').innerHTML=(WC_FLAGS[m.home]||'')+' '+m.home+' <span style="color:var(--text2);font-size:12px;">'+(WC_RANK[m.home]||'')+'</span> <span style="color:var(--text2);margin:0 6px;">VS</span> '+(WC_FLAGS[m.away]||'')+' '+m.away+' <span style="color:var(--text2);font-size:12px;">'+(WC_RANK[m.away]||'')+'</span>';document.getElementById('predModalTitle').style.textAlign='center';
   var od=getInitOdds(m.home,m.away);
   var oh=m.odds_h||od.h||2.0, odv=m.odds_d||od.d||3.0, oa=m.odds_a||od.a||3.0;
   var wdlStake=p?(p.stake||m.stake||10):10;
