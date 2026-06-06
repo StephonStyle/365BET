@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.59 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.60 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1692,7 +1692,7 @@ function showPredModal(mid){
     '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWdl(this,\'D\')">平</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+odv+'</span></div>'+
     '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWdl(this,\'A\')">负</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+oa+'</span></div></div>'+
     '<div class="stake-row" style="margin-bottom:8px;">'+skHtml(wdlStake,'wdl_'+mid)+'</div>'+
-    '<div id="wdlResult">'+wdlPred+'</div>'+
+    '<div id="wdlResult" style="min-height:36px;">'+wdlPred+'</div>'+
     
     '<div style="font-size:14px;font-weight:700;margin:12px 0 6px;text-align:center;">比分</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;">'+
@@ -1700,13 +1700,13 @@ function showPredModal(mid){
       '<div><div style="font-size:11px;color:var(--gold);text-align:center;padding:2px 0;font-weight:600;">平局</div>'+ms(['0:0','1:1','2:2','3:3','4:4'],'row')+'</div>'+
       '<div><div style="font-size:11px;color:var(--red);text-align:center;padding:2px 0;font-weight:600;">客胜</div>'+ms(['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','3:4'],'row-reverse')+'</div>'+
     '</div>'+
-    '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="scr_'+mid+'">'+[10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===10?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div><button class="btn btn-primary" onclick="showToast(\'比分功能待完善\')" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
+    '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="scr_'+mid+'">'+[10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===10?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div><button class="btn btn-primary" onclick="scrPred()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
     '';
   document.getElementById('predModal').classList.add('show');
   
   document.getElementById('predModalContent').onclick=function(e){var t=e.target.closest('.score-item-lg');if(t){document.querySelectorAll('#predModal .score-item-lg').forEach(function(b){b.classList.remove('active');});t.classList.add('active');}};
 
-  '<div id="scrResult"></div>';
+  '<div id="scrResult" style="min-height:36px;"></div>';
 }function scrPred(){
   var mid=PRED_CURRENT_MID; if(!mid)return;
   var el=document.querySelector('#predModal .score-item-lg.active');
