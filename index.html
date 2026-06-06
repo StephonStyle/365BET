@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.57 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.58 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1688,10 +1688,12 @@ function showPredModal(mid){
   }
   document.getElementById('predModalContent').innerHTML=
     
-    '<div class="wdl-wrap" style="margin-bottom:4px;"><div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWdl(this,\'H\')">胜</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+oh+'</span></div>'+
+    '<div class="wdl-wrap" style="margin-bottom:10px;"><div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWdl(this,\'H\')">胜</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+oh+'</span></div>'+
     '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWdl(this,\'D\')">平</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+odv+'</span></div>'+
     '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWdl(this,\'A\')">负</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+oa+'</span></div></div>'+
     '<div class="stake-row" style="margin-bottom:8px;">'+skHtml(wdlStake,'wdl_'+mid)+'</div>'+
+    '<div id="wdlResult">'+wdlPred+'</div>'+
+    
     wdlPred+
     '<div style="font-size:14px;font-weight:700;margin:12px 0 6px;text-align:center;">比分</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;">'+
@@ -1729,9 +1731,15 @@ function subPredModal(){
     var url=SB_URL+'/rest/v1/predictions';
     if(e){url+='?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u);fetch(url,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});}
     else{fetch(url,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(Object.assign({match_id:mid,user_name:u,created_at:new Date().toISOString()},body))});}
-    closePredModal();showToast('预测已提交');loadData();
+    showToast('预测已提交');
     var ss=document.querySelector('#predModal .stake-btn.active');if(ss){ss.classList.remove('active');ss.classList.add('stake-set');}
     var sp=document.querySelector('#predModal .wdl-btn.active');if(sp){sp.classList.remove('active');sp.classList.add('pick-set');}
+    // Update display with prediction result
+    var pick=document.querySelector('#predModal .wdl-btn.pick-set')?.dataset?.pick;
+    var stake=document.querySelector('#predModal .stake-btn.stake-set')?.dataset?.stake;
+    var pl={'H':'胜','D':'平','A':'负'};
+    var predDiv=document.getElementById('wdlResult');
+    if(predDiv&&pick&&stake){predDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+stake+'分 '+pl[pick]+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;" onclick="showPredModal('+PRED_CURRENT_MID+')">修改</button></div>';}
   }catch(e){showToast('提交失败');}
 }
 const ADMIN_PWD='321';
