@@ -263,7 +263,8 @@ body {
 .wdl-btn[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
 .wdl-btn[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
 .wdl-btn[data-pick="A"]:hover { border-color:var(--red); color:var(--red); background:var(--red-dim); }
-.odds-box { width:100%; padding:1px 2px; border-radius:2px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:8px; font-weight:600; height:18px; box-sizing:border-box; }
+.odds-box { width:100%; padding:1px 0; border-radius:2px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:7px; font-weight:600; height:16px; box-sizing:border-box; -moz-appearance:textfield; }
+.odds-box::-webkit-inner-spin-button, .odds-box::-webkit-outer-spin-button { display:none; -webkit-appearance:none; margin:0; }
 .odds-box[readonly] { opacity:0.5; border-color:transparent; background:transparent; cursor:default; }
 
 </style>
@@ -312,7 +313,7 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.22 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.23 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
