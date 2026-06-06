@@ -256,15 +256,15 @@ body {
 .group-table tr.flash-row { animation: rowFlash 1.5s ease-out; }
 
 
-.wdl-btns { display:flex; gap:8px; justify-content:center; margin:4px 0; }
-.wdl-btn { flex:1; text-align:center; padding:8px 4px; border-radius:8px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:14px; font-weight:700; transition:all .2s; }
+.wdl-btns { display:flex; gap:3px; justify-content:center; margin:1px 0; }
+.wdl-btn { flex:0 0 auto; text-align:center; padding:2px 5px; border-radius:4px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:10px; font-weight:600; transition:all .15s; }
 .wdl-btn.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
 .wdl-btn:hover { background:var(--primary-dim); border-color:var(--primary); }
 .wdl-btn[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); }
 .wdl-btn[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); }
 .wdl-btn[data-pick="A"]:hover { border-color:var(--red); color:var(--red); }
-.odds-box { width:52px; padding:2px 4px; border-radius:4px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:12px; font-weight:600; }
-.odds-box[readonly] { opacity:0.7; border-color:transparent; background:transparent; cursor:default; }
+.odds-box { width:38px; padding:1px 2px; border-radius:3px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:9px; font-weight:600; height:18px; }
+.odds-box[readonly] { opacity:0.6; border-color:transparent; background:transparent; cursor:default; }
 
 </style>
 </head>
@@ -312,7 +312,7 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.16 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.17 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
