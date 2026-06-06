@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.63 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.64 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -529,18 +529,18 @@ const WC_SQUADS = {
 
 var RANK_DATA={Argentina:3,Australia:27,Austria:24,Belgium:9,Bosnia:65,Brazil:6,Canada:30,CapeVerde:69,Colombia:13,Croatia:11,Curacao:82,Czechia:41,DRCongo:46,Ecuador:23,Egypt:29,England:4,France:1,Germany:10,Ghana:74,Haiti:83,Iran:21,Iraq:57,IvoryCoast:34,Japan:18,Jordan:63,Mexico:15,Morocco:8,Netherlands:7,NewZealand:85,Norway:31,Panama:33,Paraguay:40,Portugal:5,Qatar:55,SaudiArabia:61,Scotland:43,Senegal:14,SouthAfrica:60,SouthKorea:25,Spain:2,Sweden:38,Switzerland:19,Tunisia:44,Turkey:22,USA:16,Uruguay:17,Uzbekistan:50,Algeria:28};
 var CN2EN={'墨西哥':'Mexico','南非':'SouthAfrica','韩国':'SouthKorea','捷克':'Czechia','加拿大':'Canada','波黑':'Bosnia','卡塔尔':'Qatar','瑞士':'Switzerland','巴西':'Brazil','摩洛哥':'Morocco','海地':'Haiti','苏格兰':'Scotland','美国':'USA','巴拉圭':'Paraguay','澳大利亚':'Australia','土耳其':'Turkey','德国':'Germany','库拉索':'Curacao','科特迪瓦':'IvoryCoast','厄瓜多尔':'Ecuador','荷兰':'Netherlands','日本':'Japan','瑞典':'Sweden','突尼斯':'Tunisia','比利时':'Belgium','埃及':'Egypt','伊朗':'Iran','新西兰':'NewZealand','西班牙':'Spain','佛得角':'CapeVerde','沙特阿拉伯':'SaudiArabia','乌拉圭':'Uruguay','法国':'France','塞内加尔':'Senegal','伊拉克':'Iraq','挪威':'Norway','阿根廷':'Argentina','阿尔及利亚':'Algeria','奥地利':'Austria','约旦':'Jordan','葡萄牙':'Portugal','DR Congo':'DRCongo','乌兹别克斯坦':'Uzbekistan','哥伦比亚':'Colombia','英格兰':'England','克罗地亚':'Croatia','加纳':'Ghana','巴拿马':'Panama'};
+var VAL_DATA={Argentina:801,Australia:74,Austria:265,Belgium:543,Bosnia:35,Brazil:909,Canada:204,CapeVerde:69,Colombia:298,Croatia:230,Curacao:29,Czechia:45,DRCongo:23,Ecuador:185,Egypt:55,England:1320,France:1530,Germany:1010,Ghana:74,Haiti:8,Iran:21,Iraq:12,IvoryCoast:515,Japan:279,Jordan:20,Mexico:194,Morocco:150,Netherlands:839,NewZealand:18,Norway:587,Panama:33,Paraguay:35,Portugal:969,Qatar:20,SaudiArabia:30,Scotland:85,Senegal:200,SouthAfrica:15,SouthKorea:142,Spain:1271,Sweden:110,Switzerland:175,Tunisia:25,Turkey:185,USA:370,Uruguay:310,Uzbekistan:70,Algeria:265};
 function getInitOdds(h,a){
   var he=CN2EN[h]||h; var ae=CN2EN[a]||a;
-  var hr=RANK_DATA[he.replace(/ /g,'')]||50, ar=RANK_DATA[ae.replace(/ /g,'')]||50, d=ar-hr;
-  var h0,d0,a0;
-  if(d>20){h0=1.3+(d-20)*0.01;d0=3.8+(50-d)*0.02;a0=6.0+d*0.05;}
-  else if(d>10){h0=1.5+(d-10)*0.02;d0=3.5+(30-d)*0.02;a0=5.0+d*0.03;}
-  else if(d>0){h0=1.7+d*0.03;d0=3.3+(20-d)*0.02;a0=4.0+d*0.03;}
-  else if(d===0){h0=2.2;d0=3.2;a0=2.2;}
-  else if(d>-10){h0=2.0-d*0.03;d0=3.3+d*0.02;a0=3.5-d*0.03;}
-  else if(d>-20){h0=2.5-d*0.04;d0=3.5+d*0.02;a0=2.8-d*0.03;}
-  else{h0=3.5-d*0.05;d0=3.8+d*0.02;a0=1.5-d*0.02;}
-  return {h:Math.round(Math.max(1.1,Math.min(h0,15))*100)/100,d:Math.round(Math.max(2.5,Math.min(d0,10))*100)/100,a:Math.round(Math.max(1.1,Math.min(a0,15))*100)/100};
+  var hr=RANK_DATA[he.replace(/ /g,'')]||50, ar=RANK_DATA[ae.replace(/ /g,'')]||50;
+  var hv=VAL_DATA[he.replace(/ /g,'')]||30, av=VAL_DATA[ae.replace(/ /g,'')]||30;
+  function str(n){return Math.max(1,Math.min(100,100-(n-1)*0.83))*0.4+Math.max(1,Math.min(100,n/15))*0.6;}
+  var hs=str(hr)+Math.min(70,hv/15)*0.6, aw=str(ar)+Math.min(70,av/15)*0.6;
+  var eh=1/(1+Math.pow(10,(aw-hs)/60)), ea=1/(1+Math.pow(10,(hs-aw)/60));
+  var dp=Math.max(0.12,Math.min(0.28,0.28-Math.abs(hs-aw)/(hs+aw)*0.2));
+  var hp=eh*(1-dp), ap=ea*(1-dp), s=hp+ap+dp;
+  hp/=s; ap/=s; dp/=s;
+  return {h:Math.round(1.06/hp*100)/100,d:Math.round(1.06/dp*100)/100,a:Math.round(1.06/ap*100)/100};
 }
 const WC_COACHES = {
   'Mexico':{en:'Javier Aguirre',cn:''},
