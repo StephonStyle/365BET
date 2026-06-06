@@ -226,7 +226,54 @@ body {
 .player-detail-grid .pd-item .pd-label { font-size:10px; color:var(--text2); }
 .player-detail-grid .pd-item .pd-value { font-size:14px; font-weight:700; margin-top:2px; }
 
+.switch { position:relative; display:inline-block; width:36px; height:20px; cursor:pointer; }
+.switch input { display:none; }
+.switch .slider { position:absolute; inset:0; background:var(--card2); border-radius:20px; transition:.3s; }
+.switch .slider::before { content:''; position:absolute; left:2px; top:2px; width:16px; height:16px; border-radius:50%; background:var(--text2); transition:.3s; }
+.switch input:checked+.slider { background:var(--gold-dim); }
+.switch input:checked+.slider::before { background:var(--gold); transform:translateX(16px); }
+.loading { text-align:center; padding:60px 20px; color:var(--text2); }
+.loading .spin { display:inline-block; width:32px; height:32px; border:3px solid var(--card2); border-top-color:var(--primary); border-radius:50%; animation: spin .8s linear infinite; margin-bottom:12px; }
+@keyframes spin { to{transform:rotate(360deg)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.match-card,.bill-item,.rank-card,.debt-item { animation:fadeIn .3s ease; }
+@media (min-width:600px) { .content { max-width:600px; margin:0 auto; } .user-grid { grid-template-columns:1fr 1fr 1fr; } .pred-grid { grid-template-columns:1fr 1fr 1fr 1fr!important; } }
+
+@keyframes rowFlash {
+  0% { background: rgba(255,215,64,0.3) !important; box-shadow: 0 0 12px rgba(255,215,64,0.4); }
+  70% { background: rgba(255,215,64,0.15) !important; box-shadow: 0 0 6px rgba(255,215,64,0.2); }
+  100% { background: transparent; box-shadow: none; }
+}
+.group-table tr.flash-row { animation: rowFlash 1.5s ease-out; }
+
+
+.wdl-wrap { display:flex; gap:4px; justify-content:center; margin:1px 0; }
+.wdl-col { display:flex; flex-direction:column; align-items:center; gap:1px; flex:0 0 72px; }
+.wdl-btn { width:100%; text-align:center; padding:1px 0; border-radius:3px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:9px; font-weight:600; transition:all .15s; }
+.wdl-btn.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
+.wdl-btn[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
+.wdl-btn[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+.wdl-btn[data-pick="A"]:hover { border-color:var(--red); color:var(--red); background:var(--red-dim); }
+.odds-text { font-size:9px; color:var(--text2); font-weight:400; line-height:1.2; }
+
+</style>
+</head>
+<body>
+<div class="header">
+  <h1 style="font-size:20px;flex:1;">365BET</h1>
+	  <button class="refresh-btn" id="refreshBtn" title="刷新数据" onclick="location.reload()">🔄</button>
+  <button class="user-btn" id="userBtn"><span class="avatar" id="userAvatar">?</span><span id="userName">选择用户</span></button>
+  <button class="cam-btn" id="camBtn" title="上传头像">📷</button>
+  <button class="settings-btn" id="adminBtn" title="管理员模式">⚙</button>
 </div>
+
+<div id="tabPast" class="content">
+  <div id="pastContent"></div>
+
+</div>
+<div id="tabMatches" class="content active">
+  <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
 
 <div id="tabBill" class="content"><div id="billContent"></div></div>
 <div id="tabRank" class="content"><div id="rankContent"></div></div>
@@ -249,8 +296,8 @@ body {
 
 <div class="modal-overlay" id="adminModal">
   <div class="modal" style="max-width:420px;">
-    <button class="modal-close" onclick="document.getElementById('adminModal').classList.remove('show')">✕</button>
-    <h2>🛠 管理员</h2>
+    <button class="modal-close" onclick="document.getElementById('adminModal').classList.remove('show')">&#10005;</button>
+    <h2>&#128736; 管理员</h2>
     <div id="adminContent" style="min-height:80px;max-height:60vh;overflow-y:auto;font-size:13px;color:var(--text2);">内容待定</div>
   </div>
 </div>
@@ -1624,8 +1671,7 @@ function showToast(m){const t=document.createElement('div');t.className='toast';
 
 const ADMIN_PWD='321';
 function toggleAdmin(){
-  if(!isAdmin){const p=prompt('请输入管理员密码:');if(p!==ADMIN_PWD){showToast('密码错误');return;}isAdmin=true;}
-  else{isAdmin=false;document.getElementById('adminModal').classList.remove('show');renderAll();return;}
+  if(!isAdmin){const p=prompt('请输入管理员密码:');if(p!==ADMIN_PWD){showToast('密码错误');return;}isAdmin=true;}else{isAdmin=false;document.getElementById('adminModal').classList.remove('show');renderAll();return;}
   document.getElementById('adminModal').classList.add('show');
 }
 
