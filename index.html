@@ -265,25 +265,21 @@ body {
 .score-item .s { flex:1; text-align:center; }
 .score-item .so { width:28px; padding:0; border:none; background:transparent; color:var(--gold); text-align:center; font-size:7px; font-weight:600; }
 .score-item .so[readonly] { color:var(--text2); }
-.wdl-col-md { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; }
-.wdl-btn-md { width:100%; text-align:center; padding:6px 0; border-radius:6px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:14px; font-weight:700; transition:all .15s; }
-.wdl-btn-md.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
-.wdl-btn-md[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
-.wdl-btn-md[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
-.wdl-btn-md[data-pick="A"]:hover { border-color:var(--red); color:var(--red); background:var(--red-dim); }
-.odds-gold { width:100%; padding:4px 0; border-radius:4px; border:1px solid var(--border); background:var(--card2); color:#FFD700; text-align:center; font-size:15px; font-weight:700; box-sizing:border-box; }
-.odds-gold[readonly] { opacity:0.8; border-color:transparent; background:transparent; cursor:default; }
+.wdl-col-lg { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+.wdl-btn-lg { width:100%; text-align:center; padding:10px 0; border-radius:8px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:18px; font-weight:700; transition:all .15s; }
+.wdl-btn-lg.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
+.wdl-btn-lg[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
+.wdl-btn-lg[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+.wdl-btn-lg[data-pick="A"]:hover { border-color:var(--red); color:var(--red); background:var(--red-dim); }
+.odds-input-lg { width:100%; padding:6px 0; border-radius:6px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:14px; font-weight:600; box-sizing:border-box; }
+.odds-input-lg[readonly] { opacity:0.6; border-color:transparent; background:transparent; cursor:default; }
 .score-grid-lg { display:grid; grid-template-columns:1fr 1fr 1fr; gap:3px; margin-top:8px; }
 .score-col-title-lg { font-size:11px; color:var(--text2); text-align:center; padding:4px 0; font-weight:600; }
-.score-item-lg { display:flex; align-items:center; gap:3px; padding:4px 6px; border-radius:5px; background:var(--card2); cursor:pointer; transition:all .15s; min-height:28px; }
-.score-item-lg.away { flex-direction:row-reverse; }
+.score-item-lg { display:flex; align-items:center; gap:3px; padding:4px 6px; border-radius:5px; background:var(--card2); cursor:pointer; transition:all .15s; }
 .score-item-lg:hover { background:var(--primary-dim); }
 .score-item-lg .s-lg { flex:1; text-align:center; font-size:13px; font-weight:600; }
-.score-item-lg.away .s-lg { text-align:right; }
 .score-item-lg .so-lg { width:40px; padding:2px 0; border-radius:3px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:11px; font-weight:600; }
-.score-item-lg .so-lg[readonly] { opacity:0.5; border-color:transparent; background:transparent; pointer-events:none; }
-.wdl-btn-md.pick-set { background:var(--red-dim) !important; border-color:var(--red) !important; color:var(--red) !important; }
-.stake-btn.stake-set { background:var(--red-dim) !important; border-color:var(--red) !important; color:var(--red) !important; }
+.score-item-lg .so-lg[readonly] { opacity:0.5; border-color:transparent; background:transparent; cursor:default; }
 </style>
 </head>
 <body>
@@ -302,11 +298,11 @@ body {
 <div id="tabMatches" class="content active">
   <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
 
-<div id="tabBill" class="content"><div id="billContent"><div style="padding:20px;text-align:center;color:var(--gold);">账单加载中...</div></div></div>
-<div id="tabRank" class="content"><div id="rankContent"><div style="padding:20px;text-align:center;color:var(--gold);">排行榜加载中...</div></div></div>
+<div id="tabBill" class="content"><div id="billContent"></div></div>
+<div id="tabRank" class="content"><div id="rankContent"></div></div>
 <div id="tabDebt" class="content"><div id="debtContent"></div></div>
 
-<div id="tabGroups" class="content"><div id="groupsContent"><div style="padding:20px;text-align:center;color:var(--gold);">分组加载中...</div></div></div>
+<div id="tabGroups" class="content"><div id="groupsContent"></div></div>
 
 <input type="file" id="avatarUpload" accept="image/*" style="display:none">
 <div class="modal-overlay" id="userModal">
@@ -348,13 +344,13 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.45 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.46 · 365BET</div>
 <div class="tabs">
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabGroups').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Groups"><span class="icon">🌍</span><span>分组</span></button>
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabBill').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Bill"><span class="icon">💰</span><span>账单</span></button>
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabRank').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Rank"><span class="icon">🏆</span><span>排行榜</span></button>
+  <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
+  <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
+  <button class="tab" data-tab="Groups"><span class="icon">🌍</span><span>分组</span></button>
+  <button class="tab" data-tab="Bill"><span class="icon">💰</span><span>账单</span></button>
+  <button class="tab" data-tab="Rank"><span class="icon">🏆</span><span>排行榜</span></button>
 </div>
 
 <script>
@@ -550,153 +546,6 @@ const WC_SQUADS = {
   'Croatia':[{num:1,name:'Dominik Livaković',pos:'GK',age:31,club:'Dinamo Zagreb',cn:'多米尼克·利瓦科维奇',value:'无身价记录'},{num:2,name:'Josip Stanišić',pos:'DF',age:26,club:'Bayern Munich',cn:'约瑟普·斯塔尼希奇',value:'无身价记录'},{num:3,name:'Marin Pongračić',pos:'DF',age:28,club:'Fiorentina',cn:'马林·蓬格拉契奇',value:'无身价记录'},{num:4,name:'Joško Gvardiol',pos:'DF',age:24,club:'Manchester City',cn:'约什科·格瓦迪奥尔',value:'€70M'},{num:5,name:'Duje Ćaleta-Car',pos:'DF',age:29,club:'Real Sociedad',cn:'杜耶·查莱塔-察尔',value:'无身价记录'},{num:6,name:'Josip Šutalo',pos:'DF',age:26,club:'Ajax',cn:'约瑟普·舒塔洛',value:'无身价记录'},{num:7,name:'Nikola Moro',pos:'MF',age:28,club:'Bologna',cn:'尼古拉·莫罗',value:'€6M'},{num:8,name:'Mateo Kovačić',pos:'MF',age:32,club:'Manchester City',cn:'马特奥·科瓦契奇',value:'无身价记录'},{num:9,name:'Andrej Kramarić',pos:'FW',age:34,club:'TSG Hoffenheim',cn:'安德烈·克拉马里奇',value:'无身价记录'},{num:10,name:'Luka Modrić',pos:'MF',age:40,club:'Milan',cn:'卢卡·莫德里奇',value:'无身价记录'},{num:11,name:'Ante Budimir',pos:'FW',age:34,club:'Osasuna',cn:'安特·布迪米尔',value:'€3M'},{num:12,name:'Ivor Pandur',pos:'GK',age:26,club:'Hull City',cn:'伊沃尔·潘杜尔',value:'€3.5M'},{num:13,name:'Nikola Vlašić',pos:'MF',age:28,club:'Torino',cn:'历高拿·华拉錫',value:'无身价记录'},{num:14,name:'Ivan Perišić',pos:'FW',age:37,club:'PSV Eindhoven',cn:'伊万·佩里希奇',value:'无身价记录'},{num:15,name:'Mario Pašalić',pos:'MF',age:31,club:'Atalanta',cn:'马里奥·帕沙利奇',value:'无身价记录'},{num:16,name:'Martin Baturina',pos:'MF',age:23,club:'Como',cn:'马丁·巴图里纳',value:'€24M'},{num:17,name:'Petar Sučić',pos:'MF',age:22,club:'Inter Milan',cn:'佩塔尔·苏契奇',value:'无身价记录'},{num:18,name:'Kristijan Jakić',pos:'DF',age:29,club:'FC Augsburg',cn:'克里斯蒂扬·亚基奇',value:'无身价记录'},{num:19,name:'Toni Fruk',pos:'MF',age:25,club:'Rijeka',cn:'托尼·弗鲁克',value:'€9M'},{num:20,name:'Igor Matanović',pos:'FW',age:23,club:'SC Freiburg',cn:'伊戈尔·马塔诺维奇',value:'无身价记录'},{num:21,name:'Luka Sučić',pos:'MF',age:23,club:'Real Sociedad',cn:'卢卡·苏契奇',value:'无身价记录'},{num:22,name:'Luka Vušković',pos:'DF',age:19,club:'Hamburger SV',cn:'卢卡·武什科维奇',value:'无身价记录'},{num:23,name:'Dominik Kotarski',pos:'GK',age:26,club:'Copenhagen',cn:'多米尼克·科塔尔斯基',value:'€6M'},{num:24,name:'Marco Pašalić',pos:'FW',age:25,club:'Orlando City SC',cn:'马尔科·帕沙利奇',value:'无身价记录'},{num:25,name:'Martin Erlić',pos:'DF',age:28,club:'Midtjylland',cn:'马丁·埃尔利奇',value:'无身价记录'},{num:26,name:'Petar Musa',pos:'FW',age:28,club:'FC Dallas',cn:'佩塔尔·穆萨',value:'€8M'}],
   'Ghana':[{num:1,name:'Lawrence Ati-Zigi',pos:'GK',age:29,club:'St. Gallen',cn:'劳伦斯·阿蒂-齊吉',value:'无身价记录'},{num:2,name:'Alidu Seidu',pos:'DF',age:26,club:'Rennes',cn:'阿利杜·赛杜',value:'无身价记录'},{num:3,name:'Caleb Yirenkyi',pos:'MF',age:20,club:'Nordsjælland',cn:'卡莱布·伊伦基伊',value:'无身价记录'},{num:4,name:'Jonas Adjetey',pos:'DF',age:22,club:'VfL Wolfsburg',cn:'约纳斯·阿杰泰',value:'无身价记录'},{num:5,name:'Thomas Partey',pos:'MF',age:32,club:'Villarreal',cn:'湯玛斯·帕尔特伊',value:'无身价记录'},{num:6,name:'Abdul Mumin',pos:'DF',age:28,club:'Rayo Vallecano',cn:'阿卜杜勒·穆明',value:'无身价记录'},{num:7,name:'Abdul Fatawu',pos:'FW',age:22,club:'Leicester City',cn:'阿卜杜勒·法塔武',value:'无身价记录'},{num:8,name:'Kwasi Sibo',pos:'MF',age:27,club:'Oviedo',cn:'夸西·西博',value:'无身价记录'},{num:9,name:'Jordan Ayew',pos:'FW',age:34,club:'Leicester City',cn:'乔丹·阿尤',value:'无身价记录'},{num:10,name:'Brandon Thomas-Asante',pos:'FW',age:27,club:'Coventry City',cn:'布兰登·托马斯-阿桑特',value:'无身价记录'},{num:11,name:'Antoine Semenyo',pos:'MF',age:26,club:'Manchester City',cn:'安托万·塞梅諾',value:'€18M'},{num:12,name:'Joseph Anang',pos:'GK',age:26,club:'St Patrick s Athletic',cn:'约瑟夫·阿南',value:'€300K'},{num:13,name:'Christopher Bonsu Baah',pos:'FW',age:21,club:'Al-Qadsiah',cn:'克里斯托弗·邦苏·巴',value:'无身价记录'},{num:14,name:'Gideon Mensah',pos:'DF',age:27,club:'Auxerre',cn:'基迪恩·门萨',value:'无身价记录'},{num:15,name:'Elisha Owusu',pos:'MF',age:28,club:'Auxerre',cn:'以利沙·奥乌苏',value:'无身价记录'},{num:16,name:'Benjamin Asare',pos:'GK',age:33,club:'Hearts of Oak',cn:'本杰明·阿萨雷',value:'无身价记录'},{num:17,name:'Abdul Rahman Baba',pos:'DF',age:31,club:'PAOK',cn:'阿卜杜勒·拉赫曼·巴巴',value:'无身价记录'},{num:18,name:'Jerome Opoku',pos:'DF',age:27,club:'İstanbul Başakşehir',cn:'杰罗姆·奥波库',value:'无身价记录'},{num:19,name:'Iñaki Williams',pos:'FW',age:31,club:'Athletic Bilbao',cn:'伊拿基·威廉斯',value:'无身价记录'},{num:20,name:'Augustine Boakye',pos:'MF',age:25,club:'Saint-Étienne',cn:'奥古斯丁·博阿基',value:'无身价记录'},{num:21,name:'Kojo Peprah Oppong',pos:'DF',age:22,club:'Nice',cn:'科喬·佩拉·奥彭',value:'无身价记录'},{num:22,name:'Kamaldeen Sulemana',pos:'FW',age:24,club:'Atalanta',cn:'卡迈勒丁·苏莱曼纳',value:'无身价记录'},{num:23,name:'Derrick Luckassen',pos:'DF',age:30,club:'Pafos',cn:'德里克·卢卡森',value:'无身价记录'},{num:24,name:'Ernest Nuamah',pos:'FW',age:22,club:'Lyon',cn:'欧內斯特·努阿马',value:'无身价记录'},{num:25,name:'Prince Kwabena Adu',pos:'FW',age:22,club:'Viktoria Plzeň',cn:'普林斯·夸贝纳·阿杜',value:'无身价记录'},{num:26,name:'Marvin Senaya',pos:'DF',age:25,club:'Auxerre',cn:'马文·塞纳亚',value:'无身价记录'}],
   'Panama':[{num:1,name:'Luis Mejía',pos:'GK',age:35,club:'Nacional',cn:'路易斯·梅希亚',value:'无身价记录'},{num:2,name:'César Blackman',pos:'DF',age:28,club:'Slovan Bratislava',cn:'塞萨尔·布莱克曼',value:'无身价记录'},{num:3,name:'José Córdoba',pos:'DF',age:25,club:'Norwich City',cn:'何塞·科尔多瓦',value:'无身价记录'},{num:4,name:'Fidel Escobar',pos:'DF',age:31,club:'Saprissa',cn:'菲德尔·埃斯科瓦尔',value:'无身价记录'},{num:5,name:'Edgardo Fariña',pos:'DF',age:24,club:'Pari Nizhny Novgorod',cn:'埃德加多·法里尼亚',value:'无身价记录'},{num:6,name:'Cristian Martínez',pos:'MF',age:29,club:'Ironi Kiryat Shmona',cn:'克里斯蒂安·马丁內斯',value:'无身价记录'},{num:7,name:'José Luis Rodríguez',pos:'MF',age:27,club:'Juárez',cn:'何塞·路易斯·罗德里格斯',value:'€100M'},{num:8,name:'Adalberto Carrasquilla',pos:'MF',age:27,club:'UNAM',cn:'阿达尔贝托·卡拉斯基利亚',value:'无身价记录'},{num:9,name:'Tomás Rodríguez',pos:'FW',age:27,club:'Saprissa',cn:'托马斯·罗德里格斯',value:'€100M'},{num:10,name:'Ismael Díaz',pos:'MF',age:29,club:'León',cn:'伊斯梅尔·迪亚斯',value:'无身价记录'},{num:11,name:'Yoel Bárcenas',pos:'MF',age:32,club:'Mazatlán',cn:'约埃尔·巴尔塞纳斯',value:'无身价记录'},{num:12,name:'César Samudio',pos:'GK',age:32,club:'Marathón',cn:'塞萨尔·萨穆迪奥',value:'无身价记录'},{num:13,name:'Jiovany Ramos',pos:'DF',age:29,club:'Puerto Cabello',cn:'希奥瓦尼·拉莫斯',value:'无身价记录'},{num:14,name:'Carlos Harvey',pos:'DF',age:26,club:'Minnesota United FC',cn:'卡洛斯·哈维',value:'无身价记录'},{num:15,name:'Eric Davis',pos:'DF',age:35,club:'Plaza Amador',cn:'埃里克·戴维斯',value:'无身价记录'},{num:16,name:'Andrés Andrade',pos:'DF',age:27,club:'LASK',cn:'安德烈斯·安德拉德',value:'无身价记录'},{num:17,name:'José Fajardo',pos:'FW',age:32,club:'Universidad Católica',cn:'何塞·法哈多',value:'无身价记录'},{num:18,name:'Cecilio Waterman',pos:'FW',age:35,club:'Universidad de Concepción',cn:'塞西利奥·沃特曼',value:'无身价记录'},{num:19,name:'Alberto Quintero',pos:'MF',age:38,club:'Plaza Amador',cn:'阿尔贝托·金特罗',value:'无身价记录'},{num:20,name:'Aníbal Godoy',pos:'MF',age:36,club:'San Diego FC',cn:'阿尼瓦尔·戈多伊',value:'无身价记录'},{num:21,name:'César Yanis',pos:'MF',age:30,club:'Cobresal',cn:'塞萨尔·亚尼斯',value:'无身价记录'},{num:22,name:'Orlando Mosquera',pos:'GK',age:31,club:'Al-Fayha',cn:'奥兰多·莫斯克拉',value:'无身价记录'},{num:23,name:'Michael Amir Murillo',pos:'DF',age:30,club:'Beşiktaş',cn:'米高·阿米尔·穆里略',value:'€15M'},{num:24,name:'Azarias Londoño',pos:'FW',age:24,club:'Universidad Católica',cn:'阿萨里亚斯·隆多尼奥',value:'无身价记录'},{num:25,name:'Roderick Miller',pos:'DF',age:34,club:'Turan Tovuz',cn:'罗德里克·米勒',value:'€1M'},{num:26,name:'Jorge Gutiérrez',pos:'DF',age:27,club:'Deportivo La Guaira',cn:'豪尔赫·古铁雷斯',value:'无身价记录'}]
-};
-
-const INITIAL_ODDS = {
-  'wc__墨西哥__南非':{h:1.55,d:3.9,a:8.25},
-  'wc__南非__墨西哥':{h:8.25,d:3.9,a:1.55},
-  'wc__韩国__捷克':{h:1.62,d:3.78,a:5.48},
-  'wc__捷克__韩国':{h:5.48,d:3.78,a:1.62},
-  'wc__墨西哥__韩国':{h:2.0,d:3.5,a:4.3},
-  'wc__韩国__墨西哥':{h:4.3,d:3.5,a:2.0},
-  'wc__南非__捷克':{h:3.26,d:3.12,a:3.37},
-  'wc__捷克__南非':{h:3.37,d:3.12,a:3.26},
-  'wc__墨西哥__捷克':{h:1.36,d:4.28,a:7.3},
-  'wc__捷克__墨西哥':{h:7.3,d:4.28,a:1.36},
-  'wc__南非__韩国':{h:5.25,d:3.1,a:2.2},
-  'wc__韩国__南非':{h:2.2,d:3.1,a:5.25},
-  'wc__加拿大__波黑':{h:1.45,d:4.1,a:7.75},
-  'wc__波黑__加拿大':{h:7.75,d:4.1,a:1.45},
-  'wc__卡塔尔__瑞士':{h:5.3,d:3.08,a:2.22},
-  'wc__瑞士__卡塔尔':{h:2.22,d:3.08,a:5.3},
-  'wc__加拿大__卡塔尔':{h:1.35,d:4.3,a:7.25},
-  'wc__卡塔尔__加拿大':{h:7.25,d:4.3,a:1.35},
-  'wc__波黑__瑞士':{h:5.8,d:2.88,a:2.42},
-  'wc__瑞士__波黑':{h:2.42,d:2.88,a:5.8},
-  'wc__加拿大__瑞士':{h:2.94,d:3.28,a:3.13},
-  'wc__瑞士__加拿大':{h:3.13,d:3.28,a:2.94},
-  'wc__波黑__卡塔尔':{h:2.9,d:3.3,a:3.1},
-  'wc__卡塔尔__波黑':{h:3.1,d:3.3,a:2.9},
-  'wc__巴西__摩洛哥':{h:1.76,d:3.66,a:4.06},
-  'wc__摩洛哥__巴西':{h:4.06,d:3.66,a:1.76},
-  'wc__海地__苏格兰':{h:5.5,d:3.0,a:2.3},
-  'wc__苏格兰__海地':{h:2.3,d:3.0,a:5.5},
-  'wc__巴西__海地':{h:1.87,d:3.26,a:9.85},
-  'wc__海地__巴西':{h:9.85,d:3.26,a:1.87},
-  'wc__摩洛哥__苏格兰':{h:1.45,d:4.1,a:7.75},
-  'wc__苏格兰__摩洛哥':{h:7.75,d:4.1,a:1.45},
-  'wc__巴西__苏格兰':{h:1.47,d:4.06,a:7.85},
-  'wc__苏格兰__巴西':{h:7.85,d:4.06,a:1.47},
-  'wc__摩洛哥__海地':{h:1.85,d:3.3,a:9.75},
-  'wc__海地__摩洛哥':{h:9.75,d:3.3,a:1.85},
-  'wc__美国__巴拉圭':{h:1.34,d:4.32,a:7.2},
-  'wc__巴拉圭__美国':{h:7.2,d:4.32,a:1.34},
-  'wc__澳大利亚__土耳其':{h:2.15,d:3.2,a:3.65},
-  'wc__土耳其__澳大利亚':{h:3.65,d:3.2,a:2.15},
-  'wc__美国__澳大利亚':{h:1.52,d:3.88,a:5.33},
-  'wc__澳大利亚__美国':{h:5.33,d:3.88,a:1.52},
-  'wc__巴拉圭__土耳其':{h:3.22,d:3.14,a:3.34},
-  'wc__土耳其__巴拉圭':{h:3.34,d:3.14,a:3.22},
-  'wc__美国__土耳其':{h:1.88,d:3.58,a:4.18},
-  'wc__土耳其__美国':{h:4.18,d:3.58,a:1.88},
-  'wc__巴拉圭__澳大利亚':{h:3.02,d:3.24,a:3.19},
-  'wc__澳大利亚__巴拉圭':{h:3.19,d:3.24,a:3.02},
-  'wc__德国__库拉索':{h:1.82,d:3.36,a:9.6},
-  'wc__库拉索__德国':{h:9.6,d:3.36,a:1.82},
-  'wc__科特迪瓦__厄瓜多尔':{h:2.94,d:3.28,a:3.13},
-  'wc__厄瓜多尔__科特迪瓦':{h:3.13,d:3.28,a:2.94},
-  'wc__德国__科特迪瓦':{h:1.34,d:4.32,a:7.2},
-  'wc__科特迪瓦__德国':{h:7.2,d:4.32,a:1.34},
-  'wc__库拉索__厄瓜多尔':{h:6.45,d:2.62,a:2.68},
-  'wc__厄瓜多尔__库拉索':{h:2.68,d:2.62,a:6.45},
-  'wc__德国__厄瓜多尔':{h:1.56,d:3.84,a:5.39},
-  'wc__厄瓜多尔__德国':{h:5.39,d:3.84,a:1.56},
-  'wc__库拉索__科特迪瓦':{h:5.9,d:2.84,a:2.46},
-  'wc__科特迪瓦__库拉索':{h:2.46,d:2.84,a:5.9},
-  'wc__荷兰__日本':{h:1.52,d:3.88,a:5.33},
-  'wc__日本__荷兰':{h:5.33,d:3.88,a:1.52},
-  'wc__瑞典__突尼斯':{h:1.88,d:3.58,a:4.18},
-  'wc__突尼斯__瑞典':{h:4.18,d:3.58,a:1.88},
-  'wc__荷兰__瑞典':{h:1.41,d:4.18,a:7.55},
-  'wc__瑞典__荷兰':{h:7.55,d:4.18,a:1.41},
-  'wc__日本__突尼斯':{h:1.36,d:4.28,a:7.3},
-  'wc__突尼斯__日本':{h:7.3,d:4.28,a:1.36},
-  'wc__荷兰__突尼斯':{h:1.47,d:4.06,a:7.85},
-  'wc__突尼斯__荷兰':{h:7.85,d:4.06,a:1.47},
-  'wc__日本__瑞典':{h:1.7,d:3.7,a:5.6},
-  'wc__瑞典__日本':{h:5.6,d:3.7,a:1.7},
-  'wc__比利时__埃及':{h:1.7,d:3.7,a:5.6},
-  'wc__埃及__比利时':{h:5.6,d:3.7,a:1.7},
-  'wc__伊朗__新西兰':{h:1.74,d:3.52,a:9.2},
-  'wc__新西兰__伊朗':{h:9.2,d:3.52,a:1.74},
-  'wc__比利时__伊朗':{h:1.54,d:3.86,a:5.36},
-  'wc__伊朗__比利时':{h:5.36,d:3.86,a:1.54},
-  'wc__埃及__新西兰':{h:1.66,d:3.68,a:8.8},
-  'wc__新西兰__埃及':{h:8.8,d:3.68,a:1.66},
-  'wc__比利时__新西兰':{h:1.86,d:3.28,a:9.8},
-  'wc__新西兰__比利时':{h:9.8,d:3.28,a:1.86},
-  'wc__埃及__伊朗':{h:2.24,d:3.14,a:3.74},
-  'wc__伊朗__埃及':{h:3.74,d:3.14,a:2.24},
-  'wc__西班牙__佛得角':{h:1.77,d:3.46,a:9.35},
-  'wc__佛得角__西班牙':{h:9.35,d:3.46,a:1.77},
-  'wc__沙特阿拉伯__乌拉圭':{h:5.7,d:2.92,a:2.38},
-  'wc__乌拉圭__沙特阿拉伯':{h:2.38,d:2.92,a:5.7},
-  'wc__西班牙__沙特阿拉伯':{h:1.69,d:3.62,a:8.95},
-  'wc__沙特阿拉伯__西班牙':{h:8.95,d:3.62,a:1.69},
-  'wc__佛得角__乌拉圭':{h:6.1,d:2.76,a:2.54},
-  'wc__乌拉圭__佛得角':{h:2.54,d:2.76,a:6.1},
-  'wc__西班牙__乌拉圭':{h:1.6,d:3.8,a:5.45},
-  'wc__乌拉圭__西班牙':{h:5.45,d:3.8,a:1.6},
-  'wc__佛得角__沙特阿拉伯':{h:2.24,d:3.14,a:3.74},
-  'wc__沙特阿拉伯__佛得角':{h:3.74,d:3.14,a:2.24},
-  'wc__法国__塞内加尔':{h:1.56,d:3.84,a:5.39},
-  'wc__塞内加尔__法国':{h:5.39,d:3.84,a:1.56},
-  'wc__伊拉克__挪威':{h:4.8,d:3.28,a:2.02},
-  'wc__挪威__伊拉克':{h:2.02,d:3.28,a:4.8},
-  'wc__法国__伊拉克':{h:1.66,d:3.68,a:8.8},
-  'wc__伊拉克__法国':{h:8.8,d:3.68,a:1.66},
-  'wc__塞内加尔__挪威':{h:1.64,d:3.76,a:5.51},
-  'wc__挪威__塞内加尔':{h:5.51,d:3.76,a:1.64},
-  'wc__法国__挪威':{h:1.4,d:4.2,a:7.5},
-  'wc__挪威__法国':{h:7.5,d:4.2,a:1.4},
-  'wc__塞内加尔__伊拉克':{h:1.53,d:3.94,a:8.15},
-  'wc__伊拉克__塞内加尔':{h:8.15,d:3.94,a:1.53},
-  'wc__阿根廷__阿尔及利亚':{h:1.35,d:4.3,a:7.25},
-  'wc__阿尔及利亚__阿根廷':{h:7.25,d:4.3,a:1.35},
-  'wc__奥地利__约旦':{h:1.49,d:4.02,a:7.95},
-  'wc__约旦__奥地利':{h:7.95,d:4.02,a:1.49},
-  'wc__阿根廷__奥地利':{h:1.31,d:4.38,a:7.05},
-  'wc__奥地利__阿根廷':{h:7.05,d:4.38,a:1.31},
-  'wc__阿尔及利亚__约旦':{h:1.45,d:4.1,a:7.75},
-  'wc__约旦__阿尔及利亚':{h:7.75,d:4.1,a:1.45},
-  'wc__阿根廷__约旦':{h:1.7,d:3.6,a:9.0},
-  'wc__约旦__阿根廷':{h:9.0,d:3.6,a:1.7},
-  'wc__阿尔及利亚__奥地利':{h:2.12,d:3.22,a:3.62},
-  'wc__奥地利__阿尔及利亚':{h:3.62,d:3.22,a:2.12},
-  'wc__葡萄牙__DR Congo':{h:1.55,d:3.9,a:8.25},
-  'wc__DR Congo__葡萄牙':{h:8.25,d:3.9,a:1.55},
-  'wc__乌兹别克斯坦__哥伦比亚':{h:5.35,d:3.06,a:2.24},
-  'wc__哥伦比亚__乌兹别克斯坦':{h:2.24,d:3.06,a:5.35},
-  'wc__葡萄牙__乌兹别克斯坦':{h:1.55,d:3.9,a:8.25},
-  'wc__乌兹别克斯坦__葡萄牙':{h:8.25,d:3.9,a:1.55},
-  'wc__DR Congo__哥伦比亚':{h:5.35,d:3.06,a:2.24},
-  'wc__哥伦比亚__DR Congo':{h:2.24,d:3.06,a:5.35},
-  'wc__葡萄牙__哥伦比亚':{h:1.94,d:3.54,a:4.24},
-  'wc__哥伦比亚__葡萄牙':{h:4.24,d:3.54,a:1.94},
-  'wc__DR Congo__乌兹别克斯坦':{h:2.2,d:3.2,a:2.2},
-  'wc__乌兹别克斯坦__DR Congo':{h:2.2,d:3.2,a:2.2},
-  'wc__英格兰__克罗地亚':{h:1.91,d:3.56,a:4.21},
-  'wc__克罗地亚__英格兰':{h:4.21,d:3.56,a:1.91},
-  'wc__加纳__巴拿马':{h:5.55,d:2.98,a:2.32},
-  'wc__巴拿马__加纳':{h:2.32,d:2.98,a:5.55},
-  'wc__英格兰__加纳':{h:1.8,d:3.4,a:9.5},
-  'wc__加纳__英格兰':{h:9.5,d:3.4,a:1.8},
-  'wc__克罗地亚__巴拿马':{h:1.32,d:4.36,a:7.1},
-  'wc__巴拿马__克罗地亚':{h:7.1,d:4.36,a:1.32},
-  'wc__英格兰__巴拿马':{h:1.39,d:4.22,a:7.45},
-  'wc__巴拿马__英格兰':{h:7.45,d:4.22,a:1.39},
-  'wc__克罗地亚__加纳':{h:1.73,d:3.54,a:9.15},
-  'wc__加纳__克罗地亚':{h:9.15,d:3.54,a:1.73},
 };
 
 const WC_COACHES = {
@@ -1462,8 +1311,7 @@ function renderPast(){
 }
 
 function renderBill(){
-  const el=document.getElementById('billContent'); if(!el)return;
-  if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const el=document.getElementById('billContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
   const u=cu(); if(!u){el.innerHTML='<div class="empty-state"><div class="icon">👤</div><p>请先选择身份</p><button class="btn btn-primary" onclick="showUserSelect()" style="margin-top:12px;">选择身份</button></div>';return;}
   const st=getStats(u); const sm=M.filter(m=>m.settled);
   let bi=sm.map(m=>{
@@ -1495,8 +1343,7 @@ function renderBill(){
 }
 
 function renderRank(){
-  const el=document.getElementById('rankContent'); if(!el)return;
-  if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const el=document.getElementById('rankContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
   const al=USERS.map((n,i)=>{const s=getStats(n);return{id:i,name:n,...s};}).sort((a,b)=>b.balance-a.balance);
   const u=cu();
   el.innerHTML='<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">🏆 消保委排名</div>'+al.map((x,i)=>{
@@ -1508,8 +1355,7 @@ function renderRank(){
 }
 
 function renderGroups(){
-  const el=document.getElementById('groupsContent'); if(!el)return;
-  if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const el=document.getElementById('groupsContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
   // Calculate standings from settled WC matches
   const standings = {};
   WC_GROUPS.forEach(g => {
@@ -1640,14 +1486,7 @@ document.addEventListener('click', function(e){
   }
 });
 
-function renderAll(){
-  try{renderMatches();}catch(e){console.error('Matches:',e);}
-  try{renderBill();}catch(e){console.error('Bill:',e);var el=document.getElementById('billContent');if(el)el.innerHTML='<div style="padding:20px;color:var(--red);text-align:center;">账单加载错误</div>';}
-  try{renderRank();}catch(e){console.error('Rank:',e);var el=document.getElementById('rankContent');if(el)el.innerHTML='<div style="padding:20px;color:var(--red);text-align:center;">排行加载错误</div>';}
-  try{renderGroups();}catch(e){console.error('Groups:',e);var el=document.getElementById('groupsContent');if(el)el.innerHTML='<div style="padding:20px;color:var(--red);text-align:center;">分组加载错误<br><span style="font-size:10px;">'+e.message+'</span></div>';}
-  try{renderPast();}catch(e){}
-  try{updateUI();}catch(e){}
-}
+function renderAll(){renderMatches();renderBill();renderRank();renderGroups();renderPast();updateUI();}
 
 // ======================== ACTIONS ========================
 var SELECTED_WDL={};
@@ -1681,7 +1520,7 @@ async function submitPred(mid){
   if(Date.now()>m.date-PREDICT_CUTOFF){showToast('预测已截止（比赛开始前1分钟停止预测）');return;}
   var pick=SELECTED_WDL[mid];
   if(!pick){showToast('请选择 胜/平/负');return;}
-  const skBtn=document.querySelector('.stake-btn.active');
+  const skBtn=document.querySelector('#stk_'+mid+' .stake-btn.active');
   if(!skBtn){showToast('请选择金额');return;}
   const cs=parseInt(skBtn.dataset.stake);
   const existing=getPred(mid,u);
@@ -1881,46 +1720,37 @@ function showPredModal(mid){
   var p=getPred(mid,u);
   PRED_CURRENT_MID=mid;
   document.getElementById('predModalTitle').textContent=m.home+' vs '+m.away;
-  var oh=m.odds_h||(INITIAL_ODDS["wc__"+m.home+"__"+m.away]||{}).h||2.0,od=m.odds_d||(INITIAL_ODDS["wc__"+m.home+"__"+m.away]||{}).d||3.0,oa=m.odds_a||(INITIAL_ODDS["wc__"+m.home+"__"+m.away]||{}).a||3.0;
+  var oh=m.odds_h||2.0,od=m.odds_d||2.0,oa=m.odds_a||2.0;
   var s=function(a,pre){return a.map(function(x){var k=pre+'_'+x.replace(':','_');var ov=m['odds_'+k];return '<div class="score-item-lg"><span class="s-lg">'+x+'</span><input type="text" class="so-lg" value="'+(ov||'')+'" '+(isAdmin?'':'readonly')+'></div>';}).join('');};
-  var sk=function(id,sel){return [10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===sel?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,\''+id+'\','+v+')">'+v+'</span>';}).join('');};
-  var wdlStake=p?((p.stake||m.stake)||10):10;
-  var scrStake=p?((p.stake||m.stake)||10):10;
   document.getElementById('predModalContent').innerHTML=
-    '<div style="font-size:14px;font-weight:700;margin:4px 0 6px;text-align:center;">胜平负</div>'+
-    '<div class="wdl-wrap" style="margin-bottom:4px;"><div class="wdl-col-md"><span class="wdl-btn-md '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWDL(this,\''+mid+'\',\'H\')">胜</span><input type="text" class="odds-gold" value="'+oh+'" '+(isAdmin?'':'readonly')+'></div>'+
-    '<div class="wdl-col-md"><span class="wdl-btn-md '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWDL(this,\''+mid+'\',\'D\')">平</span><input type="text" class="odds-gold" value="'+od+'" '+(isAdmin?'':'readonly')+'></div>'+
-    '<div class="wdl-col-md"><span class="wdl-btn-md '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWDL(this,\''+mid+'\',\'A\')">负</span><input type="text" class="odds-gold" value="'+oa+'" '+(isAdmin?'':'readonly')+'></div></div>'+
-    '<div class="stake-row" style="margin-bottom:6px;"><span class="stake-label">积分</span><div class="stake-btns" id="wdl_stk_'+mid+'">'+sk(mid,wdlStake)+'</div><button class="btn btn-primary" onclick="subPredWDL(\''+mid+'\')" style="font-size:11px;padding:4px 10px;white-space:nowrap;">提交</button></div>'+
-    '<div style="font-size:14px;font-weight:700;margin:6px 0 6px;text-align:center;">比分</div>'+
+    '<div style="font-size:16px;font-weight:700;margin:8px 0 10px;text-align:center;">胜平负</div>'+
+    '<div class="wdl-wrap" style="margin-bottom:12px;"><div class="wdl-col-lg"><span class="wdl-btn-lg '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWDL(\''+mid+'\',\'H\')">胜</span><input type="text" class="odds-input-lg" value="'+oh+'" '+(isAdmin?'':'readonly')+'></div>'+
+    '<div class="wdl-col-lg"><span class="wdl-btn-lg '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWDL(\''+mid+'\',\'D\')">平</span><input type="text" class="odds-input-lg" value="'+od+'" '+(isAdmin?'':'readonly')+'></div>'+
+    '<div class="wdl-col-lg"><span class="wdl-btn-lg '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWDL(\''+mid+'\',\'A\')">负</span><input type="text" class="odds-input-lg" value="'+oa+'" '+(isAdmin?'':'readonly')+'></div></div>'+
+    '<div style="font-size:16px;font-weight:700;margin:8px 0 10px;text-align:center;">比分</div>'+
     '<div class="score-grid-lg"><div class="score-col"><div class="score-col-title-lg" style="color:var(--primary);">主胜</div>'+s(['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','4:3'],'h')+'</div>'+
     '<div class="score-col"><div class="score-col-title-lg" style="color:var(--gold);">平局</div>'+s(['0:0','1:1','2:2','3:3','4:4'],'d')+'</div>'+
-    '<div class="score-col"><div class="score-col-title-lg" style="color:var(--red);">客胜</div>'+s(['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','3:4'],'a').split('score-item-lg').join('score-item-lg away')+'</div></div>'+
-    '<div class="stake-row" style="margin-top:4px;"><span class="stake-label">积分</span><div class="stake-btns" id="scr_stk_'+mid+'">'+sk(mid,scrStake)+'</div><button class="btn btn-primary" onclick="subPredScr(\''+mid+'\')" style="font-size:11px;padding:4px 10px;white-space:nowrap;">提交</button></div>';
+    '<div class="score-col"><div class="score-col-title-lg" style="color:var(--red);">客胜</div>'+s(['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','3:4'],'a')+'</div></div>'+
+    '<div class="stake-row" style="margin-top:10px;"><span class="stake-label" style="font-size:14px;">金额</span><div class="stake-btns" id="stk_'+mid+'">'+[10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===10?' active':'')+'" data-stake="'+v+'" onclick="selStake(\''+mid+'\','+v+')">¥'+v+'</span>';}).join('')+'</div><button class="btn btn-primary" onclick="subPred()" style="flex:1;font-size:14px;padding:10px;">提交</button></div>';
   document.getElementById('predModal').classList.add('show');
 }
 function closePredModal(){document.getElementById('predModal').classList.remove('show');}
 var PRED_CURRENT_MID=null;
-function selWDL(btn,mid,p){
-  btn.closest('.wdl-wrap').querySelectorAll('.wdl-btn-md').forEach(function(b){b.classList.remove('active','pick-set');});
-  btn.classList.add('active');
+function selWDL(mid,p){
+  document.querySelectorAll('#predModal .wdl-btn').forEach(function(b){b.classList.remove('active');});
+  var e=document.querySelector('#predModal .wdl-btn[data-pick="'+p+'"]');
+  if(e)e.classList.add('active');
 }
-function selStake(btn,id,v){
-  btn.closest('.stake-row').querySelectorAll('.stake-btn').forEach(function(b){b.classList.remove('active','stake-set');});
-  btn.classList.add('active');
-}
-function subPredWDL(mid){PRED_CURRENT_MID=mid;subPred();}
-function subPredScr(mid){PRED_CURRENT_MID=mid;showToast('比分预测功能待完成');}
-function subPredFix(){
-  var mid=PRED_CURRENT_MID; if(!mid)return;
-  var el=document.querySelector('.stake-btn.active');if(!el){showToast('请选择积分');return;}
-  el.classList.remove('active');el.classList.add('stake-set');
+function selStake(mid,v){
+  document.querySelectorAll('#stk_'+mid+' .stake-btn').forEach(function(b){b.classList.remove('active');});
+  var e=document.querySelector('#stk_'+mid+' .stake-btn[data-stake="'+v+'"]');
+  if(e)e.classList.add('active');
 }
 function subPred(){
   var mid=PRED_CURRENT_MID; if(!mid)return;
-  var pick=document.querySelector('#predModal .wdl-btn-md.active')?.dataset?.pick;
+  var pick=document.querySelector('#predModal .wdl-btn.active')?.dataset?.pick;
   if(!pick){showToast('请选择胜平负');return;}
-  var sk=document.querySelector('.stake-btn.active')?.dataset?.stake;
+  var sk=document.querySelector('#stk_'+mid+' .stake-btn.active')?.dataset?.stake;
   if(!sk){showToast('请选择金额');return;}
   var u=cu();if(!u)return;
   var m=M.find(function(x){return x.id===mid;});if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
@@ -1930,8 +1760,6 @@ function subPred(){
     if(e){ft(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});}
     else{ft(SB_URL+'/rest/v1/predictions',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(Object.assign({match_id:mid,user_name:u,created_at:new Date().toISOString()},body))});}
     closePredModal();showToast('预测已提交');loadData();
-    var ss=document.querySelector('.stake-btn.active');if(ss){ss.classList.remove('active');ss.classList.add('stake-set');}
-	    var sp=document.querySelector('#predModal .wdl-btn-md.active');if(sp){sp.classList.remove('active');sp.classList.add('pick-set');}
   }catch(e){showToast('提交失败');}
 }
 function toggleAdmin(){
@@ -2001,10 +1829,10 @@ async function deleteMyPred(mid){
   }catch(e){showToast('删除失败');}
 }
 function init(){
-  document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){try{
-    document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});
-    var c=document.getElementById('tab'+this.dataset.tab);if(c)c.classList.add('active');this.classList.add('active');renderAll();
-    }catch(e){showToast('切换失败:'+e.message);}});});
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+    document.querySelectorAll('.content,.tab').forEach(e=>e.classList.remove('active'));
+    document.getElementById('tab'+t.dataset.tab).classList.add('active');t.classList.add('active');renderAll();
+  }));
   document.querySelectorAll('#leagueFilters .btn').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#leagueFilters .btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderMatches();
   }));
@@ -2027,7 +1855,6 @@ function init(){
 
 document.addEventListener('DOMContentLoaded',init);
 </script>
-
 </body>
 </html>
 
