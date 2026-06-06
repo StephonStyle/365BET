@@ -348,7 +348,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.41 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.42 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2019,19 +2019,6 @@ function init(){
 }
 
 document.addEventListener('DOMContentLoaded',init);
-</script>
-
-<script>
-// DEBUG: Force all content visible
-setTimeout(function(){
-  document.querySelectorAll('.content').forEach(function(el){
-    el.style.display = 'block';
-    el.style.border = '2px solid red';
-  });
-  document.getElementById('groupsContent').innerHTML = '<div style="padding:20px;color:#0f0;font-size:16px;">GROUPS DEBUG: JS is working!</div>';
-  document.getElementById('billContent').innerHTML = '<div style="padding:20px;color:#0f0;font-size:16px;">BILL DEBUG: JS is working!</div>';
-  document.getElementById('rankContent').innerHTML = '<div style="padding:20px;color:#0f0;font-size:16px;">RANK DEBUG: JS is working!</div>';
-}, 3000);
 </script>
 
 </body>
