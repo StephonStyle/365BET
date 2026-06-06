@@ -241,6 +241,11 @@ body {
 }
 .group-table tr.flash-row { animation: rowFlash 1.5s ease-out; }
 
+
+.score-item-lg { display:flex; align-items:center; gap:2px; padding:3px 4px; border-radius:4px; background:var(--card2); margin-bottom:2px; min-height:26px; }
+.score-item-lg .s-lg { flex:1; text-align:center; font-size:12px; font-weight:600; }
+.score-item-lg .so-lg { width:32px; border:none; background:transparent; color:var(--gold); text-align:center; font-size:10px; font-weight:600; }
+
 </style>
 </head>
 <body>
@@ -303,7 +308,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.50 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.51 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -507,6 +512,21 @@ const WC_SQUADS = {
   'Panama':[{num:1,name:'Luis Mejía',pos:'GK',age:35,club:'Nacional',cn:'路易斯·梅希亚',value:'无身价记录'},{num:2,name:'César Blackman',pos:'DF',age:28,club:'Slovan Bratislava',cn:'塞萨尔·布莱克曼',value:'无身价记录'},{num:3,name:'José Córdoba',pos:'DF',age:25,club:'Norwich City',cn:'何塞·科尔多瓦',value:'无身价记录'},{num:4,name:'Fidel Escobar',pos:'DF',age:31,club:'Saprissa',cn:'菲德尔·埃斯科瓦尔',value:'无身价记录'},{num:5,name:'Edgardo Fariña',pos:'DF',age:24,club:'Pari Nizhny Novgorod',cn:'埃德加多·法里尼亚',value:'无身价记录'},{num:6,name:'Cristian Martínez',pos:'MF',age:29,club:'Ironi Kiryat Shmona',cn:'克里斯蒂安·马丁內斯',value:'无身价记录'},{num:7,name:'José Luis Rodríguez',pos:'MF',age:27,club:'Juárez',cn:'何塞·路易斯·罗德里格斯',value:'€100M'},{num:8,name:'Adalberto Carrasquilla',pos:'MF',age:27,club:'UNAM',cn:'阿达尔贝托·卡拉斯基利亚',value:'无身价记录'},{num:9,name:'Tomás Rodríguez',pos:'FW',age:27,club:'Saprissa',cn:'托马斯·罗德里格斯',value:'€100M'},{num:10,name:'Ismael Díaz',pos:'MF',age:29,club:'León',cn:'伊斯梅尔·迪亚斯',value:'无身价记录'},{num:11,name:'Yoel Bárcenas',pos:'MF',age:32,club:'Mazatlán',cn:'约埃尔·巴尔塞纳斯',value:'无身价记录'},{num:12,name:'César Samudio',pos:'GK',age:32,club:'Marathón',cn:'塞萨尔·萨穆迪奥',value:'无身价记录'},{num:13,name:'Jiovany Ramos',pos:'DF',age:29,club:'Puerto Cabello',cn:'希奥瓦尼·拉莫斯',value:'无身价记录'},{num:14,name:'Carlos Harvey',pos:'DF',age:26,club:'Minnesota United FC',cn:'卡洛斯·哈维',value:'无身价记录'},{num:15,name:'Eric Davis',pos:'DF',age:35,club:'Plaza Amador',cn:'埃里克·戴维斯',value:'无身价记录'},{num:16,name:'Andrés Andrade',pos:'DF',age:27,club:'LASK',cn:'安德烈斯·安德拉德',value:'无身价记录'},{num:17,name:'José Fajardo',pos:'FW',age:32,club:'Universidad Católica',cn:'何塞·法哈多',value:'无身价记录'},{num:18,name:'Cecilio Waterman',pos:'FW',age:35,club:'Universidad de Concepción',cn:'塞西利奥·沃特曼',value:'无身价记录'},{num:19,name:'Alberto Quintero',pos:'MF',age:38,club:'Plaza Amador',cn:'阿尔贝托·金特罗',value:'无身价记录'},{num:20,name:'Aníbal Godoy',pos:'MF',age:36,club:'San Diego FC',cn:'阿尼瓦尔·戈多伊',value:'无身价记录'},{num:21,name:'César Yanis',pos:'MF',age:30,club:'Cobresal',cn:'塞萨尔·亚尼斯',value:'无身价记录'},{num:22,name:'Orlando Mosquera',pos:'GK',age:31,club:'Al-Fayha',cn:'奥兰多·莫斯克拉',value:'无身价记录'},{num:23,name:'Michael Amir Murillo',pos:'DF',age:30,club:'Beşiktaş',cn:'米高·阿米尔·穆里略',value:'€15M'},{num:24,name:'Azarias Londoño',pos:'FW',age:24,club:'Universidad Católica',cn:'阿萨里亚斯·隆多尼奥',value:'无身价记录'},{num:25,name:'Roderick Miller',pos:'DF',age:34,club:'Turan Tovuz',cn:'罗德里克·米勒',value:'€1M'},{num:26,name:'Jorge Gutiérrez',pos:'DF',age:27,club:'Deportivo La Guaira',cn:'豪尔赫·古铁雷斯',value:'无身价记录'}]
 };
 
+var RANK_DATA={Argentina:3,Australia:27,Austria:24,Belgium:9,Bosnia:65,Brazil:6,Canada:30,CapeVerde:69,Colombia:13,Croatia:11,Curacao:82,Czechia:41,DRCongo:46,Ecuador:23,Egypt:29,England:4,France:1,Germany:10,Ghana:74,Haiti:83,Iran:21,Iraq:57,IvoryCoast:34,Japan:18,Jordan:63,Mexico:15,Morocco:8,Netherlands:7,NewZealand:85,Norway:31,Panama:33,Paraguay:40,Portugal:5,Qatar:55,SaudiArabia:61,Scotland:43,Senegal:14,SouthAfrica:60,SouthKorea:25,Spain:2,Sweden:38,Switzerland:19,Tunisia:44,Turkey:22,USA:16,Uruguay:17,Uzbekistan:50,Algeria:28};
+var CN2EN={'墨西哥':'Mexico','南非':'SouthAfrica','韩国':'SouthKorea','捷克':'Czechia','加拿大':'Canada','波黑':'Bosnia','卡塔尔':'Qatar','瑞士':'Switzerland','巴西':'Brazil','摩洛哥':'Morocco','海地':'Haiti','苏格兰':'Scotland','美国':'USA','巴拉圭':'Paraguay','澳大利亚':'Australia','土耳其':'Turkey','德国':'Germany','库拉索':'Curacao','科特迪瓦':'IvoryCoast','厄瓜多尔':'Ecuador','荷兰':'Netherlands','日本':'Japan','瑞典':'Sweden','突尼斯':'Tunisia','比利时':'Belgium','埃及':'Egypt','伊朗':'Iran','新西兰':'NewZealand','西班牙':'Spain','佛得角':'CapeVerde','沙特阿拉伯':'SaudiArabia','乌拉圭':'Uruguay','法国':'France','塞内加尔':'Senegal','伊拉克':'Iraq','挪威':'Norway','阿根廷':'Argentina','阿尔及利亚':'Algeria','奥地利':'Austria','约旦':'Jordan','葡萄牙':'Portugal','DR Congo':'DRCongo','乌兹别克斯坦':'Uzbekistan','哥伦比亚':'Colombia','英格兰':'England','克罗地亚':'Croatia','加纳':'Ghana','巴拿马':'Panama'};
+function getInitOdds(h,a){
+  var he=CN2EN[h]||h; var ae=CN2EN[a]||a;
+  var hr=RANK_DATA[he.replace(/ /g,'')]||50, ar=RANK_DATA[ae.replace(/ /g,'')]||50, d=ar-hr;
+  var h0,d0,a0;
+  if(d>20){h0=1.3+(d-20)*0.01;d0=3.8+(50-d)*0.02;a0=6.0+d*0.05;}
+  else if(d>10){h0=1.5+(d-10)*0.02;d0=3.5+(30-d)*0.02;a0=5.0+d*0.03;}
+  else if(d>0){h0=1.7+d*0.03;d0=3.3+(20-d)*0.02;a0=4.0+d*0.03;}
+  else if(d===0){h0=2.2;d0=3.2;a0=2.2;}
+  else if(d>-10){h0=2.0-d*0.03;d0=3.3+d*0.02;a0=3.5-d*0.03;}
+  else if(d>-20){h0=2.5-d*0.04;d0=3.5+d*0.02;a0=2.8-d*0.03;}
+  else{h0=3.5-d*0.05;d0=3.8+d*0.02;a0=1.5-d*0.02;}
+  return {h:Math.round(Math.max(1.1,Math.min(h0,15))*100)/100,d:Math.round(Math.max(2.5,Math.min(d0,10))*100)/100,a:Math.round(Math.max(1.1,Math.min(a0,15))*100)/100};
+}
 const WC_COACHES = {
   'Mexico':{en:'Javier Aguirre',cn:''},
   'South Africa':{en:'Hugo Broos',cn:''},
@@ -1638,18 +1658,24 @@ function showPredModal(mid){
   var p=getPred(mid,u);
   PRED_CURRENT_MID=mid;
   document.getElementById('predModalTitle').textContent=m.home+' vs '+m.away;
+  var od=getInitOdds(m.home,m.away);
+  var oh=m.odds_h||od.h||2.0, odv=m.odds_d||od.d||3.0, oa=m.odds_a||od.a||3.0;
   var skHtml=function(sel){return [10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===sel?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('');};
-  var wdlStake=p?10:10;
+  var ss=function(arr){return arr.map(function(x){return '<div class="score-item-lg"><span class="s-lg">'+x+'</span></div>';}).join('');};
+  var wdlStake=p?(p.stake||m.stake||10):10;
   document.getElementById('predModalContent').innerHTML=
-    '<div style="font-size:15px;font-weight:700;margin:6px 0 8px;text-align:center;">胜平负</div>'+
-    '<div class="wdl-wrap" style="margin-bottom:6px;"><div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWdl(this,&#39;H&#39;)">胜</span></div>'+
-    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWdl(this,&#39;D&#39;)">平</span></div>'+
-    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWdl(this,&#39;A&#39;)">负</span></div></div>'+
-    '<div class="stake-row" style="margin-bottom:6px;"><span class="stake-label">积分</span><div class="stake-btns" id="stk_'+mid+'">'+skHtml(wdlStake)+'</div><button class="btn btn-primary" onclick="subPredModal()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
-    '<div style="font-size:13px;font-weight:600;color:var(--text2);margin-top:4px;text-align:center;">比分预测功能待完善</div>';
+    '<div style="font-size:14px;font-weight:700;margin:4px 0 6px;text-align:center;">胜平负</div>'+
+    '<div class="wdl-wrap" style="margin-bottom:4px;"><div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWdl(this,\'H\')">胜</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+oh+'</span></div>'+
+    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWdl(this,\'D\')">平</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+odv+'</span></div>'+
+    '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWdl(this,\'A\')">负</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+oa+'</span></div></div>'+
+    '<div class="stake-row" style="margin-bottom:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="stk_'+mid+'">'+skHtml(wdlStake)+'</div><button class="btn btn-primary" onclick="subPredModal()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
+    '<div style="font-size:14px;font-weight:700;margin:6px 0 4px;text-align:center;">比分</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;"><div><div style="font-size:11px;color:var(--primary);text-align:center;padding:2px 0;font-weight:600;">主胜</div>'+ss(['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','4:3'])+'</div>'+
+    '<div><div style="font-size:11px;color:var(--gold);text-align:center;padding:2px 0;font-weight:600;">平局</div>'+ss(['0:0','1:1','2:2','3:3','4:4'])+'</div>'+
+    '<div><div style="font-size:11px;color:var(--red);text-align:center;padding:2px 0;font-weight:600;">客胜</div>'+ss(['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','3:4'])+'</div></div>'+
+    '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="scr_stk_'+mid+'">'+skHtml(10)+'</div><button class="btn btn-primary" onclick="showToast('\u6bd4\u5206\u9884\u6d4b\u529f\u80fd\u5f85\u5b8c\u5584')" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>';
   document.getElementById('predModal').classList.add('show');
-}
-function closePredModal(){document.getElementById('predModal').classList.remove('show');}
+}function closePredModal(){document.getElementById('predModal').classList.remove('show');}
 function selWdl(btn,p){
   var parent=btn.closest('.wdl-wrap')||btn.parentNode;
   parent.querySelectorAll('.wdl-btn').forEach(function(b){b.classList.remove('active','pick-set');});
