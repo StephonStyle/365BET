@@ -348,7 +348,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.37 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.38 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1637,7 +1637,7 @@ document.addEventListener('click', function(e){
   }
 });
 
-function renderAll(){renderMatches();renderBill();renderRank();renderGroups();renderPast();updateUI();}
+function renderAll(){try{renderMatches();}catch(e){}try{renderBill();}catch(e){}try{renderRank();}catch(e){}try{renderGroups();}catch(e){}try{renderPast();}catch(e){}try{updateUI();}catch(e){}}
 
 // ======================== ACTIONS ========================
 var SELECTED_WDL={};
@@ -1900,16 +1900,15 @@ function selStake(btn,id,v){
   btn.classList.add('active');
 }
 function subPredWDL(mid){PRED_CURRENT_MID=mid;subPred();}
-function subPredScr(mid){PRED_CURRENT_MID=mid;subPred();}
+function subPredScr(mid){PRED_CURRENT_MID=mid;showToast('比分预测功能待完成');}
 function subPredFix(){
   var mid=PRED_CURRENT_MID; if(!mid)return;
   var el=document.querySelector('.stake-btn.active');if(!el){showToast('请选择积分');return;}
   el.classList.remove('active');el.classList.add('stake-set');
 }
-function subPredScr(mid){PRED_CURRENT_MID=mid;subPred();}
 function subPred(){
   var mid=PRED_CURRENT_MID; if(!mid)return;
-  var pick=document.querySelector('#predModal .wdl-btn.active')?.dataset?.pick;
+  var pick=document.querySelector('#predModal .wdl-btn-md.active')?.dataset?.pick;
   if(!pick){showToast('请选择胜平负');return;}
   var sk=document.querySelector('.stake-btn.active')?.dataset?.stake;
   if(!sk){showToast('请选择金额');return;}
