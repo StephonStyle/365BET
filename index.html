@@ -265,7 +265,21 @@ body {
 .score-item .s { flex:1; text-align:center; }
 .score-item .so { width:28px; padding:0; border:none; background:transparent; color:var(--gold); text-align:center; font-size:7px; font-weight:600; }
 .score-item .so[readonly] { color:var(--text2); }
-
+.wdl-col-lg { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+.wdl-btn-lg { width:100%; text-align:center; padding:10px 0; border-radius:8px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:18px; font-weight:700; transition:all .15s; }
+.wdl-btn-lg.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
+.wdl-btn-lg[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
+.wdl-btn-lg[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+.wdl-btn-lg[data-pick="A"]:hover { border-color:var(--red); color:var(--red); background:var(--red-dim); }
+.odds-input-lg { width:100%; padding:6px 0; border-radius:6px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:14px; font-weight:600; box-sizing:border-box; }
+.odds-input-lg[readonly] { opacity:0.6; border-color:transparent; background:transparent; cursor:default; }
+.score-grid-lg { display:grid; grid-template-columns:1fr 1fr 1fr; gap:3px; margin-top:8px; }
+.score-col-title-lg { font-size:11px; color:var(--text2); text-align:center; padding:4px 0; font-weight:600; }
+.score-item-lg { display:flex; align-items:center; gap:3px; padding:4px 6px; border-radius:5px; background:var(--card2); cursor:pointer; transition:all .15s; }
+.score-item-lg:hover { background:var(--primary-dim); }
+.score-item-lg .s-lg { flex:1; text-align:center; font-size:13px; font-weight:600; }
+.score-item-lg .so-lg { width:40px; padding:2px 0; border-radius:3px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:11px; font-weight:600; }
+.score-item-lg .so-lg[readonly] { opacity:0.5; border-color:transparent; background:transparent; cursor:default; }
 </style>
 </head>
 <body>
@@ -330,7 +344,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.31 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.32 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1705,19 +1719,19 @@ function showPredModal(mid){
   var u=cu(); if(!u){showToast('请先选择身份');showUserSelect();return;}
   var p=getPred(mid,u);
   PRED_CURRENT_MID=mid;
-  document.getElementById('predModalTitle').textContent='📊 '+(p?'修改预测':'预测')+' '+m.home+' vs '+m.away;
-  var s=function(a){return a.map(function(x){return '<div class="score-item"><span class="s">'+x+'</span></div>';}).join('');};
-  var od=m.odds_h||2.0;
+  document.getElementById('predModalTitle').textContent=m.home+' vs '+m.away;
+  var oh=m.odds_h||2.0,od=m.odds_d||2.0,oa=m.odds_a||2.0;
+  var s=function(a,pre){return a.map(function(x){var k=pre+'_'+x.replace(':','_');var ov=m['odds_'+k];return '<div class="score-item-lg"><span class="s-lg">'+x+'</span><input type="text" class="so-lg" value="'+(ov||'')+'" '+(isAdmin?'':'readonly')+'></div>';}).join('');};
   document.getElementById('predModalContent').innerHTML=
-    '<div style="font-size:13px;font-weight:600;margin-bottom:6px;">胜平负</div>'+
-    '<div class="wdl-wrap" style="margin-bottom:8px;"><div class="wdl-col"><span class="wdl-btn '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWDL(\''+mid+'\',\'H\')">胜</span><span class="odds-text">'+od+'</span></div>'+
-    '<div class="wdl-col"><span class="wdl-btn '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWDL(\''+mid+'\',\'D\')">平</span><span class="odds-text">'+(m.odds_d||2.0)+'</span></div>'+
-    '<div class="wdl-col"><span class="wdl-btn '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWDL(\''+mid+'\',\'A\')">负</span><span class="odds-text">'+(m.odds_a||2.0)+'</span></div></div>'+
-    '<div style="font-size:13px;font-weight:600;margin-bottom:4px;">比分</div>'+
-    '<div class="score-grid"><div class="score-col"><div class="score-col-title" style="color:var(--primary);">主胜</div>'+s(['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','4:3'])+'</div>'+
-    '<div class="score-col"><div class="score-col-title" style="color:var(--gold);">平局</div>'+s(['0:0','1:1','2:2','3:3','4:4'])+'</div>'+
-    '<div class="score-col"><div class="score-col-title" style="color:var(--red);">客胜</div>'+s(['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','3:4'])+'</div></div>'+
-    '<div class="stake-row" style="margin-top:8px;"><span class="stake-label">金额</span><div class="stake-btns" id="stk_'+mid+'">'+[10,15,20,25,30].map(function(v){return '<span class="stake-btn'+(v===10?' active':'')+'" data-stake="'+v+'" onclick="selStake(\''+mid+'\','+v+')">¥'+v+'</span>';}).join('')+'</div><button class="btn btn-primary btn-small" onclick="subPred()">提交</button></div>';
+    '<div style="font-size:16px;font-weight:700;margin:8px 0 10px;text-align:center;">胜平负</div>'+
+    '<div class="wdl-wrap" style="margin-bottom:12px;"><div class="wdl-col-lg"><span class="wdl-btn-lg '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWDL(\''+mid+'\',\'H\')">胜</span><input type="text" class="odds-input-lg" value="'+oh+'" '+(isAdmin?'':'readonly')+'></div>'+
+    '<div class="wdl-col-lg"><span class="wdl-btn-lg '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWDL(\''+mid+'\',\'D\')">平</span><input type="text" class="odds-input-lg" value="'+od+'" '+(isAdmin?'':'readonly')+'></div>'+
+    '<div class="wdl-col-lg"><span class="wdl-btn-lg '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWDL(\''+mid+'\',\'A\')">负</span><input type="text" class="odds-input-lg" value="'+oa+'" '+(isAdmin?'':'readonly')+'></div></div>'+
+    '<div style="font-size:16px;font-weight:700;margin:8px 0 10px;text-align:center;">比分</div>'+
+    '<div class="score-grid-lg"><div class="score-col"><div class="score-col-title-lg" style="color:var(--primary);">主胜</div>'+s(['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','4:3'],'h')+'</div>'+
+    '<div class="score-col"><div class="score-col-title-lg" style="color:var(--gold);">平局</div>'+s(['0:0','1:1','2:2','3:3','4:4'],'d')+'</div>'+
+    '<div class="score-col"><div class="score-col-title-lg" style="color:var(--red);">客胜</div>'+s(['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','3:4'],'a')+'</div></div>'+
+    '<div class="stake-row" style="margin-top:10px;"><span class="stake-label" style="font-size:14px;">金额</span><div class="stake-btns" id="stk_'+mid+'">'+[10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===10?' active':'')+'" data-stake="'+v+'" onclick="selStake(\''+mid+'\','+v+')">¥'+v+'</span>';}).join('')+'</div><button class="btn btn-primary" onclick="subPred()" style="flex:1;font-size:14px;padding:10px;">提交</button></div>';
   document.getElementById('predModal').classList.add('show');
 }
 function closePredModal(){document.getElementById('predModal').classList.remove('show');}
