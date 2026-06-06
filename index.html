@@ -348,7 +348,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.40 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.41 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1994,10 +1994,10 @@ async function deleteMyPred(mid){
   }catch(e){showToast('删除失败');}
 }
 function init(){
-  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{try{
-    document.querySelectorAll('.content,.tab').forEach(e=>e.classList.remove('active'));
-    document.getElementById('tab'+t.dataset.tab).classList.add('active');t.classList.add('active');renderAll();
-    }catch(e){showToast('切换失败:'+e.message);}}));
+  document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){try{
+    document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});
+    var c=document.getElementById('tab'+this.dataset.tab);if(c)c.classList.add('active');this.classList.add('active');renderAll();
+    }catch(e){showToast('切换失败:'+e.message);}});});
   document.querySelectorAll('#leagueFilters .btn').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#leagueFilters .btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderMatches();
   }));
