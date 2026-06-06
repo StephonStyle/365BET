@@ -311,7 +311,7 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.25 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.26 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1554,6 +1554,21 @@ async function adminEditResult(mid){
   L = await sbGet('settlement_logs','?order=created_at.desc');
 }
 
+async function enterResultAdmin(mid){
+  if(!isAdmin) return;
+  var m=M.find(function(x){return x.id===mid;}); if(!m) return;
+  var h=parseInt(document.getElementById('adm_rh_'+mid)?.value);
+  var a=parseInt(document.getElementById('adm_ra_'+mid)?.value);
+  if(isNaN(h)||isNaN(a)||h<0||a<0){showToast('请输入有效比分');return;}
+  await ft(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
+    method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({home_score:h,away_score:a})
+  });
+  m.home_score=h;m.away_score=a;
+  await settleMatch(m);
+  renderAdmin();showToast('已录入并结算');
+}
+
 async function enterResultPast(mid){
   if(!isAdmin) return;
   const m=M.find(x=>x.id===mid); if(!m) return;
@@ -1738,8 +1753,7 @@ function init(){
   document.querySelector('#userModal .modal-close').addEventListener('click',()=>document.getElementById('userModal').classList.remove('show'));
   document.getElementById('userModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
   document.getElementById('adminBtn').addEventListener('click',toggleAdmin);
-  document.getElementById('adminSwitch').addEventListener('change',toggleAdmin);
-  document.getElementById('addMatchBtn').addEventListener('click',addMatch);
+    
   document.getElementById('camBtn').addEventListener('click',()=>{if(!cu()){showToast('请先选择身份');return;}document.getElementById('avatarUpload').click();});
   document.getElementById('avatarUpload').addEventListener('change',async function(){const f=this.files?.[0];if(f){await uploadAvatar(f);}this.value='';});
   document.querySelectorAll('#stakeOptions .stake-option').forEach(el=>el.addEventListener('click',function(){
