@@ -301,7 +301,7 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.12 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.13 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1384,7 +1384,7 @@ function renderGroups(){
 
 function gotoTeam(tn){
   var g=WC_TEAM_GROUP[tn]||WC_TEAM_GROUP[CN_RANK[tn]]||'';
-  if(!g) return;
+  if(!g){showToast(tn+' 不是世界杯参赛队');return;}
   document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});
   document.getElementById('tabGroups').classList.add('active');
   document.querySelector('[data-tab=Groups]').classList.add('active');
