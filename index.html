@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.60 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.61 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1702,7 +1702,7 @@ function showPredModal(mid){
     '</div>'+
     '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="scr_'+mid+'">'+[10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===10?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div><button class="btn btn-primary" onclick="scrPred()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
     '';
-  document.getElementById('predModal').classList.add('show');
+  document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
   
   document.getElementById('predModalContent').onclick=function(e){var t=e.target.closest('.score-item-lg');if(t){document.querySelectorAll('#predModal .score-item-lg').forEach(function(b){b.classList.remove('active');});t.classList.add('active');}};
 
@@ -1719,7 +1719,7 @@ function showPredModal(mid){
   if(scrDiv){scrDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">已经预测 '+sk+'分 '+score+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;" onclick="showPredModal('+PRED_CURRENT_MID+')">修改</button></div>';}
 }
 function closePredModal(){ 
-document.getElementById('predModal').classList.remove('show');}
+document.getElementById('predModal').classList.remove('show');document.body.style.overflow='';}
 function selWdl(btn,p){
   var parent=btn.closest('.wdl-wrap')||btn.parentNode;
   parent.querySelectorAll('.wdl-btn').forEach(function(b){b.classList.remove('active','pick-set');});
