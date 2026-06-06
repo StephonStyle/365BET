@@ -256,14 +256,14 @@ body {
 .group-table tr.flash-row { animation: rowFlash 1.5s ease-out; }
 
 
-.wdl-btns { display:flex; gap:3px; justify-content:center; margin:1px 0; }
-.wdl-btn { flex:0 0 auto; text-align:center; padding:2px 5px; border-radius:4px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:10px; font-weight:600; transition:all .15s; }
+.wdl-wrap { display:flex; gap:4px; justify-content:center; margin:1px 0; align-items:stretch; }
+.wdl-col { display:flex; flex-direction:column; align-items:center; gap:2px; flex:1; max-width:56px; }
+.wdl-btn { width:100%; text-align:center; padding:2px 0; border-radius:4px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:10px; font-weight:600; transition:all .15s; }
 .wdl-btn.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
-.wdl-btn:hover { background:var(--primary-dim); border-color:var(--primary); }
-.wdl-btn[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); }
-.wdl-btn[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); }
-.wdl-btn[data-pick="A"]:hover { border-color:var(--red); color:var(--red); }
-.odds-box { width:38px; padding:1px 2px; border-radius:3px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:9px; font-weight:600; height:18px; }
+.wdl-btn[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
+.wdl-btn[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+.wdl-btn[data-pick="A"]:hover { border-color:var(--red); color:var(--red); background:var(--red-dim); }
+.odds-box { width:100%; padding:1px 0; border-radius:3px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:9px; font-weight:600; height:18px; box-sizing:border-box; }
 .odds-box[readonly] { opacity:0.6; border-color:transparent; background:transparent; cursor:default; }
 
 </style>
@@ -312,7 +312,7 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.17 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.18 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1232,8 +1232,8 @@ function renderMatches(){
     if(m.home_score!=null&&m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
     else if(lh!==undefined&&la!==undefined&&!m.settled) rd=`<div class="match-score" style="color:var(--gold);">${lh} - ${la}<span style="display:block;font-size:10px;color:var(--red);font-weight:600;">🔴 LIVE</span></div>`;
     else if(m.home_score!=null&&isAdmin&&!m.settled) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
-    else if(cP) rd=`<div class="match-score-input"><div class="wdl-btns" id="wdl_${m.id}"><span class="wdl-btn" data-pick="H" onclick="selectWDL('${m.id}','H')">胜</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_h_${m.id}" value="${m.odds_h||2.0}" ${isAdmin?'':'readonly'}><span class="wdl-btn" data-pick="D" onclick="selectWDL('${m.id}','D')">平</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_d_${m.id}" value="${m.odds_d||2.0}" ${isAdmin?'':'readonly'}><span class="wdl-btn" data-pick="A" onclick="selectWDL('${m.id}','A')">负</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_a_${m.id}" value="${m.odds_a||2.0}" ${isAdmin?'':'readonly'}></div></div>`;
-    else if(p&&!isP) rd=`<div class="match-score-input"><div class="wdl-btns" id="wdl_${m.id}"><span class="wdl-btn ${p.pick==='H'?'active':''}" data-pick="H" onclick="selectWDL('${m.id}','H')">胜</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_h_${m.id}" value="${m.odds_h||2.0}" ${isAdmin?'':'readonly'}><span class="wdl-btn ${p.pick==='D'?'active':''}" data-pick="D" onclick="selectWDL('${m.id}','D')">平</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_d_${m.id}" value="${m.odds_d||2.0}" ${isAdmin?'':'readonly'}><span class="wdl-btn ${p.pick==='A'?'active':''}" data-pick="A" onclick="selectWDL('${m.id}','A')">负</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_a_${m.id}" value="${m.odds_a||2.0}" ${isAdmin?'':'readonly'}></div></div>`;
+    else if(cP) rd=`<div class="match-score-input"><div class="wdl-wrap" id="wdl_${m.id}"><div class="wdl-col"><span class="wdl-btn" data-pick="H" onclick="selectWDL('${m.id}','H')">胜</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_h_${m.id}" value="${m.odds_h||2.0}" ${isAdmin?'':'readonly'}></div><div class="wdl-col"><span class="wdl-btn" data-pick="D" onclick="selectWDL('${m.id}','D')">平</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_d_${m.id}" value="${m.odds_d||2.0}" ${isAdmin?'':'readonly'}></div><div class="wdl-col"><span class="wdl-btn" data-pick="A" onclick="selectWDL('${m.id}','A')">负</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_a_${m.id}" value="${m.odds_a||2.0}" ${isAdmin?'':'readonly'}></div></div></div>`;
+    else if(p&&!isP) rd=`<div class="match-score-input"><div class="wdl-wrap" id="wdl_${m.id}"><div class="wdl-col"><span class="wdl-btn ${p.pick==='H'?'active':''}" data-pick="H" onclick="selectWDL('${m.id}','H')">胜</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_h_${m.id}" value="${m.odds_h||2.0}" ${isAdmin?'':'readonly'}></div><div class="wdl-col"><span class="wdl-btn ${p.pick==='D'?'active':''}" data-pick="D" onclick="selectWDL('${m.id}','D')">平</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_d_${m.id}" value="${m.odds_d||2.0}" ${isAdmin?'':'readonly'}></div><div class="wdl-col"><span class="wdl-btn ${p.pick==='A'?'active':''}" data-pick="A" onclick="selectWDL('${m.id}','A')">负</span><input type="number" step="0.01" min="1.0" class="odds-box" id="odds_a_${m.id}" value="${m.odds_a||2.0}" ${isAdmin?'':'readonly'}></div></div></div>`;
     else if(p) rd=`<div class="match-score"><span class="vs">VS</span></div>`;
     else rd=`<div class="match-score"><span class="vs">VS</span></div>`;
     let pi='';const mp=getPreds(m.id);if(mp.length>0){const wl=m.settled&&m.settlement?m.settlement.winners:[];const stks=m.settlement?.stakes||{};const ds=m.stake||10;pi='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 预测详情<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:4px;">'+mp.map(x=>{const pt=x.created_at?new Date(x.created_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}):'';const sk=stks[x.user_name]||ds;const iw=wl.length&&wl.includes(x.user_name);const imp=(lh!==undefined&&la!==undefined)&&(x.home_score<lh||x.away_score<la);return'<span style="background:'+(iw?'rgba(255,50,50,0.22)':'var(--card2)')+';padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;position:relative;"><span style="font-weight:600;font-size:11px;">'+x.user_name+' <span style="font-weight:800;font-size:13px;color:var(--text);">'+(x.pick?{H:'胜',D:'平',A:'负'}[x.pick]:x.home_score+':'+x.away_score)+'</span></span><div style="display:flex;gap:2px;font-size:10px;"><span style="'+(sk>=30?'color:var(--red);font-weight:800;':sk>=15?'color:var(--red);':'color:var(--text2);')+'">¥'+sk+'</span><span style="color:var(--text2);"> · '+pt+'</span></div>'+(imp?'<span style="position:absolute;top:-4px;right:2px;font-size:20px;font-weight:900;color:#ff1744;opacity:0.8;line-height:1;text-shadow:0 0 4px rgba(255,23,68,0.4);">✗</span>':'')+'</span>';}).join('')+'</div></div>';}
