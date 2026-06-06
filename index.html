@@ -308,7 +308,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.52 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.53 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1660,20 +1660,32 @@ function showPredModal(mid){
   document.getElementById('predModalTitle').textContent=m.home+' vs '+m.away;
   var od=getInitOdds(m.home,m.away);
   var oh=m.odds_h||od.h||2.0, odv=m.odds_d||od.d||3.0, oa=m.odds_a||od.a||3.0;
-  var skHtml=function(sel){return [10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===sel?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('');};
-  var ss=function(arr){return arr.map(function(x){return '<div class="score-item-lg"><span class="s-lg">'+x+'</span></div>';}).join('');};
   var wdlStake=p?(p.stake||m.stake||10):10;
+  var pl={'H':'胜','D':'平','A':'负'};
+  var wdlPred=p?'<div style="font-size:12px;color:var(--gold);margin:4px 0;text-align:center;">✅ 已预测 '+wdlStake+'分 '+pl[p.pick]+'</div>':'';
+  function ms(arr,a){
+    return arr.map(function(x){return '<div class="score-item-lg" style="flex-direction:'+a+';"><span class="s-lg">'+x+'</span><input type="text" class="so-lg" value="" '+(isAdmin?'':'readonly')+'></div>';}).join('');
+  }
+  function skHtml(sel,id){
+    return '<span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="'+id+'">'+
+      [10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===sel?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+
+      '</div><button class="btn btn-primary" onclick="subPredModal()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button>';
+  }
   document.getElementById('predModalContent').innerHTML=
     '<div style="font-size:14px;font-weight:700;margin:4px 0 6px;text-align:center;">胜平负</div>'+
     '<div class="wdl-wrap" style="margin-bottom:4px;"><div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='H'?'active':'')+'" data-pick="H" onclick="selWdl(this,\'H\')">胜</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+oh+'</span></div>'+
     '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='D'?'active':'')+'" data-pick="D" onclick="selWdl(this,\'D\')">平</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+odv+'</span></div>'+
     '<div class="wdl-col" style="flex:0 0 72px;"><span class="wdl-btn '+(p&&p.pick==='A'?'active':'')+'" data-pick="A" onclick="selWdl(this,\'A\')">负</span><span style="display:block;text-align:center;font-size:13px;color:#FFD700;font-weight:700;">'+oa+'</span></div></div>'+
-    '<div class="stake-row" style="margin-bottom:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="stk_'+mid+'">'+skHtml(wdlStake)+'</div><button class="btn btn-primary" onclick="subPredModal()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
+    '<div class="stake-row" style="margin-bottom:4px;">'+skHtml(wdlStake,'wdl_'+mid)+'</div>'+
+    wdlPred+
     '<div style="font-size:14px;font-weight:700;margin:6px 0 4px;text-align:center;">比分</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;"><div><div style="font-size:11px;color:var(--primary);text-align:center;padding:2px 0;font-weight:600;">主胜</div>'+ss(['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','4:3'])+'</div>'+
-    '<div><div style="font-size:11px;color:var(--gold);text-align:center;padding:2px 0;font-weight:600;">平局</div>'+ss(['0:0','1:1','2:2','3:3','4:4'])+'</div>'+
-    '<div><div style="font-size:11px;color:var(--red);text-align:center;padding:2px 0;font-weight:600;">客胜</div>'+ss(['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','3:4'])+'</div></div>'+
-    '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="scr_stk_'+mid+'">'+skHtml(10)+'</div><span style="font-size:11px;color:var(--text2);">比分预测待完善</span></div>';
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;">'+
+      '<div><div style="font-size:11px;color:var(--primary);text-align:left;padding:2px 0;font-weight:600;">主胜</div>'+ms(['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','4:3'],'row')+'</div>'+
+      '<div><div style="font-size:11px;color:var(--gold);text-align:left;padding:2px 0;font-weight:600;">平局</div>'+ms(['0:0','1:1','2:2','3:3','4:4'],'row')+'</div>'+
+      '<div><div style="font-size:11px;color:var(--red);text-align:right;padding:2px 0;font-weight:600;">客胜</div>'+ms(['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','3:4'],'row-reverse')+'</div>'+
+    '</div>'+
+    '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="scr_'+mid+'">'+[10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===10?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div><button class="btn btn-primary" onclick="showToast(\'比分功能待完善\')" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
+    '<div style="font-size:11px;color:var(--text2);text-align:center;margin-top:4px;">比分预测功能待完善</div>';
   document.getElementById('predModal').classList.add('show');
 }function closePredModal(){document.getElementById('predModal').classList.remove('show');}
 function selWdl(btn,p){
