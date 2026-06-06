@@ -263,8 +263,7 @@ body {
 .wdl-btn[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
 .wdl-btn[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
 .wdl-btn[data-pick="A"]:hover { border-color:var(--red); color:var(--red); background:var(--red-dim); }
-.odds-box { width:100%; padding:0; border-radius:2px; border:1px solid var(--border); background:var(--card2); color:var(--gold); text-align:center; font-size:10px; font-weight:600; height:18px; box-sizing:border-box; }
-.odds-box[readonly] { opacity:0.5; border-color:transparent; background:transparent; cursor:default; }
+.odds-text { font-size:9px; color:var(--text2); font-weight:400; line-height:1.2; }
 
 </style>
 </head>
@@ -312,7 +311,7 @@ body {
   <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.24 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.25 · 365BET</div>
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1463,18 +1462,22 @@ function selectWDL(mid,pick){
   var el=document.querySelector('#wdl_'+mid+' .wdl-btn[data-pick="'+pick+'"]');
   if(el)el.classList.add('active');
 }
-async function saveOdds(mid){
+async function editOdds(mid){
   if(!isAdmin) return;
   const m=M.find(x=>x.id===mid); if(!m) return;
-  const oh=parseFloat(document.getElementById('odds_h_'+mid)?.value);
-  const od=parseFloat(document.getElementById('odds_d_'+mid)?.value);
-  const oa=parseFloat(document.getElementById('odds_a_'+mid)?.value);
-  if(isNaN(oh)||isNaN(od)||isNaN(oa)){showToast('请输入有效赔率');return;}
+  const oh=prompt('胜赔率 (当前: '+m.odds_h+')',m.odds_h);
+  if(oh===null) return;
+  const od=prompt('平赔率 (当前: '+m.odds_d+')',m.odds_d);
+  if(od===null) return;
+  const oa=prompt('负赔率 (当前: '+m.odds_a+')',m.odds_a);
+  if(oa===null) return;
+  const ohf=parseFloat(oh),odf=parseFloat(od),oaf=parseFloat(oa);
+  if(isNaN(ohf)||isNaN(odf)||isNaN(oaf)){showToast('请输入有效数字');return;}
   await ft(SB_URL+'/rest/v1/matches?id=eq.'+mid,{
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-    body:JSON.stringify({odds_h:oh,odds_d:od,odds_a:oa})
+    body:JSON.stringify({odds_h:ohf,odds_d:odf,odds_a:oaf})
   });
-  m.odds_h=oh;m.odds_d=od;m.odds_a=oa;
+  m.odds_h=ohf;m.odds_d=odf;m.odds_a=oaf;
   renderAll();showToast('赔率已保存');
 }
 async function submitPred(mid){
