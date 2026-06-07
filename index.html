@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.03 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.04 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1274,17 +1274,16 @@ async function loadData(){
         await createDemo('demo_ba','巴西','阿根廷',2,1,new Date('2026-06-05T22:00+08:00').getTime(),20,
           ['老章','大毛','王彬','王玺','三瓶','糖糖','二红','隔离'],
           [[2,1],[2,1],[1,1],[0,2],[1,0],[0,0],[2,0],[1,2]],
-          {type:'settled',winners:['老章','大毛'],losers:['王彬','王玺','三瓶','糖糖','二红','隔离'],totalPot:120,
-            individual:{老章:139.2,大毛:123,王彬:-40,王玺:-45,三瓶:49.3,糖糖:-35,二红:19.6,隔离:-30},
-            scoreDetails:{老章:{stake:20,exact:true,payout:60},大毛:{stake:20,exact:true,payout:60},王彬:{stake:20,exact:false,payout:-20},王玺:{stake:20,exact:false,payout:-20},三瓶:{stake:20,exact:false,payout:-20},糖糖:{stake:20,exact:false,payout:-20},二红:{stake:20,exact:false,payout:-20},隔离:{stake:20,exact:false,payout:-20}},
+          {type:'settled',individual:{老章:149.2,大毛:133,王彬:-40,王玺:-45,三瓶:49.3,糖糖:-35,二红:19.6,隔离:-30},
+            scoreDetails:{老章:{stake:20,odds:3.5,exact:true,payout:70},大毛:{stake:20,odds:3.5,exact:true,payout:70},王彬:{stake:20,exact:false,payout:-20},王玺:{stake:20,exact:false,payout:-20},三瓶:{stake:20,exact:false,payout:-20},糖糖:{stake:20,exact:false,payout:-20},二红:{stake:20,exact:false,payout:-20},隔离:{stake:20,exact:false,payout:-20}},
             wdlDetails:{老章:{pick:'H',result:'H',stake:40,odds:1.98,correct:true,payout:79.2},大毛:{pick:'H',result:'H',stake:30,odds:2.1,correct:true,payout:63},王彬:{pick:'D',result:'H',stake:20,odds:3.0,correct:false,payout:-20},王玺:{pick:'A',result:'H',stake:25,odds:3.5,correct:false,payout:-25},三瓶:{pick:'H',result:'H',stake:35,odds:1.98,correct:true,payout:69.3},糖糖:{pick:'D',result:'H',stake:15,odds:3.0,correct:false,payout:-15},二红:{pick:'H',result:'H',stake:20,odds:1.98,correct:true,payout:39.6},隔离:{pick:'A',result:'H',stake:10,odds:3.5,correct:false,payout:-10}}});
         // Demo 2: France 0-0 England (result=D, stake=25)
         await createDemo('demo_fe','法国','英格兰',0,0,new Date('2026-06-06T22:00+08:00').getTime(),25,
           ['老章','大毛','王彬','王玺','三瓶','糖糖','二红','隔离'],
           [[2,1],[1,0],[0,0],[1,1],[0,0],[0,0],[1,0],[2,1]],
           {type:'settled',winners:['王彬','三瓶','糖糖'],losers:['老章','大毛','王玺','二红','隔离'],totalPot:125,
-            individual:{老章:-45,大毛:-45,王彬:102,王玺:20,三瓶:17,糖糖:86,二红:-40,隔离:-45},
-            scoreDetails:{王彬:{stake:25,exact:true,payout:42},三瓶:{stake:25,exact:true,payout:42},糖糖:{stake:25,exact:true,payout:41},老章:{stake:25,exact:false,payout:-25},大毛:{stake:25,exact:false,payout:-25},王玺:{stake:25,exact:false,payout:-25},二红:{stake:25,exact:false,payout:-25},隔离:{stake:25,exact:false,payout:-25}},
+            individual:{老章:-45,大毛:-45,王彬:185,王玺:20,三瓶:100,糖糖:170,二红:-40,隔离:-45},
+            scoreDetails:{王彬:{stake:25,odds:5.0,exact:true,payout:125},三瓶:{stake:25,odds:5.0,exact:true,payout:125},糖糖:{stake:25,odds:5.0,exact:true,payout:125},老章:{stake:25,exact:false,payout:-25},大毛:{stake:25,exact:false,payout:-25},王玺:{stake:25,exact:false,payout:-25},二红:{stake:25,exact:false,payout:-25},隔离:{stake:25,exact:false,payout:-25}},
             wdlDetails:{老章:{pick:'H',result:'D',stake:20,odds:2.0,correct:false,payout:-20},大毛:{pick:'H',result:'D',stake:20,odds:2.0,correct:false,payout:-20},王彬:{pick:'D',result:'D',stake:20,odds:3.0,correct:true,payout:60},王玺:{pick:'D',result:'D',stake:15,odds:3.0,correct:true,payout:45},三瓶:{pick:'A',result:'D',stake:25,odds:3.5,correct:false,payout:-25},糖糖:{pick:'D',result:'D',stake:15,odds:3.0,correct:true,payout:45},二红:{pick:'H',result:'D',stake:15,odds:2.0,correct:false,payout:-15},隔离:{pick:'A',result:'D',stake:20,odds:3.5,correct:false,payout:-20}}});
         // Reload data after creating demos
         var dm=await sbGet('matches','?order=date');M=(dm||[]).map(function(m){if(typeof m.settlement==='string')try{m.settlement=JSON.parse(m.settlement);}catch(e){}return m;});
@@ -1378,8 +1377,8 @@ function renderPast(){
       plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 玩家得失分<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;">'+
         mp.map(x=>{
           const nm=x.user_name;const w=wdlD[nm],c=scD[nm];const total=indv[nm]||0;
-          const wdlTxt=w?(w.correct?'🎯 '+w.stake+'×'+w.odds+'='+w.payout.toFixed(1)+'分':'❌'+w.payout.toFixed(1)+'分'):'';
-          const scTxt=c?(c.exact?'🎯+'+c.payout+'分':'❌'+c.payout+'分'):'';
+          const wdlTxt=w?(w.correct?'🎯 '+w.stake+'×'+w.odds+'='+w.payout.toFixed(1):'❌'+w.payout.toFixed(1)):'';
+	          const scTxt=c?(c.exact?(c.odds?'🎯 '+c.stake+'×'+c.odds+'='+c.payout:'🎯+'+c.payout):'❌'+c.payout):'';
           const totalTxt=(total>=0?'+':'')+total.toFixed(1);
           return '<span style="background:var(--card2);padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;"><span style="font-weight:600;font-size:11px;">'+nm+'</span>'+
             '<div style="display:flex;gap:6px;font-size:10px;flex-wrap:wrap;">'+
