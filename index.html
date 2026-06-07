@@ -1408,7 +1408,7 @@ function renderChart(){
   // Calculate cumulative scores
   var hist={},minS=1000,maxS=1000;
   USERS.forEach(function(u){
-    var sc=1000;hist[u]=[];
+    var sc=1000;hist[u]=[{match:null,score:1000}];
     sM.forEach(function(m){var amt=m.settlement.individual?.[u]||0;sc+=amt;var s=Math.round(sc*10)/10;hist[u].push({match:m,score:s});if(s<minS)minS=s;if(s>maxS)maxS=s;});
   });
   var pad=Math.max(50,Math.ceil((maxS-minS)*0.15));minS=Math.floor(minS-pad);maxS=Math.ceil(maxS+pad);var rng=maxS-minS;
@@ -1424,7 +1424,7 @@ function renderChart(){
   svg+='<line x1="'+pL+'" y1="'+(pT+pH)+'" x2="'+(pL+pW)+'" y2="'+(pT+pH)+'" stroke="var(--text2)" stroke-width="1"/>';
   // Draw lines
   USERS.forEach(function(u,idx){
-    var pts=hist[u].map(function(p,i){var x=pL+(i+0.5)*(pW/n),y=pT+pH-((p.score-minS)/rng)*pH;return x+','+y;}).join(' ');
+    var pts=hist[u].map(function(p,i){var x=i===0?pL:pL+(i-0.5)*(pW/n),y=pT+pH-((p.score-minS)/rng)*pH;return x+','+y;}).join(' ');
     var hl=chartHL===u;var op=chartHL?(hl?1:0.15):0.7;var sw=hl?3:1.5;
     svg+='<polyline points="'+pts+'" fill="none" stroke="'+COLORS[idx]+'" stroke-width="'+sw+'" opacity="'+op+'" stroke-linejoin="round" stroke-linecap="round"/>';
     // Dots on highlighted
