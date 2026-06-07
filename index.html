@@ -1366,8 +1366,7 @@ function renderPast(){
     const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)','欧联':'#00c896','欧协联':'#6666ff'};
     const ls=m.settlement;
     let wi='';
-    if(m.settled&&m.settlement?.type==='settled'&&m.settlement.individual&&m.settlement.winners.length) wi=`<div style="font-size:11px;color:var(--primary);margin-top:6px;">🏆 奖池¥${m.settlement.totalPot} · ${m.settlement.winners.map(n=>n+'得¥'+Math.round(m.settlement.individual[n])).join(', ')}</div>`;
-    else if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 流局</div>`;
+    if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 流局</div>`;
     let rd='';
     if(m.home_score!=null) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
     else rd=`<div class="match-score"><span class="vs">VS</span></div>`;
@@ -1800,7 +1799,7 @@ function showPredModal(mid){
     var s=m.settlement;
     var wdlR=s.wdlDetails?.[u],scR=s.scoreDetails?.[u];
     var html='<div style="text-align:center;font-size:24px;font-weight:800;margin:10px 0;">'+m.home_score+' - '+m.away_score+'</div>';
-    html+='<div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:12px;">'+(s.type==='void'?'💤 流局':(s.winners.includes(u)?'🏆 你猜中了比分！':'💸 很遗憾'))+'</div>';
+    html+='<div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:12px;">已结算</div>';
     if(wdlR){
       var wdlIcon=wdlR.correct?'🎯':'❌';
       var wdlAmt=(wdlR.payout>0?'+':'')+wdlR.payout.toFixed(1);
