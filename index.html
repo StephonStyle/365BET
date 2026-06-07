@@ -1378,8 +1378,8 @@ function renderPast(){
       plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 玩家得失分<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;">'+
         mp.map(x=>{
           const nm=x.user_name;const w=wdlD[nm],c=scD[nm];const total=indv[nm]||0;
-          const wdlTxt=w?(w.correct?'🎯+'+w.payout.toFixed(1):'❌'+w.payout.toFixed(1)):'';
-          const scTxt=c?(c.exact?'🎯+'+c.payout:'❌'+c.payout):'';
+          const wdlTxt=w?(w.correct?'🎯 '+w.stake+'×'+w.odds+'='+w.payout.toFixed(1)+'分':'❌'+w.payout.toFixed(1)+'分'):'';
+          const scTxt=c?(c.exact?'🎯+'+c.payout+'分':'❌'+c.payout+'分'):'';
           const totalTxt=(total>=0?'+':'')+total.toFixed(1);
           return '<span style="background:var(--card2);padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;"><span style="font-weight:600;font-size:11px;">'+nm+'</span>'+
             '<div style="display:flex;gap:6px;font-size:10px;flex-wrap:wrap;">'+
