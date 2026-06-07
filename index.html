@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.2.80 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.2.81 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1679,7 +1679,7 @@ function showPredModal(mid){
   var mh=CN_RANK[m.home]||m.home,ma=CN_RANK[m.away]||m.away;document.getElementById('predModalTitle').innerHTML=(WC_FLAGS[mh]||'')+' '+m.home+' '+((WC_RANK[mh]||'')?'<span style="color:var(--text2);font-size:12px;">'+WC_RANK[mh]+'</span>':'')+' <span style="color:var(--text2);margin:0 4px;">vs</span> '+((WC_RANK[ma]||'')?'<span style="color:var(--text2);font-size:12px;">'+WC_RANK[ma]+'</span>':'')+' '+m.away+' '+(WC_FLAGS[ma]||'');document.getElementById('predModalTitle').style.textAlign='center';
   var od=getInitOdds(m.home,m.away);
   var oh=m.odds_h||od.h||2.0, odv=m.odds_d||od.d||3.0, oa=m.odds_a||od.a||3.0;
-  var wdlStake=p?(p.stake||m.stake||10):10;
+  var wdlStake=p?((p.stake||m.stake)||10):10;
   var pl={'H':'胜','D':'平','A':'负'};
   var wdlPred=p?'<div style="font-size:12px;color:var(--gold);margin:4px 0;text-align:center;">✅ 已预测 '+wdlStake+'分 '+pl[p.pick]+'</div>':'';
   function ms(arr,a){
@@ -1746,7 +1746,7 @@ function subPredModal(){
     var url=SB_URL+'/rest/v1/predictions';
     if(e){url+='?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u);fetch(url,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});}
     else{fetch(url,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(Object.assign({match_id:mid,user_name:u,created_at:new Date().toISOString()},body))});}
-    if(e){var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});if(idx>=0)P[idx].pick=pick;}else{P.push({match_id:mid,user_name:u,pick:pick,home_score:null,away_score:null});}
+    if(e){var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});if(idx>=0)P[idx].pick=pick;}else{P.push({match_id:mid,user_name:u,pick:pick,stake:parseInt(sk),home_score:null,away_score:null});}
     renderAll();
     var ss=document.querySelector('#predModal .stake-btn.active');if(ss){ss.classList.remove('active');ss.classList.add('stake-set');}
     var sp=document.querySelector('#predModal .wdl-btn.active');if(sp){sp.classList.remove('active');sp.classList.add('pick-set');}
