@@ -1270,16 +1270,16 @@ async function loadData(){
           await sbPost('matches',{id:dId,league:'世界杯',home:dHome,away:dAway,date:dDate,home_score:dHs,away_score:dAs,stake:dStake,settled:true,settlement:dSettl});
           for(var di=0;di<dPreds.length;di++)await sbPost('predictions',{match_id:dId,user_name:dPreds[di],home_score:dScores[di][0],away_score:dScores[di][1]});
         }
-        // Demo 1: Brazil 2-1 Argentina
-        await createDemo('demo_ba','巴西','阿根廷',2,1,new Date('2026-06-14T22:00+08:00').getTime(),20,
+        // Demo 1: Brazil 2-1 Argentina (past date for history)
+        await createDemo('demo_ba','巴西','阿根廷',2,1,new Date('2026-06-05T22:00+08:00').getTime(),20,
           ['老章','大毛','王彬','王玺','三瓶','糖糖'],
           [[2,1],[2,1],[1,1],[0,2],[1,0],[0,0]],
           {type:'settled',winners:['老章','大毛'],losers:['王彬','王玺','三瓶','糖糖'],totalPot:60,
             individual:{老章:109.2,大毛:93,王彬:-40,王玺:-50,三瓶:69.3,糖糖:-30},
             scoreDetails:{老章:{stake:20,exact:true,payout:30},大毛:{stake:20,exact:true,payout:30},王彬:{stake:20,exact:false,payout:-20},王玺:{stake:25,exact:false,payout:-25},糖糖:{stake:15,exact:false,payout:-15}},
             wdlDetails:{老章:{pick:'H',result:'H',stake:40,odds:1.98,correct:true,payout:79.2},大毛:{pick:'H',result:'H',stake:30,odds:2.1,correct:true,payout:63},王彬:{pick:'D',result:'H',stake:20,odds:3.0,correct:false,payout:-20},三瓶:{pick:'H',result:'H',stake:35,odds:1.98,correct:true,payout:69.3},糖糖:{pick:'D',result:'H',stake:15,odds:3.0,correct:false,payout:-15},王玺:{pick:'A',result:'H',stake:25,odds:3.5,correct:false,payout:-25}}});
-        // Demo 2: France 0-0 England
-        await createDemo('demo_fe','法国','英格兰',0,0,new Date('2026-06-15T22:00+08:00').getTime(),25,
+        // Demo 2: France 0-0 England (past date for history)
+        await createDemo('demo_fe','法国','英格兰',0,0,new Date('2026-06-06T22:00+08:00').getTime(),25,
           ['老章','大毛','王彬','王玺','三瓶','糖糖'],
           [[2,1],[1,0],[0,0],[1,1],[0,0],[0,0]],
           {type:'settled',winners:['王彬'],losers:['老章','大毛','王玺','三瓶','糖糖'],totalPot:80,
@@ -1356,7 +1356,7 @@ const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 开赛后4小时(含加时+结束1h)�
 function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
   const cutoff=Date.now()-PAST_CUTOFF;
-  let f=M.filter(m=>m.date<cutoff);
+  let f=M.filter(function(m){return m.date<cutoff||m.settled;});
   f.sort((a,b)=>b.date-a.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
   el.innerHTML=f.map(m=>{
