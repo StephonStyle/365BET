@@ -323,7 +323,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.00 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.01 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1089,6 +1089,18 @@ function getWDLResult(m,userName){
   return{pick:p.pick,result:mr,resultLabel:{H:'胜',D:'平',A:'负'}[mr],stake:stk,odds:Math.round(odds*100)/100,correct,payout};
 }
 
+// Sync WDL predictions stored in match.settlement.wdlPredictions into P array
+function syncWDLFromMatches(){
+  M.forEach(function(m){
+    var wdlP=m.settlement&&m.settlement.wdlPredictions;
+    if(wdlP)Object.keys(wdlP).forEach(function(u){
+      var d=wdlP[u];var idx=P.findIndex(function(p){return p.match_id===m.id&&p.user_name===u;});
+      var entry={match_id:m.id,user_name:u,pick:d.pick,stake:d.stake};
+      if(idx>=0)P[idx]=Object.assign({},P[idx],entry);else P.push(entry);
+    });
+  });
+}
+
 // ======================== AVATARS ========================
 async function loadAvatars(){
   try{const d=await sbGet('avatars');(d||[]).forEach(a=>{avatars[a.user_name]=a.image_data;});}catch(e){}
@@ -1249,6 +1261,7 @@ async function loadData(){
     L = await sbGet('settlement_logs','?order=created_at.desc');
     await loadAvatars();
     await settleAll();
+    syncWDLFromMatches();
     // Create sample settled match if none exist
     if(!M.some(m=>m.settled)){
       try{
@@ -1901,22 +1914,20 @@ function subPredModal(){
   if(!sk){showToast('请选择积分');return;}
   var u=cu();if(!u)return;
   var m=M.find(function(x){return x.id===mid;});if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
-  var e=getPred(mid,u);
-  var body={pick:pick,stake:parseInt(sk)};
+  // Store WDL prediction in match.settlement.wdlPredictions
   try{
-    var url=SB_URL+'/rest/v1/predictions';
-    if(e){url+='?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u);fetch(url,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});}
-    else{fetch(url,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(Object.assign({match_id:mid,user_name:u,created_at:new Date().toISOString()},body))});}
-    if(e){var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});if(idx>=0){P[idx].pick=pick;P[idx].stake=parseInt(sk);}}else{P.push({match_id:mid,user_name:u,pick:pick,stake:parseInt(sk)});}
+    var cur=m.settlement?(typeof m.settlement==='string'?JSON.parse(m.settlement):m.settlement):{};
+    if(!cur.wdlPredictions)cur.wdlPredictions={};
+    cur.wdlPredictions[u]={pick:pick,stake:parseInt(sk)};
+    ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});
+    m.settlement=cur;
+    // Update local P
+    var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});
+    if(idx>=0){P[idx].pick=pick;P[idx].stake=parseInt(sk);}else{P.push({match_id:mid,user_name:u,pick:pick,stake:parseInt(sk)});}
     renderAll();
-    var ss=document.querySelector('#predModal .stake-btn.active');if(ss){ss.classList.remove('active');ss.classList.add('stake-set');}
-    var sp=document.querySelector('#predModal .wdl-btn.active');if(sp){sp.classList.remove('active');sp.classList.add('pick-set');}
-    // Update display with prediction result
-    var pick=document.querySelector('#predModal .wdl-btn.pick-set')?.dataset?.pick;
-    var stake=document.querySelector('#predModal .stake-btn.stake-set')?.dataset?.stake;
-    var pl={'H':'胜','D':'平','A':'负'};
     var predDiv=document.getElementById('wdlResult');
-    if(predDiv&&pick&&stake){predDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+stake+'分 '+pl[pick]+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred('+PRED_CURRENT_MID+')">删除</button></div>';}
+    var pl={'H':'胜','D':'平','A':'负'};
+    if(predDiv&&pick&&sk){predDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+sk+'分 '+pl[pick]+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
   }catch(e){showToast('提交失败');}
 }
 const ADMIN_PWD='321';
@@ -1954,6 +1965,7 @@ function startPoll(){
       const mRaw = await sbGet('matches','?order=date');
       M = (mRaw||[]).map(m => { if(typeof m.settlement === 'string') try{ m.settlement=JSON.parse(m.settlement); }catch(e){} return m; });
       var _sp=await sbGet('predictions','?order=id');if(_sp)_sp.forEach(function(p){var ex=P.findIndex(function(x){return x.match_id===p.match_id&&x.user_name===p.user_name;});if(ex>=0)P[ex]=p;else P.push(p);});
+      syncWDLFromMatches();
       L = await sbGet('settlement_logs','?order=created_at.desc');
       await loadAvatars();
       await settleAll();
@@ -1974,12 +1986,25 @@ function startPoll(){
 
 function delPred(mid){
   var u=cu(); if(!u)return;
+  // Delete WDL from match settlement
+  var dm=M.find(function(x){return x.id===mid;});
+  if(dm&&dm.settlement&&dm.settlement.wdlPredictions&&dm.settlement.wdlPredictions[u]){
+    delete dm.settlement.wdlPredictions[u];
+    ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(dm.settlement)})});
+  }
+  // Delete score prediction from predictions table
   fetch(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}).then(function(){P=P.filter(function(p){return !(p.match_id===mid&&p.user_name===u);});showPredModal(mid);}).catch(function(e){});
 }
 async function deleteMyPred(mid){
   const u=cu(); if(!u){showToast('请先选择身份');return;}
   if(!confirm('确定删除你的预测？')) return;
   try{
+    // Delete WDL from settlement
+    var dmm=M.find(function(x){return x.id===mid;});
+    if(dmm&&dmm.settlement&&dmm.settlement.wdlPredictions&&dmm.settlement.wdlPredictions[u]){
+      delete dmm.settlement.wdlPredictions[u];
+      await ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(dmm.settlement)})});
+    }
     await ft(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{
       method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
     });
