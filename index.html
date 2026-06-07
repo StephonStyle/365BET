@@ -1252,27 +1252,25 @@ async function loadData(){
     // Create sample settled match if none exist
     if(!M.some(m=>m.settled)){
       try{
-        var sm=M.find(function(x){return x.id==='sample_001';});
-        if(!sm&&USERS.length>=4){
-          var mId='sample_001',mHome='利物浦',mAway='曼联',mDate=new Date('2026-05-20T22:00+08:00').getTime();
-          var sampleM={id:mId,league:'英超',home:mHome,away:mAway,date:mDate,home_score:2,away_score:1,stake:20,odds_h:1.98,odds_d:3.1,odds_a:3.5,settled:true,settlement:null};
-          await sbPost('matches',sampleM);
-          var preds=[
-            {match_id:mId,user_name:'老章',pick:'H',stake:40,home_score:2,away_score:1},
-            {match_id:mId,user_name:'大毛',pick:'H',stake:30,home_score:2,away_score:1},
-            {match_id:mId,user_name:'王彬',pick:'D',stake:20,home_score:1,away_score:1},
-            {match_id:mId,user_name:'王玺',pick:'A',stake:25,home_score:0,away_score:2},
-            {match_id:mId,user_name:'三瓶',pick:'H',stake:35},
-            {match_id:mId,user_name:'糖糖',pick:'D',stake:15}
+        var smM=M.find(function(x){return x.id==='sample_001';});
+        if(!smM&&USERS.length>=4){
+          var smId='sample_001';
+          await sbPost('matches',{id:smId,league:'英超',home:'利物浦',away:'曼联',date:new Date('2026-05-20T22:00+08:00').getTime(),home_score:2,away_score:1,stake:20,settled:false,settlement:null});
+          var smPreds=[
+            {match_id:smId,user_name:'老章',pick:'H',stake:40,home_score:2,away_score:1},
+            {match_id:smId,user_name:'大毛',pick:'H',stake:30,home_score:2,away_score:1},
+            {match_id:smId,user_name:'王彬',pick:'D',stake:20,home_score:1,away_score:1},
+            {match_id:smId,user_name:'王玺',pick:'A',stake:25,home_score:0,away_score:2},
+            {match_id:smId,user_name:'三瓶',pick:'H',stake:35},
+            {match_id:smId,user_name:'糖糖',pick:'D',stake:15}
           ];
-          for(var pi=0;pi<preds.length;pi++)await sbPost('predictions',preds[pi]);
-          // Reload and settle
-          var rm=await sbGet('matches','?order=date');M=(rm||[]).map(function(m){if(typeof m.settlement==='string')try{m.settlement=JSON.parse(m.settlement);}catch(e){}return m;});
-          var rp=await sbGet('predictions','?order=id');if(rp)rp.forEach(function(p){var ex=P.findIndex(function(x){return x.match_id===p.match_id&&x.user_name===p.user_name;});if(ex>=0)P[ex]=p;else P.push(p);});
-          var sm2=M.find(function(x){return x.id===mId;});
-          if(sm2&&sm2.home_score!=null&&!sm2.settled)await settleMatch(sm2);
+          for(var spi=0;spi<smPreds.length;spi++)await sbPost('predictions',smPreds[spi]);
+          var rm2=await sbGet('matches','?order=date');M=(rm2||[]).map(function(m){if(typeof m.settlement==='string')try{m.settlement=JSON.parse(m.settlement);}catch(e){}return m;});
+          var rp2=await sbGet('predictions','?order=id');if(rp2)rp2.forEach(function(p){var ex=P.findIndex(function(x){return x.match_id===p.match_id&&x.user_name===p.user_name;});if(ex>=0)P[ex]=p;else P.push(p);});
+          var sm3=M.find(function(x){return x.id===smId;});
+          if(sm3&&sm3.home_score!=null&&!sm3.settled)await settleMatch(sm3);
         }
-      }catch(e){console.error('sample creation error:',e);}
+      }catch(e){console.error('sample:',e);}
     }
     loaded=true;
     renderAll();
@@ -1383,40 +1381,60 @@ function renderPast(){
     return `<div class="match-card"><div class="match-header"><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span>${(grp=WC_TEAM_GROUP[m.home]||WC_TEAM_GROUP[CN_RANK[m.home]]||"")?'<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+grp+'组</span>':''}<span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.home)}');">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''?''+(WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''):''}</span></div>${rd}<div class="team away"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.away)}');">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''?''+(WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''):''}</span></div></div>${wi}${plHtml}${act}</div>`;
   }).join('');
 }
-    return `<div class="match-card"><div class="match-header"><span class="match-date" style="color:var(--gold);">${dtStr}</span>${(grp=WC_TEAM_GROUP[m.home]||WC_TEAM_GROUP[CN_RANK[m.home]]||"")?'<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+grp+'组</span>':''}<span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.home)}');">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''?''+(WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''):''}</span></div>${rd}<div class="team away"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.away)}');">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''?''+(WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''):''}</span></div></div>${wi}${pi}${act}</div>`;
-  }).join('');
+var chartHL=null;
+function renderChart(){
+  try{
+  const el=document.getElementById('billContent');
+  if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const sM=M.filter(function(m){return m.settled&&m.settlement&&m.settlement.type==='settled';}).sort(function(a,b){return a.date-b.date;});
+  if(!sM.length){el.innerHTML='<div class="empty-state"><div class="icon">📊</div><p>暂无已结算的比赛数据</p></div>';return;}
+  // Calculate cumulative scores
+  var hist={},minS=1000,maxS=1000;
+  USERS.forEach(function(u){
+    var sc=1000;hist[u]=[];
+    sM.forEach(function(m){var amt=m.settlement.individual?.[u]||0;sc+=amt;var s=Math.round(sc*10)/10;hist[u].push({match:m,score:s});if(s<minS)minS=s;if(s>maxS)maxS=s;});
+  });
+  var pad=Math.max(50,Math.ceil((maxS-minS)*0.15));minS=Math.floor(minS-pad);maxS=Math.ceil(maxS+pad);var rng=maxS-minS;
+  var W=700,H=360,pL=55,pR=20,pT=20,pB=50,pW=W-pL-pR,pH=H-pT-pB,n=sM.length;
+  var yT=Math.ceil(rng/60/10)*10||10;
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:var(--card);border-radius:var(--radius);display:block;">';
+  // Grid + Y-axis
+  for(var i=0;i<=6;i++){var v=minS+i*yT,y=pT+pH-((v-minS)/rng)*pH;svg+='<line x1="'+pL+'" y1="'+y+'" x2="'+(pL+pW)+'" y2="'+y+'" stroke="var(--border)" stroke-width="1"/>';svg+='<text x="'+(pL-8)+'" y="'+(y+4)+'" text-anchor="end" fill="var(--text2)" font-size="10">'+v+'</text>';}
+  // X-axis
+  for(var i=0;i<n;i++){var x=pL+(i+0.5)*(pW/n);svg+='<text x="'+x+'" y="'+(pT+pH+14)+'" text-anchor="middle" fill="var(--text2)" font-size="9">'+(i+1)+'</text>';svg+='<text x="'+x+'" y="'+(pT+pH+26)+'" text-anchor="middle" fill="var(--text2)" font-size="7">'+sM[i].league+'</text>';}
+  // Axis lines
+  svg+='<line x1="'+pL+'" y1="'+pT+'" x2="'+pL+'" y2="'+(pT+pH)+'" stroke="var(--text2)" stroke-width="1"/>';
+  svg+='<line x1="'+pL+'" y1="'+(pT+pH)+'" x2="'+(pL+pW)+'" y2="'+(pT+pH)+'" stroke="var(--text2)" stroke-width="1"/>';
+  // Draw lines
+  USERS.forEach(function(u,idx){
+    var pts=hist[u].map(function(p,i){var x=pL+(i+0.5)*(pW/n),y=pT+pH-((p.score-minS)/rng)*pH;return x+','+y;}).join(' ');
+    var hl=chartHL===u;var op=chartHL?(hl?1:0.15):0.7;var sw=hl?3:1.5;
+    svg+='<polyline points="'+pts+'" fill="none" stroke="'+COLORS[idx]+'" stroke-width="'+sw+'" opacity="'+op+'" stroke-linejoin="round" stroke-linecap="round"/>';
+    // Dots on highlighted
+    if(hl){hist[u].forEach(function(p,i){var x=pL+(i+0.5)*(pW/n),y=pT+pH-((p.score-minS)/rng)*pH;svg+='<circle cx="'+x+'" cy="'+y+'" r="3" fill="'+COLORS[idx]+'"/>';});}
+  });
+  // X-axis title
+  svg+='<text x="'+(pL+pW/2)+'" y="'+(H-4)+'" text-anchor="middle" fill="var(--text2)" font-size="11">比赛场次 →</text>';
+  svg+='<text x="12" y="'+(pT+pH/2)+'" text-anchor="middle" fill="var(--text2)" font-size="11" transform="rotate(-90,12,'+(pT+pH/2)+')">积分</text>';
+  svg+='</svg>';
+  // Legend
+  var lg='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center;">';
+  USERS.forEach(function(u,idx){
+    var hl=chartHL===u;
+    lg+='<span onclick="toggleChartHL(\''+u+'\')" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;cursor:pointer;background:'+(hl?COLORS[idx]+'33':'var(--card2)')+';border:1px solid '+(hl?COLORS[idx]:'transparent')+';transition:all .2s;">'+
+      '<span style="width:10px;height:10px;border-radius:50%;background:'+COLORS[idx]+';display:inline-block;"></span>'+
+      '<span style="font-size:12px;font-weight:'+(hl?'700':'400')+';color:var(--text);">'+u+'</span>'+
+      '<span style="font-size:10px;color:var(--text2);">'+hist[u][hist[u].length-1].score+'分</span></span>';
+  });
+  lg+='</div>';
+  // Match detail tooltip area
+  var dt='<div style="font-size:11px;color:var(--text2);margin-top:8px;padding:6px;text-align:center;border-top:1px solid var(--border);">点击颜色标注的玩家名高亮曲线，再点恢复</div>';
+  el.innerHTML='<div style="font-size:14px;font-weight:600;margin:0 0 8px 4px;">📈 积分走势图</div>'+svg+lg+dt;
+}catch(e){document.getElementById('billContent').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>图表加载失败</p></div>';}
 }
-
-function renderBill(){
-  const el=document.getElementById('billContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
-  const u=cu(); if(!u){el.innerHTML='<div class="empty-state"><div class="icon">👤</div><p>请先选择身份</p><button class="btn btn-primary" onclick="showUserSelect()" style="margin-top:12px;">选择身份</button></div>';return;}
-  const st=getStats(u); const sm=M.filter(m=>m.settled);
-  let bi=sm.map(m=>{
-    if(!m.settlement) return '';
-    if(m.settlement.type==='void') return `<div class="bill-item"><div class="match-info"><div class="teams">${ts(m.home)} vs ${ts(m.away)}</div><div class="detail">${m.league} · ${m.home_score}:${m.away_score} · 无人猜中</div></div><div class="bill-amount" style="color:var(--text2);">—</div></div>`;
-    const iw=m.settlement.winners.includes(u),il=m.settlement.losers.includes(u);
-    if(!iw&&!il) return '';
-    const amt=m.settlement.individual?.[u]||0;
-    const p=getPred(m.id,u);
-    return `<div class="bill-item"><div class="match-info"><div class="teams">${ts(m.home)} ${m.home_score}:${m.away_score} ${ts(m.away)}</div><div class="detail">${m.league} · 预测 ${p?p.home_score+' : '+p.away_score:'未预测'} · ${iw?'🏆 赢了':'💸 输了'}</div></div><div class="bill-amount ${amt>=0?'positive':'negative'}">${amt>=0?'+':''}¥${Math.abs(Math.round(amt))}</div></div>`;
-  }).filter(Boolean).join('');
-  if(!bi) bi='<div class="empty-state"><div class="icon">📊</div><p>暂无已结算的比赛</p></div>';
-  el.innerHTML=`<div class="summary-card"><div style="font-size:14px;color:var(--text2);">💰 ${u} 的累计账单</div><div class="big-num ${st.balance>0?'positive':st.balance<0?'negative':'zero'}">${st.balance>=0?'+':''}¥${Math.round(Math.abs(st.balance))}</div><div class="summary-row"><div class="summary-item"><div class="label">🏆 赢</div><div class="value" style="color:var(--primary);">${Math.max(0,Math.round(st.balance))}</div></div><div class="summary-item"><div class="label">💸 输</div><div class="value" style="color:var(--red);">${Math.max(0,Math.round(-st.balance))}</div></div><div class="summary-item"><div class="label">🎯 猜对</div><div class="value" style="color:var(--gold);">${st.wins}次</div></div><div class="summary-item"><div class="label">场次</div><div class="value">${sm.length}</div></div></div></div><div style="font-size:13px;font-weight:600;margin:0 0 8px 4px;">📋 明细</div>${bi}`;
-
-  // Settlement info merged into Bill
-  const all=USERS.map(n=>{const s=getStats(n);return{name:n,...s};}).filter(x=>x.balance!==0).sort((a,b)=>b.balance-a.balance);
-  const cr=all.filter(x=>x.balance>0).map(x=>({...x}));
-  const dr=all.filter(x=>x.balance<0).map(x=>({...x}));
-  const sts=[];let ci=0,di=0;
-  while(ci<cr.length&&di<dr.length){const amt=Math.min(cr[ci].balance,-dr[di].balance);if(amt>0.01)sts.push({from:dr[di].name,to:cr[ci].name,amount:Math.round(amt*100)/100});cr[ci].balance=Math.round((cr[ci].balance-amt)*100)/100;dr[di].balance=Math.round((dr[di].balance+amt)*100)/100;if(cr[ci].balance<0.01)ci++;if(dr[di].balance>-0.01)di++;}
-  const sc=M.filter(m=>m.settled&&m.settlement?.type==='settled').length;
-  const vc=M.filter(m=>m.settlement?.type==='void').length;
-  let dh='';
-  if(sts.length===0) dh='<div class="empty-state"><div class="icon">🤝</div><p>暂无欠款，大家两清！</p></div>';
-  else dh=sts.map(s=>{const mf=u&&s.from===u,mt=u&&s.to===u;return'<div class="debt-item"><span style="font-weight:600;">'+s.from+'</span><span class="arrow">➜</span><span style="font-weight:600;">'+s.to+'</span><div class="debt-amount negative" style="margin-left:8px;">¥'+Math.round(s.amount)+(mf?'<span style="font-size:10px;color:var(--text2);">(你欠)</span>':'')+(mt?'<span style="font-size:10px;color:var(--primary);">(应收)</span>':'')+'</div></div>';}).join('');
-  const logs=L.slice(0,20);
-  let lh=logs.length?logs.map(l=>'<div class="bill-item" style="padding:10px 14px;"><div class="match-info"><div class="detail">'+l.detail+'</div><div style="font-size:10px;color:var(--text2);margin-top:2px;">'+(l.created_at?new Date(l.created_at).toLocaleString('zh-CN'):'')+'</div></div></div>').join(''):'<div class="empty-state"><div class="icon">📭</div><p>暂无结算记录</p></div>';
-  el.innerHTML+=`<div style="border-top:2px solid var(--border);margin:16px 0;"></div><div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📋 结算概况</div><div class="debt-summary"><div class="debt-box"><div class="label">✅ 已结算场次</div><div class="value" style="color:var(--primary);">${sc}</div></div><div class="debt-box"><div class="label">💤 流局场次</div><div class="value" style="color:var(--text2);">${vc}</div></div></div><div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">🔄 结算关系</div>${dh}<div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">📜 结算记录</div>${lh}`;
+function toggleChartHL(nm){
+  chartHL=(chartHL===nm)?null:nm;
+  try{renderChart();}catch(e){}
 }
 
 function renderRank(){
@@ -1563,7 +1581,7 @@ document.addEventListener('click', function(e){
   }
 });
 
-function renderAll(){try{renderMatches();}catch(e){}try{renderBill();}catch(e){}try{renderRank();}catch(e){}try{renderGroups();}catch(e){}try{renderPast();}catch(e){}try{updateUI();}catch(e){}}
+function renderAll(){try{renderMatches();}catch(e){}try{renderChart();}catch(e){}try{renderRank();}catch(e){}try{renderGroups();}catch(e){}try{renderPast();}catch(e){}try{updateUI();}catch(e){}}
 
 // ======================== ACTIONS ========================
 async function submitPred(mid){
