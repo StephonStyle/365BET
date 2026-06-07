@@ -1262,28 +1262,34 @@ async function loadData(){
     await loadAvatars();
     await settleAll();
     syncWDLFromMatches();
-    // Create sample settled match if none exist
+    // Create 2 demo settled matches if none exist
     if(!M.some(m=>m.settled)){
       try{
-        var smM=M.find(function(x){return x.id==='sample_001';});
-        if(!smM&&USERS.length>=4){
-          var smId='sample_001';
-          await sbPost('matches',{id:smId,league:'英超',home:'利物浦',away:'曼联',date:new Date('2026-05-20T22:00+08:00').getTime(),home_score:2,away_score:1,stake:20,settled:false,settlement:null});
-          var smPreds=[
-            {match_id:smId,user_name:'老章',pick:'H',stake:40,home_score:2,away_score:1},
-            {match_id:smId,user_name:'大毛',pick:'H',stake:30,home_score:2,away_score:1},
-            {match_id:smId,user_name:'王彬',pick:'D',stake:20,home_score:1,away_score:1},
-            {match_id:smId,user_name:'王玺',pick:'A',stake:25,home_score:0,away_score:2},
-            {match_id:smId,user_name:'三瓶',pick:'H',stake:35},
-            {match_id:smId,user_name:'糖糖',pick:'D',stake:15}
-          ];
-          for(var spi=0;spi<smPreds.length;spi++)await sbPost('predictions',smPreds[spi]);
-          var rm2=await sbGet('matches','?order=date');M=(rm2||[]).map(function(m){if(typeof m.settlement==='string')try{m.settlement=JSON.parse(m.settlement);}catch(e){}return m;});
-          var rp2=await sbGet('predictions','?order=id');if(rp2)rp2.forEach(function(p){var ex=P.findIndex(function(x){return x.match_id===p.match_id&&x.user_name===p.user_name;});if(ex>=0)P[ex]=p;else P.push(p);});
-          var sm3=M.find(function(x){return x.id===smId;});
-          if(sm3&&sm3.home_score!=null&&!sm3.settled)await settleMatch(sm3);
+        async function createDemo(dId,dHome,dAway,dHs,dAs,dDate,dStake,dPreds,dScores,dSettl){
+          if(M.some(function(x){return x.id===dId;}))return;
+          await sbPost('matches',{id:dId,league:'世界杯',home:dHome,away:dAway,date:dDate,home_score:dHs,away_score:dAs,stake:dStake,settled:true,settlement:dSettl});
+          for(var di=0;di<dPreds.length;di++)await sbPost('predictions',{match_id:dId,user_name:dPreds[di],home_score:dScores[di][0],away_score:dScores[di][1]});
         }
-      }catch(e){console.error('sample:',e);}
+        // Demo 1: Brazil 2-1 Argentina
+        await createDemo('demo_ba','巴西','阿根廷',2,1,new Date('2026-06-14T22:00+08:00').getTime(),20,
+          ['老章','大毛','王彬','王玺','三瓶','糖糖'],
+          [[2,1],[2,1],[1,1],[0,2],[1,0],[0,0]],
+          {type:'settled',winners:['老章','大毛'],losers:['王彬','王玺','三瓶','糖糖'],totalPot:60,
+            individual:{老章:109.2,大毛:93,王彬:-40,王玺:-50,三瓶:69.3,糖糖:-30},
+            scoreDetails:{老章:{stake:20,exact:true,payout:30},大毛:{stake:20,exact:true,payout:30},王彬:{stake:20,exact:false,payout:-20},王玺:{stake:25,exact:false,payout:-25},糖糖:{stake:15,exact:false,payout:-15}},
+            wdlDetails:{老章:{pick:'H',result:'H',stake:40,odds:1.98,correct:true,payout:79.2},大毛:{pick:'H',result:'H',stake:30,odds:2.1,correct:true,payout:63},王彬:{pick:'D',result:'H',stake:20,odds:3.0,correct:false,payout:-20},三瓶:{pick:'H',result:'H',stake:35,odds:1.98,correct:true,payout:69.3},糖糖:{pick:'D',result:'H',stake:15,odds:3.0,correct:false,payout:-15},王玺:{pick:'A',result:'H',stake:25,odds:3.5,correct:false,payout:-25}}});
+        // Demo 2: France 0-0 England
+        await createDemo('demo_fe','法国','英格兰',0,0,new Date('2026-06-15T22:00+08:00').getTime(),25,
+          ['老章','大毛','王彬','王玺','三瓶','糖糖'],
+          [[2,1],[1,0],[0,0],[1,1],[0,0],[0,0]],
+          {type:'settled',winners:['王彬'],losers:['老章','大毛','王玺','三瓶','糖糖'],totalPot:80,
+            individual:{老章:-20,大毛:-20,王彬:100,王玺:15,三瓶:-25,糖糖:20},
+            scoreDetails:{王彬:{stake:20,exact:true,payout:80},老章:{stake:20,exact:false,payout:-20},大毛:{stake:20,exact:false,payout:-20},糖糖:{stake:15,exact:false,payout:-15}},
+            wdlDetails:{王彬:{pick:'D',result:'D',stake:20,odds:3.0,correct:true,payout:60},糖糖:{pick:'D',result:'D',stake:15,odds:3.0,correct:true,payout:45},王玺:{pick:'D',result:'D',stake:15,odds:3.0,correct:true,payout:45},老章:{pick:'H',result:'D',stake:20,odds:2.0,correct:false,payout:-20},大毛:{pick:'H',result:'D',stake:20,odds:2.0,correct:false,payout:-20},三瓶:{pick:'A',result:'D',stake:25,odds:3.5,correct:false,payout:-25}}});
+        // Reload data after creating demos
+        var dm=await sbGet('matches','?order=date');M=(dm||[]).map(function(m){if(typeof m.settlement==='string')try{m.settlement=JSON.parse(m.settlement);}catch(e){}return m;});
+        var dp=await sbGet('predictions','?order=id');if(dp)dp.forEach(function(p){var ex=P.findIndex(function(x){return x.match_id===p.match_id&&x.user_name===p.user_name;});if(ex>=0)P[ex]=p;else P.push(p);});
+      }catch(e){console.error('demo:',e);}
     }
     loaded=true;
     renderAll();
