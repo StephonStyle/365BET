@@ -234,6 +234,9 @@ body {
 .match-card,.bill-item,.rank-card,.debt-item { animation:fadeIn .3s ease; }
 @media (min-width:600px) { .content { max-width:600px; margin:0 auto; } .user-grid { grid-template-columns:1fr 1fr 1fr; } .pred-grid { grid-template-columns:1fr 1fr 1fr 1fr!important; } }
 
+.round-divider { display:flex; align-items:center; gap:12px; margin:20px 0 14px; }
+.round-divider::before, .round-divider::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+.round-divider span { font-size:13px; font-weight:700; color:var(--gold); white-space:nowrap; text-shadow:0 0 12px rgba(255,215,64,0.3); letter-spacing:1px; }
 @keyframes rowFlash {
   0% { background: rgba(255,215,64,0.3) !important; box-shadow: 0 0 12px rgba(255,215,64,0.4); }
   70% { background: rgba(255,215,64,0.15) !important; box-shadow: 0 0 6px rgba(255,215,64,0.2); }
@@ -323,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.06 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.07 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1298,6 +1301,11 @@ async function loadData(){
   }
 }
 
+	// ======================== ROUND DIVIDERS ========================
+	const ROUND_TS = [0, 1781510400000, 1781942400000, 1782550800000, 1782979200000, 1783353600000, 1783699200000, 1784044800000, 9999999999999];
+	const ROUND_DIV = {2:'⚡ 第一轮结算日',3:'⚡ 第二轮结算日',4:'🏆 小组赛完结 · 结算日',6:'🏆 1/8决赛结算日'};
+	function getMatchRound(m){ for(var i=1;i<ROUND_TS.length;i++) if(m.date<ROUND_TS[i]) return i; return 8; }
+
 // ======================== RENDER ========================
 function gs(m){
   if(m.settled) return{label:m.settlement?.type==='void'?'流局':'已结算',cls:m.settlement?.type==='void'?'流局':'已结算'};
@@ -1314,10 +1322,14 @@ function renderMatches(){
   f=f.filter(m=>m.date>=Date.now()-PAST_CUTOFF);
   f.sort((a,b)=>a.date-b.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';return;}
-  el.innerHTML=f.map(m=>{
+  var lastRound=0,parts=[],_i=0;
+  f.forEach(function(m){
+    var r=getMatchRound(m);
+    if(r!==lastRound&&_i>0&&ROUND_DIV[r]) parts.push('<div class="round-divider"><span>'+ROUND_DIV[r]+'</span></div>');
+    lastRound=r;_i++;
     const st=gs(m);const isP=Date.now()>m.date-PREDICT_CUTOFF||m.home_score!=null;
     const p=u?getPred(m.id,u):null;const cP=!isP&&!p&&u;const stk=m.stake||10;
-    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short',timeZoneName:'short'});
+    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short'});
     const tmStr=new Date(m.date).toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
     const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)','欧联':'#00c896','欧协联':'#6666ff'};
     const ls=m.settlement;const lh=ls?.live_home,la=ls?.live_away;
@@ -1346,8 +1358,8 @@ function renderMatches(){
     else if(p&&!isP) act='';
     else if(p&&!m.home_score) act=`<span style="font-size:11px;color:var(--gold);">✅ 已预测 ${p.pick?({H:'胜',D:'平',A:'负'}[p.pick]||p.pick):(p.home_score!=null?p.home_score+':'+p.away_score:'')}</span><button class="btn btn-small" style="background:var(--red);color:#fff;font-size:10px;padding:2px 6px;margin-left:4px;" onclick="deleteMyPred('${m.id}')">删除</button>`;
     else if(!isAdmin && !m.home_score && Date.now()>m.date) act=`<span style="font-size:11px;color:var(--text2);">⏳ 等待管理员录入比分</span>`;
-    return `<div class="match-card"><div class="match-header"><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span>${(grp=WC_TEAM_GROUP[m.home]||WC_TEAM_GROUP[CN_RANK[m.home]]||WC_TEAM_GROUP[m.away]||WC_TEAM_GROUP[CN_RANK[m.away]]||"")?'<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+grp+'组</span>':''}<span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.home)}');">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''?''+(WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''):''}</span></div>${rd}<div class="team away"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.away)}');">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''?''+(WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''):''}</span></div></div>${wi}${pi}${np}${act}</div>`;
-  }).join('');
+    parts.push(`<div class="match-card"><div class="match-header"><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span>${(grp=WC_TEAM_GROUP[m.home]||WC_TEAM_GROUP[CN_RANK[m.home]]||WC_TEAM_GROUP[m.away]||WC_TEAM_GROUP[CN_RANK[m.away]]||"")?'<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+grp+'组</span>':''}<span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.home)}');">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''?''+(WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''):''}</span></div>${rd}<div class="team away"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.away)}');">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''?''+(WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''):''}</span></div></div>${wi}${pi}${np}${act}</div>`);
+  }); el.innerHTML=parts.join('');
 }
 
 const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 开赛后4小时(含加时+结束1h)移入历史
@@ -1358,9 +1370,13 @@ function renderPast(){
   let f=M.filter(function(m){return m.date<cutoff||m.settled;});
   f.sort((a,b)=>b.date-a.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
-  el.innerHTML=f.map(m=>{
+  var lastRound=0,parts2=[];
+  f.forEach(function(m){
+    var r=getMatchRound(m);
+    if(lastRound!==0&&r<lastRound&&ROUND_DIV[lastRound]) parts2.push('<div class="round-divider"><span>'+ROUND_DIV[lastRound]+'</span></div>');
+    lastRound=r;
     const st=gs(m);
-    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short',timeZoneName:'short'});
+    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short'});
     const tmStr=new Date(m.date).toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
     const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)','欧联':'#00c896','欧协联':'#6666ff'};
     const ls=m.settlement;
@@ -1395,8 +1411,8 @@ function renderPast(){
     let act='';
     if(isAdmin&&m.settled) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}_p" value="${m.home_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}_p" value="${m.away_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="adminEditResultPast('${m.id}')">修改</button></div>`;
     else if(isAdmin&&!m.home_score) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}_p" placeholder="主" style="width:36px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}_p" placeholder="客" style="width:36px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="enterResultPast('${m.id}')">录入比分</button></div>`;
-    return `<div class="match-card"><div class="match-header"><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span>${(grp=WC_TEAM_GROUP[m.home]||WC_TEAM_GROUP[CN_RANK[m.home]]||WC_TEAM_GROUP[m.away]||WC_TEAM_GROUP[CN_RANK[m.away]]||"")?'<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+grp+'组</span>':''}<span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.home)}');">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''?''+(WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''):''}</span></div>${rd}<div class="team away"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.away)}');">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''?''+(WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''):''}</span></div></div>${wi}${plHtml}${act}</div>`;
-  }).join('');
+    parts2.push(`<div class="match-card"><div class="match-header"><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span>${(grp=WC_TEAM_GROUP[m.home]||WC_TEAM_GROUP[CN_RANK[m.home]]||WC_TEAM_GROUP[m.away]||WC_TEAM_GROUP[CN_RANK[m.away]]||"")?'<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+grp+'组</span>':''}<span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.home)}');">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''?''+(WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''):''}</span></div>${rd}<div class="team away"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.away)}');">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''?''+(WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''):''}</span></div></div>${wi}${plHtml}${act}</div>`);
+  }); el.innerHTML=parts2.join('');
 }
 var chartHL=null;
 function renderChart(){
