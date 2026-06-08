@@ -326,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.12 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.13 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1329,7 +1329,7 @@ function renderMatches(){
     lastRound=r;_i++;
     const st=gs(m);const isP=Date.now()>m.date-PREDICT_CUTOFF||m.home_score!=null;
     const p=u?getPred(m.id,u):null;const cP=!isP&&!p&&u;const stk=m.stake||10;
-    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short'});
+    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short',timeZoneName:'short'});
     const tmStr=new Date(m.date).toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
     const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)','欧联':'#00c896','欧协联':'#6666ff'};
     const ls=m.settlement;const lh=ls?.live_home,la=ls?.live_away;
@@ -1377,7 +1377,7 @@ function renderPast(){
     lastRound=r;
     if(!demoShown&&m.id.indexOf('demo_')===0){demoShown=true;parts2.push('<div style="text-align:center;margin:18px 0 12px;position:relative;"><span style="display:inline-block;padding:4px 20px;font-size:12px;font-weight:700;color:var(--text2);background:var(--card2);border-radius:20px;border:1px solid var(--border);letter-spacing:2px;">🎮 演示模拟</span></div>');}
     const st=gs(m);
-    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short'});
+    const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short',timeZoneName:'short'});
     const tmStr=new Date(m.date).toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
     const lc={'英超':'var(--primary)','西甲':'#ff6432','中超':'#ffc832','欧冠':'var(--blue)','世界杯':'var(--gold)','欧联':'#00c896','欧协联':'#6666ff'};
     const ls=m.settlement;
@@ -1833,17 +1833,19 @@ function showPredModal(mid){
     if(!wdlR&&!scR&&!p){html+='<div style="text-align:center;font-size:12px;color:var(--text2);padding:12px;">你未参与本场预测</div>';}
     document.getElementById('predModalContent').innerHTML=html;
     document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
-  if(isAdmin&&!m.settled&&m.home_score==null){
-    var sb=document.createElement('div');sb.style.cssText='text-align:center;margin-top:12px;border-top:1px solid var(--border);padding-top:10px;';
-    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn">' + String.fromCharCode(128190) + ' 保存赔率</button>';
-    document.getElementById('predModalContent').appendChild(sb);
-    document.getElementById('saveOddsBtn').onclick=function(){
-      var inp=document.querySelectorAll('#predModalContent .wdl-col input');
-      var hv=parseFloat(inp[0].value)||2.0,dv=parseFloat(inp[1].value)||3.0,av=parseFloat(inp[2].value)||3.0;
-      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({odds_h:hv,odds_d:dv,odds_a:av})}).catch(function(e){});
-      showToast('' + String.fromCharCode(10004) + ' 赔率已保存');
-    };
-  }
+  	  if(isAdmin&&!m.settled&&m.home_score==null){
+	    var sb=document.createElement('div');sb.style.cssText='text-align:center;margin:2px 0 10px;';
+	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,36130,32,20445,20445) + '</button>';
+	    var wdlWrap=document.querySelector('#predModalContent .wdl-wrap');
+	    if(wdlWrap&&wdlWrap.parentNode) wdlWrap.parentNode.insertBefore(sb,wdlWrap.nextSibling);
+	    else document.getElementById('predModalContent').appendChild(sb);
+	    document.getElementById('saveOddsBtn').onclick=function(){
+	      var inp=document.querySelectorAll('#predModalContent .wdl-col input');
+	      var hv=parseFloat(inp[0].value)||2.0,dv=parseFloat(inp[1].value)||3.0,av=parseFloat(inp[2].value)||3.0;
+	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({odds_h:hv,odds_d:dv,odds_a:av})}).catch(function(e){});
+	      showToast(String.fromCharCode(10004,32,36130,23384,24050,20445));
+	    };
+	  }
     return;
   }
   var od=getInitOdds(m.home,m.away);
@@ -1876,17 +1878,19 @@ function showPredModal(mid){
     '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="scr_'+mid+'">'+[10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===10?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div><button class="btn btn-primary" onclick="scrPred()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
     '<div id="scrResult" style="min-height:36px;"></div>';
   document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
-  if(isAdmin&&!m.settled&&m.home_score==null){
-    var sb=document.createElement('div');sb.style.cssText='text-align:center;margin-top:12px;border-top:1px solid var(--border);padding-top:10px;';
-    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn">' + String.fromCharCode(128190) + ' 保存赔率</button>';
-    document.getElementById('predModalContent').appendChild(sb);
-    document.getElementById('saveOddsBtn').onclick=function(){
-      var inp=document.querySelectorAll('#predModalContent .wdl-col input');
-      var hv=parseFloat(inp[0].value)||2.0,dv=parseFloat(inp[1].value)||3.0,av=parseFloat(inp[2].value)||3.0;
-      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({odds_h:hv,odds_d:dv,odds_a:av})}).catch(function(e){});
-      showToast('' + String.fromCharCode(10004) + ' 赔率已保存');
-    };
-  }
+  	  if(isAdmin&&!m.settled&&m.home_score==null){
+	    var sb=document.createElement('div');sb.style.cssText='text-align:center;margin:2px 0 10px;';
+	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,36130,32,20445,20445) + '</button>';
+	    var wdlWrap=document.querySelector('#predModalContent .wdl-wrap');
+	    if(wdlWrap&&wdlWrap.parentNode) wdlWrap.parentNode.insertBefore(sb,wdlWrap.nextSibling);
+	    else document.getElementById('predModalContent').appendChild(sb);
+	    document.getElementById('saveOddsBtn').onclick=function(){
+	      var inp=document.querySelectorAll('#predModalContent .wdl-col input');
+	      var hv=parseFloat(inp[0].value)||2.0,dv=parseFloat(inp[1].value)||3.0,av=parseFloat(inp[2].value)||3.0;
+	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({odds_h:hv,odds_d:dv,odds_a:av})}).catch(function(e){});
+	      showToast(String.fromCharCode(10004,32,36130,23384,24050,20445));
+	    };
+	  }
   
   document.getElementById('predModalContent').onclick=function(e){var t=e.target.closest('.score-item-lg');if(t){document.querySelectorAll('#predModal .score-item-lg').forEach(function(b){b.classList.remove('active');});t.classList.add('active');}};
   // Show existing score prediction
