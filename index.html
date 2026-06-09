@@ -1835,15 +1835,17 @@ function showPredModal(mid){
     document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
   	  if(isAdmin&&!m.settled&&m.home_score==null){
 	    var sb=document.createElement('div');sb.style.cssText='text-align:center;margin:2px 0 10px;';
-	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,36130,32,20445,20445) + '</button>';
+	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,20462,25913) + '</button>';
 	    var wdlWrap=document.querySelector('#predModalContent .wdl-wrap');
 	    if(wdlWrap&&wdlWrap.parentNode) wdlWrap.parentNode.insertBefore(sb,wdlWrap.nextSibling);
 	    else document.getElementById('predModalContent').appendChild(sb);
 	    document.getElementById('saveOddsBtn').onclick=function(){
 	      var inp=document.querySelectorAll('#predModalContent .wdl-col input');
 	      var hv=parseFloat(inp[0].value)||2.0,dv=parseFloat(inp[1].value)||3.0,av=parseFloat(inp[2].value)||3.0;
-	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({odds_h:hv,odds_d:dv,odds_a:av})}).catch(function(e){});
-	      showToast(String.fromCharCode(10004,32,36130,23384,24050,20445));
+	      var sc=document.querySelectorAll('#predModalContent .score-item-lg');var so={};sc.forEach(function(el){var s=el.querySelector('.s-lg').textContent;var v=parseFloat(el.querySelector('.so-lg').value);if(v)so[s]=v;});
+	      var data={odds_h:hv,odds_d:dv,odds_a:av};if(Object.keys(so).length)data.score_odds=JSON.stringify(so);
+	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(data)}).catch(function(e){});
+	      showToast(String.fromCharCode(10004,32,24050,20445,23384));
 	    };
 	  }
     return;
@@ -1881,15 +1883,17 @@ function showPredModal(mid){
   document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
   	  if(isAdmin&&!m.settled&&m.home_score==null){
 	    var sb=document.createElement('div');sb.style.cssText='text-align:center;margin:2px 0 10px;';
-	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,36130,32,20445,20445) + '</button>';
+	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,20462,25913) + '</button>';
 	    var wdlWrap=document.querySelector('#predModalContent .wdl-wrap');
 	    if(wdlWrap&&wdlWrap.parentNode) wdlWrap.parentNode.insertBefore(sb,wdlWrap.nextSibling);
 	    else document.getElementById('predModalContent').appendChild(sb);
 	    document.getElementById('saveOddsBtn').onclick=function(){
 	      var inp=document.querySelectorAll('#predModalContent .wdl-col input');
 	      var hv=parseFloat(inp[0].value)||2.0,dv=parseFloat(inp[1].value)||3.0,av=parseFloat(inp[2].value)||3.0;
-	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({odds_h:hv,odds_d:dv,odds_a:av})}).catch(function(e){});
-	      showToast(String.fromCharCode(10004,32,36130,23384,24050,20445));
+	      var sc=document.querySelectorAll('#predModalContent .score-item-lg');var so={};sc.forEach(function(el){var s=el.querySelector('.s-lg').textContent;var v=parseFloat(el.querySelector('.so-lg').value);if(v)so[s]=v;});
+	      var data={odds_h:hv,odds_d:dv,odds_a:av};if(Object.keys(so).length)data.score_odds=JSON.stringify(so);
+	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(data)}).catch(function(e){});
+	      showToast(String.fromCharCode(10004,32,24050,20445,23384));
 	    };
 	  }
   
