@@ -326,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.25 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.26 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1467,8 +1467,7 @@ function renderPast(){
       // New feature: show all players' TWO predictions
       '<div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--gold-dim);">'+
         '<div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px;">'+
-          '<span>📊 所有人预测</span>'+
-          '<span style="font-size:10px;color:var(--text2);font-weight:400;">每人格 胜平负(彩色) + 比分(彩色) + 积分</span>'+
+          '<span>📊 预测详情</span>'+
         '</div>'+predGrid+
       '</div>'+
     '</div>';
