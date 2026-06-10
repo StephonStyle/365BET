@@ -1,341 +1,4 @@
-﻿<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>365BET</title>
-<style>
-:root {
-  --bg: #0d0d1a;
-  --card: #16162a;
-  --card2: #1e1e3a;
-  --primary: #00e676;
-  --primary-dim: rgba(0,230,118,0.15);
-  --gold: #ffd740;
-  --gold-dim: rgba(255,215,64,0.15);
-  --red: #ff5252;
-  --red-dim: rgba(255,82,82,0.12);
-  --blue: #448aff;
-  --blue-dim: rgba(68,138,255,0.12);
-  --text: #f0f0f0;
-  --text2: #9090b0;
-  --border: rgba(255,255,255,0.06);
-  --radius: 14px;
-  --shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: var(--bg); color: var(--text); min-height: 100vh;
-  padding-bottom: 76px; overflow-x: hidden;
-}
-.footer { position:fixed; bottom:52px; left:0; right:0; text-align:center; font-size:10px; color:var(--text2); padding:6px; background:var(--bg); z-index:99; border-top:1px solid var(--border); }
-.header {
-  position:sticky; top:0; z-index:100;
-  background:linear-gradient(135deg,#0d0d1a 0%,#1a0a2e 100%);
-  padding:10px 16px; border-bottom:1px solid var(--border);
-  display:flex; align-items:center; gap:8px;
-}
-.header h1 {
-  font-size:22px; font-weight:800;
-  background:linear-gradient(135deg,var(--gold),var(--primary));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  flex:1;
-}
-.user-btn {
-  display:flex; align-items:center; gap:6px;
-  background:var(--card2); border:1px solid var(--border);
-  border-radius:20px; padding:4px 14px 4px 8px;
-  color:var(--text); font-size:13px; cursor:pointer; white-space:nowrap;
-}
-.user-btn .avatar { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; background:var(--primary-dim); color:var(--primary); }
-.refresh-btn { background:none; border:none; color:var(--text2); font-size:16px; cursor:pointer; padding:4px; line-height:1; }
-.refresh-btn:hover { color:var(--primary); }
-.settings-btn { background:none; border:none; color:var(--text2); font-size:18px; cursor:pointer; padding:4px; line-height:1; }
-.cam-btn { background:none; border:none; color:var(--text2); font-size:16px; cursor:pointer; padding:4px; line-height:1; }
-.cam-btn:hover { color:var(--primary); }
 
-.tabs {
-  position:fixed; bottom:0; left:0; right:0; z-index:100;
-  background:linear-gradient(0deg,#0d0d1a 0%,rgba(13,13,26,0.98) 100%);
-  border-top:1px solid var(--border);
-  display:flex; padding:4px 0 env(safe-area-inset-bottom);
-}
-.tab {
-  flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
-  padding:6px 0 4px; cursor:pointer; color:var(--text2);
-  font-size:10px; transition:color .2s; border:none; background:none;
-}
-.tab.active { color:var(--primary); }
-.tab .icon { font-size:20px; line-height:1.2; }
-
-.content { display:none; padding:12px 14px; }
-.content.active { display:block; }
-
-.match-card {
-  background:var(--card); border-radius:var(--radius); padding:14px 16px;
-  margin-bottom:12px; border:1px solid var(--border);
-}
-.match-header {
-  display:flex; align-items:center; gap:6px; margin-bottom:10px;
-}
-.match-date { font-size:12px; font-weight:700; white-space:nowrap; }
-.match-time-center { font-size:12px; font-weight:700; text-align:center; flex:1; min-width:44px; letter-spacing:0; }
-.league-badge { font-size:10px; font-weight:600; padding:2px 10px; border-radius:10px; }
-.league-badge.英超 { background:var(--primary-dim); color:var(--primary); }
-.league-badge.欧冠 { background:var(--blue-dim); color:var(--blue); }
-.league-badge.世界杯 { background:var(--gold-dim); color:var(--gold); }
-.league-badge.西甲 { background:rgba(255,100,50,0.2); color:#ff6432; }
-.league-badge.中超 { background:rgba(255,200,50,0.2); color:#ffc832; }
-.league-badge.欧联 { background:rgba(0,200,150,0.2); color:#00c896; }
-.league-badge.欧协联 { background:rgba(100,100,255,0.2); color:#6666ff; }
-.match-time { font-size:12px; color:var(--text2); flex:1; text-align:right; font-weight:500; }
-.match-status { font-size:10px; font-weight:600; padding:2px 8px; border-radius:8px; background:var(--card2); }
-.match-status.待预测 { color:var(--blue); background:var(--blue-dim); }
-.match-status.进行中 { color:var(--red); background:var(--red-dim); animation: pulse 1.5s ease-in-out infinite; }
-.match-status.已预测 { color:var(--gold); background:var(--gold-dim); }
-.match-status.待结算 { color:var(--primary); background:var(--primary-dim); }
-.match-status.已结算 { color:var(--text2); }
-.match-status.预测截止 { color:var(--red); background:var(--red-dim); }
-.match-status.流局 { color:var(--red); background:var(--red-dim); }
-.match-teams { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
-.team { display:flex; align-items:center; gap:8px; flex:1; }
-.team.away { flex-direction:row-reverse; }
-.team .name { font-size:12px; font-weight:600; }
-.team .logo { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; background:var(--card2); }
-.match-score { font-size:22px; font-weight:800; color:var(--text); text-align:center; min-width:50px; }
-.match-score .vs { font-size:14px; font-weight:400; color:var(--text2); }
-.match-score-input { display:flex; align-items:center; gap:4px; justify-content:center; }
-.match-score-input input { width:36px; height:36px; border-radius:8px; border:1px solid var(--border); background:var(--card2); color:var(--text); font-size:18px; font-weight:700; text-align:center; outline:none; }
-.match-score-input input:focus { border-color:var(--primary); }
-.btn { padding:6px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600; cursor:pointer; transition:opacity .2s; }
-.btn:active { opacity:.7; }
-.btn-primary { background:var(--primary); color:#000; }
-.btn-gold { background:var(--gold); color:#000; }
-.btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
-.btn-outline.btn-small { padding:3px 6px; font-size:10px; }
-.btn-outline.active { background:var(--primary); border-color:var(--primary); color:#000; }
-.btn-small { padding:4px 12px; font-size:11px; }
-.stake-btns { display:flex; gap:5px; }
-.stake-btn { padding:6px 8px; border-radius:8px; background:var(--card2); border:1px solid var(--border); color:var(--text); font-size:12px; font-weight:600; cursor:pointer; text-align:center; min-width:34px; transition:all .2s; user-select:none; }
-.stake-btn:active { transform:scale(.95); }
-.stake-btn.active { background:var(--primary); border-color:var(--primary); color:#000; }
-.stake-row { display:flex; align-items:center; gap:4px; margin-top:6px; flex-wrap:nowrap; }
-.stake-row .stake-label { font-size:11px; color:var(--text2); white-space:nowrap; }
-.stake-row .stake-btns { display:flex; gap:4px; flex-shrink:1; min-width:0; }
-.stake-row .btn { flex-shrink:0; }
-.summary-card { background:linear-gradient(135deg,var(--card),var(--card2)); border-radius:var(--radius); padding:18px; margin-bottom:16px; border:1px solid var(--border); text-align:center; }
-.summary-card .big-num { font-size:36px; font-weight:800; margin:6px 0; }
-.summary-card .big-num.positive { color:var(--primary); }
-.summary-card .big-num.negative { color:var(--red); }
-.summary-card .big-num.zero { color:var(--text2); }
-.summary-row { display:flex; justify-content:space-around; gap:12px; margin-top:12px; }
-.summary-item { text-align:center; }
-.summary-item .label { font-size:11px; color:var(--text2); }
-.summary-item .value { font-size:18px; font-weight:700; margin-top:2px; }
-.bill-item { background:var(--card); border-radius:var(--radius); padding:12px 14px; margin-bottom:8px; border:1px solid var(--border); display:flex; align-items:center; gap:12px; }
-.bill-item .match-info { flex:1; }
-.bill-item .match-info .teams { font-size:13px; font-weight:600; }
-.bill-item .match-info .detail { font-size:11px; color:var(--text2); margin-top:2px; }
-.bill-amount { font-size:16px; font-weight:700; text-align:right; }
-.bill-amount.positive { color:var(--primary); }
-.bill-amount.negative { color:var(--red); }
-.rank-card { background:var(--card); border-radius:var(--radius); padding:12px 16px; margin-bottom:8px; border:1px solid var(--border); display:flex; align-items:center; gap:12px; }
-.rank-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; }
-.rank-num.gold { background:var(--gold); color:#000; }
-.rank-num.silver { background:#a0a0b0; color:#000; }
-.rank-num.bronze { background:#cd7f32; color:#fff; }
-.rank-num.normal { background:var(--card2); color:var(--text2); }
-.rank-info { flex:1; }
-.rank-info .name { font-size:14px; font-weight:600; }
-.rank-info .stats { font-size:11px; color:var(--text2); margin-top:2px; }
-.rank-score { text-align:right; }
-.rank-score .pts { font-size:20px; font-weight:800; color:var(--gold); }
-.rank-score .label { font-size:10px; color:var(--text2); }
-.modal-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; padding:20px; }
-.modal-overlay.show { display:flex; }
-.modal { background:var(--card); border-radius:var(--radius); padding:24px; width:100%; max-width:380px; border:1px solid var(--border); max-height:80vh; overflow-y:auto; }
-.modal h2 { font-size:18px; margin-bottom:16px; text-align:center; }
-.modal-close { float:right; background:none; border:none; color:var(--text2); font-size:20px; cursor:pointer; padding:4px; }
-.user-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.user-option { display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 8px; border-radius:12px; border:2px solid transparent; background:var(--card2); cursor:pointer; }
-.user-option.selected { border-color:var(--primary); background:var(--primary-dim); }
-.user-option .avatar-big { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; }
-.user-option .un { font-size:13px; font-weight:600; }
-.admin-row { display:flex; gap:8px; }
-.admin-row input { flex:1; }
-.stake-option input:checked+span { background:var(--gold)!important; color:#000!important; border-color:var(--gold)!important; }
-.debt-summary { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
-.debt-box { background:var(--card); border-radius:var(--radius); padding:14px; text-align:center; border:1px solid var(--border); }
-.debt-box .label { font-size:11px; color:var(--text2); }
-.debt-box .value { font-size:22px; font-weight:800; margin-top:4px; }
-.debt-item { background:var(--card); border-radius:var(--radius); padding:12px 14px; margin-bottom:8px; border:1px solid var(--border); display:flex; align-items:center; gap:10px; }
-.debt-item .arrow { color:var(--text2); font-size:16px; }
-.debt-amount { font-size:15px; font-weight:700; margin-left:auto; }
-.debt-amount.positive { color:var(--primary); }
-.debt-amount.negative { color:var(--red); }
-.empty-state { text-align:center; padding:40px 20px; color:var(--text2); }
-.empty-state .icon { font-size:48px; margin-bottom:12px; opacity:.5; }
-.empty-state p { font-size:13px; }
-.toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:var(--card2); color:var(--text); padding:10px 20px; border-radius:10px; font-size:13px; z-index:300; border:1px solid var(--border); box-shadow:var(--shadow); animation: toastIn .3s ease; }
-@keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
-.group-section { margin-bottom:20px; }
-.group-title { font-size:15px; font-weight:700; margin-bottom:8px; padding:8px 12px; background:var(--card2); border-radius:8px; border-left:4px solid var(--gold); }
-.group-table { width:100%; table-layout:fixed; border-collapse:collapse; font-size:12px; background:var(--card); border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); margin-bottom:8px; }
-.group-table th { background:var(--card2); color:var(--text2); font-weight:600; padding:8px 2px; text-align:center; font-size:10px; }
-.group-table th:first-child { text-align:left; padding-left:8px; }
-.group-table td { padding:6px 2px; text-align:center; border-top:1px solid var(--border); }
-.group-table td:first-child { text-align:left; padding-left:8px; font-weight:600; }
-.group-table .team-cell { display:flex; align-items:center; gap:4px; }
-.group-table .team-cell .flag { font-size:16px; }
-.group-table .pos { width:22px; color:var(--text2); font-weight:600; }
-.group-table .pts-cell { font-weight:800; font-size:14px; color:var(--gold); }
-.group-table .qualify { background:rgba(0,230,118,0.06); }
-.group-table .qualify3 { background:rgba(255,215,64,0.08); }
-.group-table .elim { background:rgba(255,82,82,0.04); }
-.group-table .rank { font-size:9px; color:var(--text2); font-weight:400; }
-.team-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.team-grid .team-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:all .2s; }
-.team-grid .team-card:active { transform:scale(.97); }
-.team-grid .team-card .flag { font-size:28px; }
-.team-grid .team-card .tname { font-size:13px; font-weight:600; }
-.team-grid .team-card .tinfo { font-size:10px; color:var(--text2); }
-.squad-modal { max-width:95%; width:540px; max-height:85vh; }
-.player-item { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--card2); border-radius:8px; margin-bottom:6px; cursor:pointer; transition:all .2s; border:1px solid transparent; }
-.player-item:active { transform:scale(.98); }
-.player-item:hover { border-color:var(--primary-dim); }
-
-.player-item .pcn { font-size:11px; color:var(--gold); margin-top:1px; }
-.player-item .pright { text-align:right; min-width:80px; max-width:120px; flex-shrink:0; }
-.player-item .pleague { font-size:9px; color:var(--text2); }
-.player-item .pnum { width:24px; height:24px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--text2); flex-shrink:0; }
-.player-item .pinfo { flex:1; min-width:0; overflow:hidden; }
-.player-item .pname { font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; }
-.player-item .ppos { font-size:10px; color:var(--text2); }
-.player-item .pclub { font-size:11px; color:var(--text2); word-break:break-word; line-height:1.3; }
-.player-item .pvalue { font-size:12px; font-weight:700; color:var(--gold); white-space:nowrap; }
-.player-detail-card { text-align:center; padding:8px 0; }
-.player-detail-card .big-avatar { width:80px; height:80px; border-radius:50%; background:var(--card2); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:700; margin:0 auto 12px; color:var(--gold); }
-.player-detail-card .pd-name { font-size:20px; font-weight:800; }
-.player-detail-card .pd-number { font-size:14px; color:var(--text2); margin-bottom:8px; }
-.player-detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
-.player-detail-grid .pd-item { background:var(--card2); border-radius:8px; padding:10px; text-align:center; }
-.player-detail-grid .pd-item .pd-label { font-size:10px; color:var(--text2); }
-.player-detail-grid .pd-item .pd-value { font-size:14px; font-weight:700; margin-top:2px; }
-
-.loading { text-align:center; padding:60px 20px; color:var(--text2); }
-.loading .spin { display:inline-block; width:32px; height:32px; border:3px solid var(--card2); border-top-color:var(--primary); border-radius:50%; animation: spin .8s linear infinite; margin-bottom:12px; }
-@keyframes spin { to{transform:rotate(360deg)} }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-.match-card,.bill-item,.rank-card,.debt-item { animation:fadeIn .3s ease; }
-@media (min-width:600px) { .content { max-width:600px; margin:0 auto; } .user-grid { grid-template-columns:1fr 1fr 1fr; } .pred-grid { grid-template-columns:1fr 1fr 1fr 1fr!important; } }
-
-.round-divider { display:flex; align-items:center; gap:12px; margin:20px 0 14px; }
-.round-divider::before, .round-divider::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
-.round-divider span { font-size:13px; font-weight:700; color:var(--gold); white-space:nowrap; text-shadow:0 0 12px rgba(255,215,64,0.3); letter-spacing:1px; }
-@keyframes rowFlash {
-  0% { background: rgba(255,215,64,0.3) !important; box-shadow: 0 0 12px rgba(255,215,64,0.4); }
-  70% { background: rgba(255,215,64,0.15) !important; box-shadow: 0 0 6px rgba(255,215,64,0.2); }
-  100% { background: transparent; box-shadow: none; }
-}
-.group-table tr.flash-row { animation: rowFlash 1.5s ease-out; }
-
-
-.score-item-lg { display:flex; align-items:center; gap:2px; padding:3px 4px; border-radius:4px; background:var(--card2); margin-bottom:2px; min-height:26px; cursor:pointer; }
-.score-item-lg.active { background:var(--gold-dim); border:1px solid var(--gold); }
-.score-item-lg .s-lg { flex:1; text-align:center; font-size:12px; font-weight:600; }
-.score-item-lg .so-lg { width:32px; border:none; background:transparent; color:var(--gold); text-align:center; font-size:10px; font-weight:600; }
-
-
-.wdl-wrap { display:flex; gap:6px; justify-content:center; align-items:stretch; }
-.wdl-col { display:flex; flex-direction:column; align-items:center; gap:3px; flex:0 0 72px; }
-.wdl-btn { width:100%; text-align:center; padding:6px 0; border-radius:6px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:14px; font-weight:700; transition:all .15s; }
-.wdl-btn.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
-.wdl-btn[data-pick="H"]:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-dim); }
-.wdl-btn[data-pick="D"]:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
-.wdl-btn[data-pick="A"]:hover { border-color:var(--red); color:var(--red); background:var(--red-dim); }
-.stake-row { display:flex; align-items:center; gap:6px; flex-wrap:nowrap; }
-.stake-label { font-size:12px; color:var(--text2); white-space:nowrap; }
-.stake-btns { display:flex; gap:4px; flex:1; }
-.stake-btn { padding:4px 8px; border-radius:4px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:12px; font-weight:600; transition:all .15s; text-align:center; min-width:32px; }
-.stake-btn.active { background:var(--primary-dim); border-color:var(--primary); color:var(--primary); }
-
-</style>
-</head>
-<body>
-<div class="header">
-  <h1 style="font-size:20px;flex:1;">365BET</h1>
-	  <button class="refresh-btn" id="refreshBtn" title="刷新数据" onclick="location.reload()">🔄</button>
-  <button class="user-btn" id="userBtn"><span class="avatar" id="userAvatar">?</span><span id="userName">选择用户</span></button>
-  <button class="cam-btn" id="camBtn" title="上传头像">📷</button>
-  <button class="settings-btn" id="adminBtn" title="管理员模式">⚙</button>
-</div>
-
-<div id="tabPast" class="content">
-  <div id="pastContent"></div>
-
-</div>
-<div id="tabMatches" class="content active">
-  <div id="matchList"><div class="loading"><div class="spin"></div><p>加载中...</p></div></div>
-    <div class="modal-overlay" id="pwdModal">
-    <div class="modal" style="max-width:300px;">
-      <h2 style="font-size:16px;margin-bottom:12px;">&#128274; 管理员密码</h2>
-      <input type="password" id="pwdInput" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:16px;text-align:center;outline:none;margin-bottom:16px;box-sizing:border-box;">
-      <div style="display:flex;gap:10px;">
-        <button class="btn" style="flex:1;background:var(--card2);color:var(--text2);" onclick="cancelPwd()">取消</button>
-        <button class="btn btn-primary" style="flex:1;" onclick="submitPwd()">确定</button>
-      </div>
-    </div>
-  </div>
-  <div class="modal-overlay" id="adminModal">
-    <div class="modal" style="max-width:420px;">
-      <button class="modal-close" onclick="document.getElementById('adminModal').classList.remove('show')">&#10005;</button>
-      <h2>&#128736; 管理员</h2>
-      <div id="adminContent" style="min-height:80px;max-height:60vh;overflow-y:auto;font-size:13px;color:var(--text2);">内容待定</div>
-    </div>
-  </div></div>
-
-<div id="tabBill" class="content"><div id="billContent"></div></div>
-<div id="tabRank" class="content"><div id="rankContent"></div></div>
-<div id="tabDebt" class="content"><div id="debtContent"></div></div>
-
-<div id="tabGroups" class="content"><div id="groupsContent"></div></div>
-
-<input type="file" id="avatarUpload" accept="image/*" style="display:none">
-<div class="modal-overlay" id="userModal">
-  <div class="modal"><button class="modal-close" id="closeModalBtn">✕</button><h2>👤 选择你的身份</h2><div class="user-grid" id="userGrid"></div></div>
-</div>
-
-<div class="modal-overlay" id="squadModal">
-  <div class="modal squad-modal"><button class="modal-close" onclick="closeSquad()">✕</button><h2 id="squadTitle">球队阵容</h2><div id="squadContent"></div></div>
-</div>
-
-<div class="modal-overlay" id="playerModal">
-  <div class="modal"><button class="modal-close" onclick="closePlayer()">✕</button><div id="playerContent"></div></div>
-</div>
-
-<div class="modal-overlay" id="predModal">
-  <div class="modal" style="max-width:400px;">
-    <button class="modal-close" onclick="closePredModal()">&#10005;</button>
-    <h2 id="predModalTitle"></h2>
-    <div id="predModalContent"></div>
-  </div>
-</div>
-
-<div class="footer">© 2026-2030 Stephon · v2.3.16 · 365BET</div>
-<div class="tabs">
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabGroups').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Groups"><span class="icon">🌍</span><span>分组</span></button>
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabBill').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Bill"><span class="icon">💰</span><span>账单</span></button>
-  <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabRank').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Rank"><span class="icon">🏆</span><span>排行榜</span></button>
-</div>
-
-<script>
 // ======================== SUPABASE REST ========================
 const SB_URL = 'https://dpfdndvxhsbdngvypoie.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZmRuZHZ4aHNiZG5ndnlwb2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjg4NDIsImV4cCI6MjA5MzgwNDg0Mn0.Np3v76r6q9sfu0LsP82UqQmRQH8tVhaF0G2fzlqYoeQ';
@@ -1413,67 +1076,7 @@ function renderPast(){
     if(isAdmin&&m.settled) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}_p" value="${m.home_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}_p" value="${m.away_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="adminEditResultPast('${m.id}')">修改</button></div>`;
     else if(isAdmin&&!m.home_score) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}_p" placeholder="主" style="width:36px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}_p" placeholder="客" style="width:36px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="enterResultPast('${m.id}')">录入比分</button></div>`;
     parts2.push(`<div class="match-card"><div class="match-header"><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span>${(grp=WC_TEAM_GROUP[m.home]||WC_TEAM_GROUP[CN_RANK[m.home]]||WC_TEAM_GROUP[m.away]||WC_TEAM_GROUP[CN_RANK[m.away]]||"")?'<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+grp+'组</span>':''}<span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.home)}');">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''?''+(WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''):''}</span></div>${rd}<div class="team away"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.away)}');">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''?''+(WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''):''}</span></div></div>${wi}${plHtml}${act}</div>`);
-  });
-  // ======================== 新功能模拟：比赛开始后展示所有人预测的两个结果 ========================
-  if(!demoShown){
-    var simHtml='<div style="text-align:center;margin:18px 0 12px;position:relative;"><span style="display:inline-block;padding:4px 20px;font-size:12px;font-weight:700;color:var(--gold);background:var(--gold-dim);border-radius:20px;border:1px solid var(--gold);letter-spacing:2px;">🔮 新功能模拟 — 比赛开始后展示所有人预测</span></div>';
-    // Simulate 3 World Cup matches in progress
-    var simMatches=[
-      {home:'Mexico',away:'South Korea',hScore:0,aScore:1,date:new Date('2026-06-11T21:00+08:00'),league:'世界杯',grp:'A'},
-      {home:'Brazil',away:'Haiti',hScore:3,aScore:0,date:new Date('2026-06-12T18:00+08:00'),league:'世界杯',grp:'C'},
-      {home:'Portugal',away:'DR Congo',hScore:1,aScore:1,date:new Date('2026-06-13T00:00+08:00'),league:'世界杯',grp:'K'}
-    ];
-    simMatches.forEach(function(sm){
-      var dtStr=sm.date.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+sm.date.toLocaleString([],{weekday:'short'});
-      var tmStr=sm.date.toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
-      // Simulated predictions for all 8 players: each has [pick (H/D/A), hScore, aScore, stake]
-      var simPreds=[
-        {un:'老章',pick:'H',h:2,a:1,sk:10},{un:'大毛',pick:'H',h:1,a:0,sk:15},
-        {un:'王彬',pick:'A',h:0,a:2,sk:20},{un:'王玺',pick:'A',h:1,a:2,sk:10},
-        {un:'三瓶',pick:'H',h:3,a:0,sk:25},{un:'糖糖',pick:'D',h:0,a:0,sk:15},
-        {un:'二红',pick:'A',h:0,a:1,sk:10},{un:'隔离',pick:'D',h:1,a:1,sk:20}
-      ];
-      var pickLabels={'H':'胜','D':'平','A':'负'};
-      var predGrid='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:8px;">'+
-        simPreds.map(function(x){
-          var idx=USERS.indexOf(x.un);
-          var bg=COLORS[idx]+'15';
-          var clr=COLORS[idx];
-          return '<div style="background:'+bg+';border:1px solid '+clr+'33;border-radius:10px;padding:8px 6px;text-align:center;">'+
-            '<div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:4px;">'+
-            '<span style="width:22px;height:22px;border-radius:50%;background:'+clr+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">'+ac(x.un)+'</span>'+
-            '<span style="font-size:12px;font-weight:600;">'+x.un+'</span></div>'+
-            '<div style="display:flex;gap:4px;justify-content:center;font-size:11px;flex-wrap:wrap;">'+
-            '<span style="background:var(--card2);padding:2px 8px;border-radius:4px;font-weight:600;">'+(sm.hScore>sm.aScore?'H':sm.hScore<sm.aScore?'A':'D')+' → '+pickLabels[x.pick]+'</span>'+
-            '<span style="background:var(--card2);padding:2px 8px;border-radius:4px;font-weight:600;">'+x.h+':'+x.a+'</span>'+
-            '</div>'+
-            '<div style="font-size:10px;color:var(--text2);margin-top:3px;">¥'+x.sk+'</div>'+
-            '</div>';
-        }).join('')+'</div>';
-      simHtml+= '<div class="match-card" style="border-color:var(--gold-dim);">'+
-        '<div class="match-header">'+
-          '<span class="match-date" style="color:var(--gold);">'+dtStr+'</span>'+
-          '<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+sm.grp+'组</span>'+
-          '<span class="match-time-center">'+tmStr+'</span>'+
-          '<span class="match-status" style="color:var(--red);background:var(--red-dim);">🔴 进行中</span>'+
-        '</div>'+
-        '<div class="match-teams">'+
-          '<div class="team"><span style="font-size:22px;">'+(WC_FLAGS[sm.home]||'🇲🇽')+'</span><span class="name" style="font-weight:700;">'+sm.home+'</span></div>'+
-          '<div class="match-score" style="color:var(--gold);">'+sm.hScore+' - '+sm.aScore+'<span style="display:block;font-size:10px;color:var(--red);font-weight:600;">🔴 LIVE</span></div>'+
-          '<div class="team away"><span style="font-size:22px;">'+(WC_FLAGS[sm.away]||'🇰🇷')+'</span><span class="name" style="font-weight:700;">'+sm.away+'</span></div>'+
-        '</div>'+
-        // New feature: show all players' TWO predictions
-        '<div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--gold-dim);">'+
-          '<div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px;">'+
-            '<span>📊 所有人预测</span>'+
-            '<span style="font-size:10px;color:var(--text2);font-weight:400;">每个玩家显示 ②胜平负预测 + ②比分预测</span>'+
-          '</div>'+predGrid+
-        '</div>'+
-      '</div>';
-    });
-    parts2.push(simHtml);
-  }
-  el.innerHTML=parts2.join('');
+  }); el.innerHTML=parts2.join('');
 }
 var chartHL=null;
 function renderChart(){
@@ -1895,17 +1498,15 @@ function showPredModal(mid){
     document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
   	  if(isAdmin&&!m.settled&&m.home_score==null){
 	    var sb=document.createElement('div');sb.style.cssText='text-align:center;margin:2px 0 10px;';
-	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,20462,25913) + '</button>';
+	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,36130,32,20445,20445) + '</button>';
 	    var wdlWrap=document.querySelector('#predModalContent .wdl-wrap');
 	    if(wdlWrap&&wdlWrap.parentNode) wdlWrap.parentNode.insertBefore(sb,wdlWrap.nextSibling);
 	    else document.getElementById('predModalContent').appendChild(sb);
 	    document.getElementById('saveOddsBtn').onclick=function(){
 	      var inp=document.querySelectorAll('#predModalContent .wdl-col input');
 	      var hv=parseFloat(inp[0].value)||2.0,dv=parseFloat(inp[1].value)||3.0,av=parseFloat(inp[2].value)||3.0;
-	      var sc=document.querySelectorAll('#predModalContent .score-item-lg');var so={};sc.forEach(function(el){var s=el.querySelector('.s-lg').textContent;var v=parseFloat(el.querySelector('.so-lg').value);if(v)so[s]=v;});
-	      var data={odds_h:hv,odds_d:dv,odds_a:av};if(Object.keys(so).length)data.score_odds=JSON.stringify(so);
-	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(data)}).catch(function(e){});
-	      showToast(String.fromCharCode(10004,32,24050,20445,23384));
+	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({odds_h:hv,odds_d:dv,odds_a:av})}).catch(function(e){});
+	      showToast(String.fromCharCode(10004,32,36130,23384,24050,20445));
 	    };
 	  }
     return;
@@ -1943,17 +1544,15 @@ function showPredModal(mid){
   document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
   	  if(isAdmin&&!m.settled&&m.home_score==null){
 	    var sb=document.createElement('div');sb.style.cssText='text-align:center;margin:2px 0 10px;';
-	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,20462,25913) + '</button>';
+	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,36130,32,20445,20445) + '</button>';
 	    var wdlWrap=document.querySelector('#predModalContent .wdl-wrap');
 	    if(wdlWrap&&wdlWrap.parentNode) wdlWrap.parentNode.insertBefore(sb,wdlWrap.nextSibling);
 	    else document.getElementById('predModalContent').appendChild(sb);
 	    document.getElementById('saveOddsBtn').onclick=function(){
 	      var inp=document.querySelectorAll('#predModalContent .wdl-col input');
 	      var hv=parseFloat(inp[0].value)||2.0,dv=parseFloat(inp[1].value)||3.0,av=parseFloat(inp[2].value)||3.0;
-	      var sc=document.querySelectorAll('#predModalContent .score-item-lg');var so={};sc.forEach(function(el){var s=el.querySelector('.s-lg').textContent;var v=parseFloat(el.querySelector('.so-lg').value);if(v)so[s]=v;});
-	      var data={odds_h:hv,odds_d:dv,odds_a:av};if(Object.keys(so).length)data.score_odds=JSON.stringify(so);
-	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(data)}).catch(function(e){});
-	      showToast(String.fromCharCode(10004,32,24050,20445,23384));
+	      fetch(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({odds_h:hv,odds_d:dv,odds_a:av})}).catch(function(e){});
+	      showToast(String.fromCharCode(10004,32,36130,23384,24050,20445));
 	    };
 	  }
   
@@ -2149,20 +1748,3 @@ function init(){
 }
 
 document.addEventListener('DOMContentLoaded',init);
-</script>
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
