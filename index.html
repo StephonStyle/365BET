@@ -327,7 +327,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.34 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.35 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1367,14 +1367,12 @@ const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 开赛后4小时(含加时+结束1h)�
 
 function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
-  let f=M.filter(function(m){return m.id&&m.id==='demo_ba';});
+  let f=[];
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
-  var lastRound=0,parts2=[],demoShown=false;
+  var lastRound=0,parts2=[];
   f.forEach(function(m){
     var r=getMatchRound(m);
     if(lastRound!==0&&r<lastRound&&ROUND_DIV[lastRound]) parts2.push('<div class="round-divider"><span>'+ROUND_DIV[lastRound]+'</span></div>');
-    lastRound=r;
-    if(!demoShown&&m.id.indexOf('demo_')===0){demoShown=true;parts2.push('<div style="text-align:center;margin:18px 0 12px;position:relative;"><span style="display:inline-block;padding:4px 20px;font-size:12px;font-weight:700;color:var(--text2);background:var(--card2);border-radius:20px;border:1px solid var(--border);letter-spacing:2px;">🎮 演示模拟</span></div>');}
     const st=gs(m);
     const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short'});
     const tmStr=new Date(m.date).toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
