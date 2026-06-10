@@ -326,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.22 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.23 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1425,12 +1425,11 @@ function renderPast(){
   simMatches.forEach(function(sm){
     var dtStr=sm.date.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+sm.date.toLocaleString([],{weekday:'short'});
     var tmStr=sm.date.toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
-    // Simulated predictions for all 8 players: each has [pick (H/D/A), hScore, aScore, stake]
     var simPreds=[
-      {un:'老章',pick:'H',h:2,a:1,sk:10},{un:'大毛',pick:'H',h:1,a:0,sk:15},
-      {un:'王彬',pick:'A',h:0,a:2,sk:20},{un:'王玺',pick:'A',h:1,a:2,sk:10},
-      {un:'三瓶',pick:'H',h:3,a:0,sk:25},{un:'糖糖',pick:'D',h:0,a:0,sk:15},
-      {un:'二红',pick:'A',h:0,a:1,sk:10},{un:'隔离',pick:'D',h:1,a:1,sk:20}
+      {un:'老章',pick:'H',h:2,a:1,wSk:30,wOd:1.83,sSk:20,sOd:6.5},{un:'大毛',pick:'H',h:1,a:0,wSk:15,wOd:1.83,sSk:15,sOd:8.0},
+      {un:'王彬',pick:'A',h:0,a:2,wSk:20,wOd:3.50,sSk:10,sOd:12.0},{un:'王玺',pick:'A',h:1,a:2,wSk:10,wOd:3.50,sSk:10,sOd:12.0},
+      {un:'三瓶',pick:'H',h:3,a:0,wSk:25,wOd:1.83,sSk:20,sOd:5.0},{un:'糖糖',pick:'D',h:0,a:0,wSk:15,wOd:3.20,sSk:25,sOd:7.0},
+      {un:'二红',pick:'A',h:0,a:1,wSk:10,wOd:3.50,sSk:15,sOd:12.0},{un:'隔离',pick:'D',h:1,a:1,wSk:20,wOd:3.20,sSk:10,sOd:7.0}
     ];
     var pickLabels={'H':'胜','D':'平','A':'负'};
     var wdlColors={'H':'var(--primary)','D':'var(--gold)','A':'var(--red)'};
@@ -1441,18 +1440,18 @@ function renderPast(){
         var clr=COLORS[idx];
         var scClr=x.h>x.a?'var(--primary)':x.h<x.a?'var(--red)':'var(--gold)';
         return '<div style="background:'+bg+';border:1px solid '+clr+'33;border-radius:10px;padding:8px 6px;">'+
-          // Row 1: Avatar + Name (centered)
-          '<div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:5px;">'+
+          // Row 1: Avatar + Name
+          '<div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:4px;">'+
           '<span style="width:22px;height:22px;border-radius:50%;background:'+clr+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">'+ac(x.un)+'</span>'+
           '<span style="font-size:12px;font-weight:600;">'+x.un+'</span></div>'+
-          // Row 2: 胜平负 (left, colored) + stake (right)
-          '<div style="display:flex;align-items:center;justify-content:space-between;padding:1px 6px;margin-bottom:2px;font-size:13px;">'+
-          '<span style="font-weight:800;color:'+wdlColors[x.pick]+';">'+pickLabels[x.pick]+'</span>'+
-          '<span style="color:var(--text2);font-weight:700;font-size:11px;">¥'+x.sk+'</span></div>'+
-          // Row 3: 比分 (left, colored by predicted result) + stake (right)
-          '<div style="display:flex;align-items:center;justify-content:space-between;padding:1px 6px;font-size:13px;">'+
-          '<span style="font-weight:800;color:'+scClr+';">'+x.h+':'+x.a+'</span>'+
-          '<span style="color:var(--text2);font-weight:700;font-size:11px;">¥'+x.sk+'</span></div>'+
+          // Row 2: WDL pick (just one character, colored)
+          '<div style="text-align:center;padding:1px 6px;margin-bottom:1px;font-size:15px;font-weight:800;color:'+wdlColors[x.pick]+';">'+pickLabels[x.pick]+'</div>'+
+          // Row 3: WDL stake @ odds
+          '<div style="text-align:center;padding:0 6px;margin-bottom:2px;font-size:11px;color:var(--text2);">'+x.wSk+' @ '+x.wOd.toFixed(2)+'</div>'+
+          // Row 4: Score prediction
+          '<div style="text-align:center;padding:1px 6px;margin-bottom:1px;font-size:15px;font-weight:800;color:'+scClr+';">'+x.h+':'+x.a+'</div>'+
+          // Row 5: Score stake @ odds
+          '<div style="text-align:center;padding:0 6px;font-size:11px;color:var(--text2);">'+x.sSk+' @ '+x.sOd.toFixed(2)+'</div>'+
           '</div>';
       }).join('')+'</div>';
     simHtml+= '<div class="match-card" style="border-color:var(--gold-dim);">'+
