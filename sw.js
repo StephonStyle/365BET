@@ -1,4 +1,4 @@
-const CACHE = '365BET-v3.0.0';
+const CACHE = '365BET-v3.0.1';
 self.addEventListener('install',function(e){
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(['/365BET/']);}));
