@@ -8,6 +8,10 @@
 <meta http-equiv="Expires" content="0">
 <title>365BET</title>
 <style>
+/* 开屏闪图 */
+#splash{position:fixed;inset:0;z-index:9999;background:#0d0d1a;display:flex;align-items:center;justify-content:center;animation:fadeOut .5s ease 1.8s forwards;}
+#splash img{max-width:100%;max-height:100%;object-fit:cover;}
+@keyframes fadeOut{to{opacity:0;pointer-events:none;}}
 :root {
   --bg: #0d0d1a;
   --card: #16162a;
@@ -267,6 +271,7 @@ body {
 </style>
 </head>
 <body>
+<div id="splash"><img src="https://stephonstyle.github.io/test/WC.jpg" onerror="this.parentElement.style.display='none'"></div>
 <div class="header">
   <h1 style="font-size:20px;flex:1;">365BET</h1>
 	  <button class="refresh-btn" id="refreshBtn" title="刷新数据" onclick="location.reload()">🔄</button>
@@ -326,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.0.1 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.0.2 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
