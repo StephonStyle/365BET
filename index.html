@@ -1415,64 +1415,61 @@ function renderPast(){
     parts2.push(`<div class="match-card"><div class="match-header"><span class="match-date" style="color:${lc[m.league]||'var(--text2)'}">${dtStr}</span>${(grp=WC_TEAM_GROUP[m.home]||WC_TEAM_GROUP[CN_RANK[m.home]]||WC_TEAM_GROUP[m.away]||WC_TEAM_GROUP[CN_RANK[m.away]]||"")?'<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+grp+'组</span>':''}<span class="match-time-center">${tmStr}</span><span class="match-status ${st.cls}">${st.label}</span></div><div class="match-teams"><div class="team"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.home)}');">${ts(m.home)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''?''+(WC_RANK[m.home]||WC_RANK[CN_RANK[m.home]]||''):''}</span></div>${rd}<div class="team away"><span class="name" style="cursor:pointer;" onclick="gotoTeam('${ts(m.away)}');">${ts(m.away)}</span><span style="font-size:9px;color:var(--text2);font-weight:400;margin-left:2px;">${WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''?''+(WC_RANK[m.away]||WC_RANK[CN_RANK[m.away]]||''):''}</span></div></div>${wi}${plHtml}${act}</div>`);
   });
   // ======================== 新功能模拟：比赛开始后展示所有人预测的两个结果 ========================
-  if(!demoShown){
-    var simHtml='<div style="text-align:center;margin:18px 0 12px;position:relative;"><span style="display:inline-block;padding:4px 20px;font-size:12px;font-weight:700;color:var(--gold);background:var(--gold-dim);border-radius:20px;border:1px solid var(--gold);letter-spacing:2px;">🔮 新功能模拟 — 比赛开始后展示所有人预测</span></div>';
-    // Simulate 3 World Cup matches in progress
-    var simMatches=[
-      {home:'Mexico',away:'South Korea',hScore:0,aScore:1,date:new Date('2026-06-11T21:00+08:00'),league:'世界杯',grp:'A'},
-      {home:'Brazil',away:'Haiti',hScore:3,aScore:0,date:new Date('2026-06-12T18:00+08:00'),league:'世界杯',grp:'C'},
-      {home:'Portugal',away:'DR Congo',hScore:1,aScore:1,date:new Date('2026-06-13T00:00+08:00'),league:'世界杯',grp:'K'}
+  var simHtml='<div style="text-align:center;margin:18px 0 12px;position:relative;"><span style="display:inline-block;padding:4px 20px;font-size:12px;font-weight:700;color:var(--gold);background:var(--gold-dim);border-radius:20px;border:1px solid var(--gold);letter-spacing:2px;">🔮 新功能模拟 — 比赛开始后展示所有人预测</span></div>';
+  // Simulate 3 World Cup matches in progress
+  var simMatches=[
+    {home:'Mexico',away:'South Korea',hScore:0,aScore:1,date:new Date('2026-06-11T21:00+08:00'),league:'世界杯',grp:'A'},
+    {home:'Brazil',away:'Haiti',hScore:3,aScore:0,date:new Date('2026-06-12T18:00+08:00'),league:'世界杯',grp:'C'},
+    {home:'Portugal',away:'DR Congo',hScore:1,aScore:1,date:new Date('2026-06-13T00:00+08:00'),league:'世界杯',grp:'K'}
+  ];
+  simMatches.forEach(function(sm){
+    var dtStr=sm.date.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+sm.date.toLocaleString([],{weekday:'short'});
+    var tmStr=sm.date.toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
+    // Simulated predictions for all 8 players: each has [pick (H/D/A), hScore, aScore, stake]
+    var simPreds=[
+      {un:'老章',pick:'H',h:2,a:1,sk:10},{un:'大毛',pick:'H',h:1,a:0,sk:15},
+      {un:'王彬',pick:'A',h:0,a:2,sk:20},{un:'王玺',pick:'A',h:1,a:2,sk:10},
+      {un:'三瓶',pick:'H',h:3,a:0,sk:25},{un:'糖糖',pick:'D',h:0,a:0,sk:15},
+      {un:'二红',pick:'A',h:0,a:1,sk:10},{un:'隔离',pick:'D',h:1,a:1,sk:20}
     ];
-    simMatches.forEach(function(sm){
-      var dtStr=sm.date.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+sm.date.toLocaleString([],{weekday:'short'});
-      var tmStr=sm.date.toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
-      // Simulated predictions for all 8 players: each has [pick (H/D/A), hScore, aScore, stake]
-      var simPreds=[
-        {un:'老章',pick:'H',h:2,a:1,sk:10},{un:'大毛',pick:'H',h:1,a:0,sk:15},
-        {un:'王彬',pick:'A',h:0,a:2,sk:20},{un:'王玺',pick:'A',h:1,a:2,sk:10},
-        {un:'三瓶',pick:'H',h:3,a:0,sk:25},{un:'糖糖',pick:'D',h:0,a:0,sk:15},
-        {un:'二红',pick:'A',h:0,a:1,sk:10},{un:'隔离',pick:'D',h:1,a:1,sk:20}
-      ];
-      var pickLabels={'H':'胜','D':'平','A':'负'};
-      var predGrid='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:8px;">'+
-        simPreds.map(function(x){
-          var idx=USERS.indexOf(x.un);
-          var bg=COLORS[idx]+'15';
-          var clr=COLORS[idx];
-          return '<div style="background:'+bg+';border:1px solid '+clr+'33;border-radius:10px;padding:8px 6px;text-align:center;">'+
-            '<div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:4px;">'+
-            '<span style="width:22px;height:22px;border-radius:50%;background:'+clr+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">'+ac(x.un)+'</span>'+
-            '<span style="font-size:12px;font-weight:600;">'+x.un+'</span></div>'+
-            '<div style="display:flex;gap:4px;justify-content:center;font-size:11px;flex-wrap:wrap;">'+
-            '<span style="background:var(--card2);padding:2px 8px;border-radius:4px;font-weight:600;">'+(sm.hScore>sm.aScore?'H':sm.hScore<sm.aScore?'A':'D')+' → '+pickLabels[x.pick]+'</span>'+
-            '<span style="background:var(--card2);padding:2px 8px;border-radius:4px;font-weight:600;">'+x.h+':'+x.a+'</span>'+
-            '</div>'+
-            '<div style="font-size:10px;color:var(--text2);margin-top:3px;">¥'+x.sk+'</div>'+
-            '</div>';
-        }).join('')+'</div>';
-      simHtml+= '<div class="match-card" style="border-color:var(--gold-dim);">'+
-        '<div class="match-header">'+
-          '<span class="match-date" style="color:var(--gold);">'+dtStr+'</span>'+
-          '<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+sm.grp+'组</span>'+
-          '<span class="match-time-center">'+tmStr+'</span>'+
-          '<span class="match-status" style="color:var(--red);background:var(--red-dim);">🔴 进行中</span>'+
-        '</div>'+
-        '<div class="match-teams">'+
-          '<div class="team"><span style="font-size:22px;">'+(WC_FLAGS[sm.home]||'🇲🇽')+'</span><span class="name" style="font-weight:700;">'+sm.home+'</span></div>'+
-          '<div class="match-score" style="color:var(--gold);">'+sm.hScore+' - '+sm.aScore+'<span style="display:block;font-size:10px;color:var(--red);font-weight:600;">🔴 LIVE</span></div>'+
-          '<div class="team away"><span style="font-size:22px;">'+(WC_FLAGS[sm.away]||'🇰🇷')+'</span><span class="name" style="font-weight:700;">'+sm.away+'</span></div>'+
-        '</div>'+
-        // New feature: show all players' TWO predictions
-        '<div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--gold-dim);">'+
-          '<div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px;">'+
-            '<span>📊 所有人预测</span>'+
-            '<span style="font-size:10px;color:var(--text2);font-weight:400;">每个玩家显示 ②胜平负预测 + ②比分预测</span>'+
-          '</div>'+predGrid+
-        '</div>'+
-      '</div>';
-    });
-    parts2.push(simHtml);
-  }
+    var pickLabels={'H':'胜','D':'平','A':'负'};
+    var predGrid='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:8px;">'+
+      simPreds.map(function(x){
+        var idx=USERS.indexOf(x.un);
+        var bg=COLORS[idx]+'15';
+        var clr=COLORS[idx];
+        return '<div style="background:'+bg+';border:1px solid '+clr+'33;border-radius:10px;padding:8px 6px;text-align:center;">'+
+          '<div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:4px;">'+
+          '<span style="width:22px;height:22px;border-radius:50%;background:'+clr+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">'+ac(x.un)+'</span>'+
+          '<span style="font-size:12px;font-weight:600;">'+x.un+'</span></div>'+
+          '<div style="display:flex;gap:4px;justify-content:center;font-size:11px;flex-wrap:wrap;">'+
+          '<span style="background:var(--card2);padding:2px 8px;border-radius:4px;font-weight:600;">'+(sm.hScore>sm.aScore?'H':sm.hScore<sm.aScore?'A':'D')+' → '+pickLabels[x.pick]+'</span>'+
+          '<span style="background:var(--card2);padding:2px 8px;border-radius:4px;font-weight:600;">'+x.h+':'+x.a+'</span>'+
+          '</div>'+
+          '<div style="font-size:10px;color:var(--text2);margin-top:3px;">¥'+x.sk+'</div>'+
+          '</div>';
+      }).join('')+'</div>';
+    simHtml+= '<div class="match-card" style="border-color:var(--gold-dim);">'+
+      '<div class="match-header">'+
+        '<span class="match-date" style="color:var(--gold);">'+dtStr+'</span>'+
+        '<span class="league-badge" style="background:var(--gold-dim);color:var(--gold);font-size:9px;padding:1px 6px;border-radius:6px;margin:0 4px;">'+sm.grp+'组</span>'+
+        '<span class="match-time-center">'+tmStr+'</span>'+
+        '<span class="match-status" style="color:var(--red);background:var(--red-dim);">🔴 进行中</span>'+
+      '</div>'+
+      '<div class="match-teams">'+
+        '<div class="team"><span style="font-size:22px;">'+(WC_FLAGS[sm.home]||'🇲🇽')+'</span><span class="name" style="font-weight:700;">'+sm.home+'</span></div>'+
+        '<div class="match-score" style="color:var(--gold);">'+sm.hScore+' - '+sm.aScore+'<span style="display:block;font-size:10px;color:var(--red);font-weight:600;">🔴 LIVE</span></div>'+
+        '<div class="team away"><span style="font-size:22px;">'+(WC_FLAGS[sm.away]||'🇰🇷')+'</span><span class="name" style="font-weight:700;">'+sm.away+'</span></div>'+
+      '</div>'+
+      // New feature: show all players' TWO predictions
+      '<div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--gold-dim);">'+
+        '<div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px;">'+
+          '<span>📊 所有人预测</span>'+
+          '<span style="font-size:10px;color:var(--text2);font-weight:400;">每个玩家显示 ②胜平负预测 + ②比分预测</span>'+
+        '</div>'+predGrid+
+      '</div>'+
+    '</div>';
+  });
   el.innerHTML=parts2.join('');
 }
 var chartHL=null;
