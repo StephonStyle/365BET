@@ -6,7 +6,6 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta http-equiv="Cache-Control" content="no-cache">
 <title>365BET</title>
 <style>
 :root {
@@ -327,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.35 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.29 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1367,12 +1366,14 @@ const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 开赛后4小时(含加时+结束1h)�
 
 function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
-  let f=[];
+  let f=M.filter(function(m){return m.id&&m.id==='demo_ba';});
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
-  var lastRound=0,parts2=[];
+  var lastRound=0,parts2=[],demoShown=false;
   f.forEach(function(m){
     var r=getMatchRound(m);
     if(lastRound!==0&&r<lastRound&&ROUND_DIV[lastRound]) parts2.push('<div class="round-divider"><span>'+ROUND_DIV[lastRound]+'</span></div>');
+    lastRound=r;
+    if(!demoShown&&m.id.indexOf('demo_')===0){demoShown=true;parts2.push('<div style="text-align:center;margin:18px 0 12px;position:relative;"><span style="display:inline-block;padding:4px 20px;font-size:12px;font-weight:700;color:var(--text2);background:var(--card2);border-radius:20px;border:1px solid var(--border);letter-spacing:2px;">🎮 演示模拟</span></div>');}
     const st=gs(m);
     const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short'});
     const tmStr=new Date(m.date).toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
@@ -1947,9 +1948,6 @@ function showPredModal(mid){
   }
   var scrDiv=document.getElementById('scrResult');
   if(scrDiv){scrDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+cs+'分 '+score+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
-  var predDiv=document.getElementById('wdlResult');
-  var p2={'H':'胜','D':'平','A':'负'};
-  if(predDiv&&wdlPick&&wdlSk){predDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+wdlSk+'分 '+p2[wdlPick]+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
   renderAll();showToast('✅ 已提交比分预测 '+score);
 }
 function closePredModal(){ 
@@ -1990,8 +1988,6 @@ function subPredModal(){
     var predDiv=document.getElementById('wdlResult');
     var pl={'H':'胜','D':'平','A':'负'};
     if(predDiv&&pick&&sk){predDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+sk+'分 '+pl[pick]+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
-    var scrDiv=document.getElementById('scrResult');
-    if(scrDiv&&scrEl){var ss=scrEl.querySelector('.s-lg').textContent;scrDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+scrSk+'分 '+ss+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
   }catch(e){showToast('提交失败');}
 }
 const ADMIN_PWD='321';
