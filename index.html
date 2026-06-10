@@ -326,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.18 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.19 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1433,20 +1433,26 @@ function renderPast(){
       {un:'二红',pick:'A',h:0,a:1,sk:10},{un:'隔离',pick:'D',h:1,a:1,sk:20}
     ];
     var pickLabels={'H':'胜','D':'平','A':'负'};
+    var wdlColors={'H':'var(--primary)','D':'var(--gold)','A':'var(--red)'};
     var predGrid='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:8px;">'+
       simPreds.map(function(x){
         var idx=USERS.indexOf(x.un);
         var bg=COLORS[idx]+'15';
         var clr=COLORS[idx];
-        return '<div style="background:'+bg+';border:1px solid '+clr+'33;border-radius:10px;padding:8px 6px;text-align:center;">'+
-          '<div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:4px;">'+
+        var scClr=x.h>x.a?'var(--primary)':x.h<x.a?'var(--red)':'var(--gold)';
+        return '<div style="background:'+bg+';border:1px solid '+clr+'33;border-radius:10px;padding:8px 6px;">'+
+          // Row 1: Avatar + Name (centered)
+          '<div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:5px;">'+
           '<span style="width:22px;height:22px;border-radius:50%;background:'+clr+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">'+ac(x.un)+'</span>'+
           '<span style="font-size:12px;font-weight:600;">'+x.un+'</span></div>'+
-          '<div style="display:flex;gap:4px;justify-content:center;font-size:11px;flex-wrap:wrap;">'+
-          '<span style="background:var(--card2);padding:2px 8px;border-radius:4px;font-weight:600;">'+(sm.hScore>sm.aScore?'H':sm.hScore<sm.aScore?'A':'D')+' → '+pickLabels[x.pick]+'</span>'+
-          '<span style="background:var(--card2);padding:2px 8px;border-radius:4px;font-weight:600;">'+x.h+':'+x.a+'</span>'+
-          '</div>'+
-          '<div style="font-size:10px;color:var(--text2);margin-top:3px;">¥'+x.sk+'</div>'+
+          // Row 2: 胜平负 (left, colored) + stake (right)
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:1px 6px;margin-bottom:2px;font-size:13px;">'+
+          '<span style="font-weight:800;color:'+wdlColors[x.pick]+';">'+pickLabels[x.pick]+'</span>'+
+          '<span style="color:var(--text2);font-weight:700;font-size:11px;">¥'+x.sk+'</span></div>'+
+          // Row 3: 比分 (left, colored by predicted result) + stake (right)
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:1px 6px;font-size:13px;">'+
+          '<span style="font-weight:800;color:'+scClr+';">'+x.h+':'+x.a+'</span>'+
+          '<span style="color:var(--text2);font-weight:700;font-size:11px;">¥'+x.sk+'</span></div>'+
           '</div>';
       }).join('')+'</div>';
     simHtml+= '<div class="match-card" style="border-color:var(--gold-dim);">'+
@@ -1465,7 +1471,7 @@ function renderPast(){
       '<div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--gold-dim);">'+
         '<div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px;">'+
           '<span>📊 所有人预测</span>'+
-          '<span style="font-size:10px;color:var(--text2);font-weight:400;">每个玩家显示 ②胜平负预测 + ②比分预测</span>'+
+          '<span style="font-size:10px;color:var(--text2);font-weight:400;">每人格 胜平负(彩色) + 比分(彩色) + 积分</span>'+
         '</div>'+predGrid+
       '</div>'+
     '</div>';
