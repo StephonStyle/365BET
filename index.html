@@ -326,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.0.0 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.0.1 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1097,6 +1097,7 @@ function syncWDLFromMatches(){
   M.forEach(function(m){
     var wdlP=m.settlement&&m.settlement.wdlPredictions;
     if(wdlP)Object.keys(wdlP).forEach(function(u){
+      if(USERS.indexOf(u)<0)return;
       var d=wdlP[u];var idx=P.findIndex(function(p){return p.match_id===m.id&&p.user_name===u;});
       var entry={match_id:m.id,user_name:u,pick:d.pick,stake:d.stake};
       if(idx>=0)P[idx]=Object.assign({},P[idx],entry);else P.push(entry);
