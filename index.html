@@ -327,7 +327,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.36 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.35 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1089,7 +1089,7 @@ function getWDLResult(m,userName){
   const mr=m.home_score>m.away_score?'H':m.home_score<m.away_score?'A':'D';
   const correct=p.pick===mr;const stk=p.stake||m.stake||10;
   const odds=p.pick==='H'?(m.odds_h||2.0):p.pick==='D'?(m.odds_d||3.0):(m.odds_a||3.0);
-  const payout=correct?Math.round(stk*(odds-1)*10)/10:-stk;
+  const payout=correct?Math.round(stk*odds*10)/10:-stk;
   return{pick:p.pick,result:mr,resultLabel:{H:'胜',D:'平',A:'负'}[mr],stake:stk,odds:Math.round(odds*100)/100,correct,payout};
 }
 
@@ -1170,7 +1170,7 @@ async function settleMatch(m){
   ps.filter(p=>p.pick).forEach(p=>{
     const correct=p.pick===mr;const stk=p.stake||defStake;
     const odds=p.pick==='H'?(m.odds_h||2.0):p.pick==='D'?(m.odds_d||3.0):(m.odds_a||3.0);
-    const payout=correct?Math.round(stk*(odds-1)*10)/10:-stk;
+    const payout=correct?Math.round(stk*odds*10)/10:-stk;
     wdlDetails[p.user_name]={pick:p.pick,result:mr,stake:stk,odds:Math.round(odds*100)/100,correct,payout};
     indv[p.user_name]=(indv[p.user_name]||0)+payout;
   });
@@ -1391,7 +1391,7 @@ function renderPast(){
       plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 玩家得失分<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;">'+
         mp.map(x=>{
           const nm=x.user_name;const w=wdlD[nm],c=scD[nm];const total=indv[nm]||0;
-          const wdlTxt=w?(w.correct?'🎯 +'+w.payout.toFixed(1)+' ('+w.stake+'×'+w.odds+')':'❌'+w.payout.toFixed(1)):'';
+          const wdlTxt=w?(w.correct?'🎯 '+w.stake+'×'+w.odds+'='+w.payout.toFixed(1):'❌'+w.payout.toFixed(1)):'';
 	          const scTxt=c?(c.exact?(c.odds?'🎯 '+c.stake+'×'+c.odds+'='+Number(c.payout).toFixed(1):'🎯+'+Number(c.payout).toFixed(1)):'❌'+Number(c.payout).toFixed(1)):'';
           const totalTxt=(total>=0?'+':'')+total.toFixed(1);
           return '<span style="background:var(--card2);padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;"><span style="font-weight:600;font-size:11px;">'+nm+'</span>'+
@@ -1819,7 +1819,7 @@ function showPredModal(mid){
       var wdlAmt=(wdlR.payout>0?'+':'')+wdlR.payout.toFixed(1);
       html+='<div class="match-card" style="margin:6px 0;"><div style="font-weight:600;font-size:14px;margin-bottom:4px;">📊 胜负预测</div>'+
         '<div style="font-size:13px;padding:4px 0;">预测: <span style="font-weight:700;">'+{H:'胜',D:'平',A:'负'}[wdlR.pick]+'</span> 积分:'+wdlR.stake+' 赔率:'+wdlR.odds+'</div>'+
-        '<div style="font-size:15px;font-weight:800;'+(wdlR.correct?'color:var(--primary);':'color:var(--red);')+'">'+wdlIcon+' '+(wdlR.correct?'+'+wdlR.payout.toFixed(1)+'分 ('+wdlR.stake+'×'+wdlR.odds+')'':'错误: '+wdlR.payout.toFixed(1)+'分')+'</div></div>';
+        '<div style="font-size:15px;font-weight:800;'+(wdlR.correct?'color:var(--primary);':'color:var(--red);')+'">'+wdlIcon+' '+(wdlR.correct?'准确! '+wdlR.stake+'×'+wdlR.odds+'='+wdlR.payout.toFixed(1)+'分':'错误: '+wdlR.payout.toFixed(1)+'分')+'</div></div>';
     }
     if(scR){
       var scIcon=scR.exact?'🎯':'❌';

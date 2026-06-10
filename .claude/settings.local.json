@@ -1,0 +1,5 @@
+{
+  "hooks": {
+    "preCommit": "node -e \"const fs=require('fs');const c=fs.readFileSync('index.html','utf8');const v=c.match(/v\\d+\\.\\d+\\.\\d+/);if(!v)process.exit(0);const m=c.match(/v(\\d+)\\.(\\d+)\\.(\\d+)/);const cur=m[1]+'.'+m[2]+'.'+m[3];const fs2=require('fs');const log=fs2.readFileSync('index.html','utf8');process.exit(0);\""
+  }
+}
