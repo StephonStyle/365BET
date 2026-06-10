@@ -326,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.31 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.32 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1088,7 +1088,7 @@ function getWDLResult(m,userName){
   const mr=m.home_score>m.away_score?'H':m.home_score<m.away_score?'A':'D';
   const correct=p.pick===mr;const stk=p.stake||m.stake||10;
   const odds=p.pick==='H'?(m.odds_h||2.0):p.pick==='D'?(m.odds_d||3.0):(m.odds_a||3.0);
-  const payout=correct?Math.round(stk*odds*10)/10:-stk;
+  const payout=correct?Math.round(stk*(odds-1)*10)/10:-stk;
   return{pick:p.pick,result:mr,resultLabel:{H:'胜',D:'平',A:'负'}[mr],stake:stk,odds:Math.round(odds*100)/100,correct,payout};
 }
 
@@ -1169,7 +1169,7 @@ async function settleMatch(m){
   ps.filter(p=>p.pick).forEach(p=>{
     const correct=p.pick===mr;const stk=p.stake||defStake;
     const odds=p.pick==='H'?(m.odds_h||2.0):p.pick==='D'?(m.odds_d||3.0):(m.odds_a||3.0);
-    const payout=correct?Math.round(stk*odds*10)/10:-stk;
+    const payout=correct?Math.round(stk*(odds-1)*10)/10:-stk;
     wdlDetails[p.user_name]={pick:p.pick,result:mr,stake:stk,odds:Math.round(odds*100)/100,correct,payout};
     indv[p.user_name]=(indv[p.user_name]||0)+payout;
   });
