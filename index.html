@@ -326,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.3.30 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v2.3.31 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1937,18 +1937,20 @@ function showPredModal(mid){
     if(!e&&ex.message&&ex.message.includes('23505')){showToast('你已经提交过预测了！');return;}
     showToast('提交失败');return;
   }
-  // Save stake to match settlement
-  var mx=M.find(x=>x.id===mid);
-  if(mx){
-    var cur=mx.settlement?(typeof mx.settlement==='string'?JSON.parse(mx.settlement):mx.settlement):{};
+  // Save WDL + stakes to settlement
+  try{
+    var cur=m.settlement?(typeof m.settlement==='string'?JSON.parse(m.settlement):m.settlement):{};
+    if(!cur.wdlPredictions)cur.wdlPredictions={};
+    cur.wdlPredictions[u]={pick:wdlPick,stake:parseInt(wdlSk)};
     if(!cur.stakes) cur.stakes={};
     cur.stakes[u]=cs;
-    try{await ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});}catch(ex2){}
-    mx.settlement=cur;
-  }
-  var scrDiv=document.getElementById('scrResult');
-  if(scrDiv){scrDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+cs+'分 '+score+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
-  renderAll();showToast('✅ 已提交比分预测 '+score);
+    await ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});
+    m.settlement=cur;
+    var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});
+    if(idx>=0){P[idx].pick=wdlPick;P[idx].stake=parseInt(wdlSk);}else{P.push({match_id:mid,user_name:u,pick:wdlPick,stake:parseInt(wdlSk)});}
+    renderAll();
+    showToast('预测已提交');
+  }catch(e){showToast('提交失败');}
 }
 function closePredModal(){ 
 document.getElementById('predModal').classList.remove('show');document.body.style.overflow='';}
@@ -1974,20 +1976,36 @@ function subPredModal(){
   if(!scrEl){showToast('请选择比分');return;}
   var scrSk=document.querySelector('#scr_'+mid+' .stake-btn.active')?.dataset?.stake;
   if(!scrSk){showToast('请选择比分的积分');return;}
-  // Store WDL prediction in match.settlement.wdlPredictions
+  var score=scrEl.querySelector('.s-lg').textContent;
+  var parts=score.split(':');var h=parseInt(parts[0]),a=parseInt(parts[1]);
+  if(isNaN(h)||isNaN(a)){showToast('无效比分');return;}
+  // Save score prediction
+  try{
+    var e=getPred(mid,u);
+    if(e){
+      ft(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{
+        method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify({home_score:h,away_score:a})
+      });
+      e.home_score=h;e.away_score=a;
+    }else{
+      sbPost('predictions',{match_id:mid,user_name:u,home_score:h,away_score:a});
+      P.push({match_id:mid,user_name:u,home_score:h,away_score:a});
+    }
+  }catch(ex){}
+  // Save WDL + stakes to settlement
   try{
     var cur=m.settlement?(typeof m.settlement==='string'?JSON.parse(m.settlement):m.settlement):{};
     if(!cur.wdlPredictions)cur.wdlPredictions={};
     cur.wdlPredictions[u]={pick:pick,stake:parseInt(sk)};
+    if(!cur.stakes) cur.stakes={};
+    cur.stakes[u]=parseInt(scrSk);
     ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});
     m.settlement=cur;
-    // Update local P
     var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});
     if(idx>=0){P[idx].pick=pick;P[idx].stake=parseInt(sk);}else{P.push({match_id:mid,user_name:u,pick:pick,stake:parseInt(sk)});}
     renderAll();
-    var predDiv=document.getElementById('wdlResult');
-    var pl={'H':'胜','D':'平','A':'负'};
-    if(predDiv&&pick&&sk){predDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+sk+'分 '+pl[pick]+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
+    showToast('预测已提交');
   }catch(e){showToast('提交失败');}
 }
 const ADMIN_PWD='321';
