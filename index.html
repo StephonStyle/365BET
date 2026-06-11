@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.7 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.8 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1533,9 +1533,10 @@ function renderGroups(){
     });
   });
   M.filter(m => m.league==='世界杯' && m.settled && m.home_score!=null).forEach(m => {
-    const grp = WC_TEAM_GROUP[m.home] || WC_TEAM_GROUP[m.away];
+    var hn=CN_RANK[m.home]||m.home,an=CN_RANK[m.away]||m.away;
+    const grp = WC_TEAM_GROUP[hn] || WC_TEAM_GROUP[an];
     if(!grp || !standings[grp]) return;
-    const homeTeam = m.home, awayTeam = m.away;
+    const homeTeam=hn, awayTeam=an;
     if(!standings[grp][homeTeam] || !standings[grp][awayTeam]) return;
     const hg = m.home_score, ag = m.away_score;
     standings[grp][homeTeam].pld++; standings[grp][awayTeam].pld++;
@@ -1559,8 +1560,8 @@ function renderGroups(){
       if(b.pts !== a.pts) return b.pts - a.pts;
       if(b.gd !== a.gd) return b.gd - a.gd;
       if(b.gf !== a.gf) return b.gf - a.gf;
-      const h2h = M.filter(m => m.league==='世界杯' && m.settled && ((m.home===a.name&&m.away===b.name)||(m.home===b.name&&m.away===a.name)));
-      if(h2h.length) { const m = h2h[0]; if(m.home===a.name) return (m.home_score>m.away_score?-1:(m.home_score<m.away_score?1:0)); else return (m.away_score>m.home_score?-1:(m.away_score<m.home_score?1:0)); }
+      var ha=CN_RANK[m.home]||m.home,aa=CN_RANK[m.away]||m.away;const h2h = M.filter(function(mm){var hha=CN_RANK[mm.home]||mm.home,aaa=CN_RANK[mm.away]||mm.away;return mm.league==='世界杯'&&mm.settled&&((hha===a.name&&aaa===b.name)||(hha===b.name&&aaa===a.name));});
+      if(h2h.length){var hm=h2h[0];var hh=CN_RANK[hm.home]||hm.home;if(hh===a.name)return (hm.home_score>hm.away_score?-1:(hm.home_score<hm.away_score?1:0));else return (hm.away_score>hm.home_score?-1:(hm.away_score<hm.home_score?1:0));}
       return 0;
     });
     if(s.length>=3) thirds.push({group:g.id,...s[2]});
