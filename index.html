@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.5 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.6 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1371,9 +1371,9 @@ function renderMatches(){
 '</div>';}).join('')+'</div></div>';}
     let np='';if(!m.home_score&&Date.now()<m.date){
       var ap=getPreds(m.id),pl={'H':'胜','D':'平','A':'负'};
-      var nl=u?USERS.filter(function(n){return !getPred(m.id,n)&&n!==u;}):USERS.filter(function(n){return !getPred(m.id,n);});
+      var nl=USERS.filter(function(n){return !getPred(m.id,n);});
       if(nl.length>0)np='<div style="font-size:10px;color:var(--text2);margin-top:6px;display:flex;align-items:center;gap:3px;flex-wrap:wrap;"><span>⏳ 未预测:</span>'+nl.map(function(n){return '<span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:'+COLORS[USERS.indexOf(n)]+'33;color:'+COLORS[USERS.indexOf(n)]+';font-size:10px;align-items:center;justify-content:center;font-weight:700;">'+ac(n)+'</span>';}).join('')+'</div>';
-      if(ap.length>0)np+='<div style="font-size:10px;color:var(--gold);margin-top:4px;display:flex;align-items:center;gap:3px;flex-wrap:wrap;"><span>✅ 已预测:</span>'+ap.map(function(x){return '<span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:'+COLORS[USERS.indexOf(x.user_name)]+'33;color:'+COLORS[USERS.indexOf(x.user_name)]+';font-size:10px;align-items:center;justify-content:center;font-weight:700;">'+ac(x.user_name)+'</span>';}).join('')+'</div>';
+      if(ap.length>0){var apSet=[];ap.forEach(function(x){if(apSet.indexOf(x.user_name)<0)apSet.push(x.user_name);});np+='<div style="font-size:10px;color:var(--gold);margin-top:4px;display:flex;align-items:center;gap:3px;flex-wrap:wrap;"><span>✅ 已预测:</span>'+apSet.map(function(n){return '<span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:'+COLORS[USERS.indexOf(n)]+'33;color:'+COLORS[USERS.indexOf(n)]+';font-size:10px;align-items:center;justify-content:center;font-weight:700;">'+ac(n)+'</span>';}).join('')+'</div>';}
     }    let act='';
     if(isAdmin&&m.settled) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}" value="${m.home_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}" value="${m.away_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="adminEditResult('${m.id}')">修改</button></div>`;
     if(isAdmin&&m.home_score!=null&&!m.settled) act=`<span style="font-size:11px;color:var(--gold);">⏳ 等待结算...</span>`;
