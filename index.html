@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.0.7 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.0.8 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1991,12 +1991,12 @@ function subPredModal(){
     if(e){
       ft(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{
         method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-        body:JSON.stringify({home_score:h,away_score:a})
+        body:JSON.stringify({home_score:h,away_score:a,pick:pick})
       });
-      e.home_score=h;e.away_score=a;
+      e.home_score=h;e.away_score=a;e.pick=pick;
     }else{
-      sbPost('predictions',{match_id:mid,user_name:u,home_score:h,away_score:a});
-      P.push({match_id:mid,user_name:u,home_score:h,away_score:a});
+      sbPost('predictions',{match_id:mid,user_name:u,home_score:h,away_score:a,pick:pick});
+      P.push({match_id:mid,user_name:u,home_score:h,away_score:a,pick:pick});
     }
   }catch(ex){}
   // Save WDL + stakes
