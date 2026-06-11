@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.0.9 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.0 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1097,6 +1097,24 @@ function getWDLResult(m,userName){
   return{pick:p.pick,result:mr,resultLabel:{H:'胜',D:'平',A:'负'}[mr],stake:stk,odds:Math.round(odds*100)/100,correct,payout};
 }
 
+// Restore predictions from settlement_logs backup if settlement data missing
+function restorePredFromLogs(){
+  L.forEach(function(l){
+    if(l.detail.indexOf('prediction_backup ')!==0)return;
+    var parts=l.detail.split(' ');var uname=parts[1];var data;
+    try{data=JSON.parse(parts.slice(2).join(' '));}catch(e){return;}
+    var m=M.find(function(x){return x.id===l.match_id;});if(!m)return;
+    if(!m.settlement||typeof m.settlement!=='object')m.settlement={};
+    var cur=m.settlement;
+    if(!cur.wdlPredictions)cur.wdlPredictions={};
+    if(data.pick)cur.wdlPredictions[uname]={pick:data.pick,stake:data.wdlStake||10};
+    if(!cur.stakes)cur.stakes={};
+    if(data.scrStake)cur.stakes[uname]=data.scrStake;
+    // Also update P
+    var idx=P.findIndex(function(p){return p.match_id===l.match_id&&p.user_name===uname;});
+    if(idx>=0){if(data.pick)P[idx].pick=data.pick;if(data.pick)P[idx].stake=data.wdlStake||10;}
+  });
+}
 // Sync WDL predictions stored in match.settlement.wdlPredictions into P array
 function syncWDLFromMatches(){
   M.forEach(function(m){
@@ -2008,6 +2026,8 @@ function subPredModal(){
     cur.stakes[u]=parseInt(scrSk);
     ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});
     m.settlement=cur;
+    // Backup prediction to settlement_logs (防丢失)
+    ft(SB_URL+'/rest/v1/settlement_logs',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({match_id:mid,detail:'prediction_backup '+u+' '+JSON.stringify({pick:pick,wdlStake:parseInt(sk),score:h+':'+a,scrStake:parseInt(scrSk)})})});
     var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});
     if(idx>=0){P[idx].pick=pick;P[idx].stake=parseInt(sk);}else{P.push({match_id:mid,user_name:u,pick:pick,stake:parseInt(sk)});}
     renderAll();
