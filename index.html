@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.8 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.9 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1560,7 +1560,7 @@ function renderGroups(){
       if(b.pts !== a.pts) return b.pts - a.pts;
       if(b.gd !== a.gd) return b.gd - a.gd;
       if(b.gf !== a.gf) return b.gf - a.gf;
-      var ha=CN_RANK[m.home]||m.home,aa=CN_RANK[m.away]||m.away;const h2h = M.filter(function(mm){var hha=CN_RANK[mm.home]||mm.home,aaa=CN_RANK[mm.away]||mm.away;return mm.league==='世界杯'&&mm.settled&&((hha===a.name&&aaa===b.name)||(hha===b.name&&aaa===a.name));});
+      const h2h = M.filter(function(mm){var hha=CN_RANK[mm.home]||mm.home,aaa=CN_RANK[mm.away]||mm.away;return mm.league==='世界杯'&&mm.settled&&((hha===a.name&&aaa===b.name)||(hha===b.name&&aaa===a.name));});
       if(h2h.length){var hm=h2h[0];var hh=CN_RANK[hm.home]||hm.home;if(hh===a.name)return (hm.home_score>hm.away_score?-1:(hm.home_score<hm.away_score?1:0));else return (hm.away_score>hm.home_score?-1:(hm.away_score<hm.home_score?1:0));}
       return 0;
     });
