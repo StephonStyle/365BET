@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.9 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.6 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1417,7 +1417,7 @@ function renderPast(){
     let rd='';
     if(m.home_score!=null) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
     else rd=`<div class="match-score"><span class="vs">VS</span></div>`;
-    // Per-player P&L details
+        // Per-player P&L details
     const mp=getPreds(m.id);const s=m.settlement;
     let plHtml='';
     if(mp.length>0&&m.home_score!=null&&m.settled){
@@ -1441,7 +1441,6 @@ function renderPast(){
             (scTxt?'<div style="font-size:10px;padding:1px 0;"><span style="color:'+(c.exact?'var(--primary)':'var(--red)')+';">比分:'+scTxt+'</span></div>':'')+
           '</div>';
         }).join('')+'</div></div>';
-    }else if(mp.length>0&&m.home_score!=null){
     }else if(mp.length>0&&m.home_score!=null){
       // Match has ended but not settled - show predictions
       plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 预测详情<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:4px;">'+mp.map(x=>{
