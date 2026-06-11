@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.0 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.1 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1343,7 +1343,7 @@ function gs(m){
 function renderMatches(){
   const el=document.getElementById('matchList'); if(!loaded) return;
   const u=cu(); let f=M;
-  f=f.filter(m=>m.date>=Date.now()-PAST_CUTOFF);
+  f=f.filter(m=>m.date>=Date.now()-getMatchCutoff(m));
   f.sort((a,b)=>a.date-b.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>暂无比赛</p></div>';return;}
   var lastRound=0,parts=[],_i=0;
@@ -1390,11 +1390,22 @@ function renderMatches(){
   }); el.innerHTML=parts.join('');
 }
 
-const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 开赛后4小时(含加时+结束1h)移入历史
+const PAST_CUTOFF = 4 * 60 * 60 * 1000;
+// 世界杯小组赛2.5h自动结算, 淘汰赛4h, 手动模式不过期
+function getMatchCutoff(m){
+  if(m.settlement?.manual_settle) return Infinity;
+  if(m.league==='世界杯'){
+    var h=m.home||'',a=m.away||'';
+    if(h.indexOf('组')>0||h.indexOf('1/8')>=0||h.indexOf('1/4')>=0||h.indexOf('半')>=0||h.indexOf('决赛')>=0||h.indexOf('季军')>=0) return 4*60*60*1000;
+    return 2.5*60*60*1000;
+  }
+  return PAST_CUTOFF;
+}
 
 function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
-  let f=[];
+  let f=M.filter(function(m){return m.date<Date.now()-getMatchCutoff(m)||m.settled;});
+  f.sort((a,b)=>b.date-a.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
   var lastRound=0,parts2=[];
   f.forEach(function(m){
