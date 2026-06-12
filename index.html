@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.14 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.15 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1505,7 +1505,7 @@ function renderChart(){
   // Match detail tooltip area
   var dt='<div style="font-size:11px;color:var(--text2);margin-top:8px;padding:6px;text-align:center;border-top:1px solid var(--border);">点击颜色标注的玩家名高亮曲线，再点恢复</div>';
   // === 结算状态 ===
-  var allScores=USERS.map(function(u){return{name:u,score:hist[u][hist[u].length-1].score};});
+  var allScores=USERS.map(function(u){return{name:u,score:getStats(u).balance};});
   var avg=allScores.reduce(function(s,x){return s+x.score;},0)/allScores.length;
   var sorted=allScores.map(function(x){return{name:x.name,score:x.score,diff:Math.round((x.score-avg)*10)/10};}).sort(function(a,b){return b.diff-a.diff;});
   var ss='<div style="margin-top:16px;padding:14px;background:var(--card);border-radius:var(--radius);">'+
