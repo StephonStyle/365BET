@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.13 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.14 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1520,7 +1520,7 @@ function renderChart(){
       '<span style="color:var(--text2);">'+(i+1)+'</span>'+
       '<span style="font-weight:600;font-size:12px;color:var(--text);">'+x.name+'</span>'+
       '<span style="text-align:right;font-size:12px;color:var(--text2);">'+x.score.toFixed(1)+'</span>'+
-      '<span style="text-align:right;font-weight:700;font-size:13px;color:'+c+';">'+sg+x.diff.toFixed(1)+'</span></div>';
+      '<span style="text-align:right;font-weight:700;font-size:13px;color:'+c+';">¥'+sg+x.diff.toFixed(1)+'</span></div>';
   });
   ss+='</div>';
   el.innerHTML='<div style="font-size:14px;font-weight:600;margin:0 0 8px 4px;">📈 积分走势图</div>'+svg+lg+dt+ss;
