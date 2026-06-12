@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.10 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.11 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1170,6 +1170,8 @@ async function settleMatch(m){
   const cur=m.settlement?(typeof m.settlement==='string'?JSON.parse(m.settlement):m.settlement):{};
   const stakes=cur.stakes||{};
   const h=m.home_score,a=m.away_score;
+  const wnrs=ps.filter(p=>p.home_score===h&&p.away_score===a).map(p=>p.user_name);
+  const losrs=ps.filter(p=>!wnrs.includes(p.user_name)).map(p=>p.user_name);
 
   // === Score Prediction (odds-based) ===
   const so=typeof m.score_odds=='string'?JSON.parse(m.score_odds):(m.score_odds||{});
