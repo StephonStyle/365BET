@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.12 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.13 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1509,18 +1509,20 @@ function renderChart(){
   var avg=allScores.reduce(function(s,x){return s+x.score;},0)/allScores.length;
   var sorted=allScores.map(function(x){return{name:x.name,score:x.score,diff:Math.round((x.score-avg)*10)/10};}).sort(function(a,b){return b.diff-a.diff;});
   var ss='<div style="margin-top:16px;padding:14px;background:var(--card);border-radius:var(--radius);">'+
-    '<div style="font-size:13px;font-weight:600;margin-bottom:8px;">📊 目前结算状态</div>'+
+    '<div style="font-size:13px;font-weight:600;margin-bottom:6px;">📊 目前结算状态</div>'+
     '<div style="font-size:11px;color:var(--text2);margin-bottom:10px;">平均积分: <span style="font-weight:700;color:var(--text);">'+avg.toFixed(1)+'</span></div>'+
-    '<div style="display:flex;flex-direction:column;gap:4px;">';
+    '<div style="display:grid;grid-template-columns:30px 1fr 80px 80px;gap:4px;font-size:11px;color:var(--text2);padding:0 6px 6px 6px;border-bottom:1px solid var(--border);margin-bottom:4px;">'+
+    '<span>#</span><span>玩家</span><span style="text-align:right;">积分</span><span style="text-align:right;">结算分</span></div>';
   sorted.forEach(function(x,i){
     var c=x.diff>=0?'var(--primary)':'var(--red)',sg=x.diff>=0?'+':'';
-    ss+='<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--card2);border-radius:10px;">'+
-      '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--text2);width:16px;">'+(i+1)+'.</span>'+
-      '<span style="font-weight:600;font-size:13px;">'+x.name+'</span></div>'+
-      '<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:11px;color:var(--text2);">'+x.score.toFixed(1)+'</span>'+
-      '<span style="font-weight:700;font-size:13px;color:'+c+';">'+sg+x.diff.toFixed(1)+'</span></div></div>';
+    var bg=i%2===0?'var(--card2)':'transparent';
+    ss+='<div style="display:grid;grid-template-columns:30px 1fr 80px 80px;gap:4px;padding:5px 6px;border-radius:6px;background:'+bg+';align-items:center;">'+
+      '<span style="color:var(--text2);">'+(i+1)+'</span>'+
+      '<span style="font-weight:600;font-size:12px;color:var(--text);">'+x.name+'</span>'+
+      '<span style="text-align:right;font-size:12px;color:var(--text2);">'+x.score.toFixed(1)+'</span>'+
+      '<span style="text-align:right;font-weight:700;font-size:13px;color:'+c+';">'+sg+x.diff.toFixed(1)+'</span></div>';
   });
-  ss+='</div></div>';
+  ss+='</div>';
   el.innerHTML='<div style="font-size:14px;font-weight:600;margin:0 0 8px 4px;">📈 积分走势图</div>'+svg+lg+dt+ss;
 }catch(e){document.getElementById('billContent').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>图表加载失败</p></div>';}
 }
