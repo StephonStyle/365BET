@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.15 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.16 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1422,16 +1422,13 @@ function renderPast(){
         // Per-player P&L details
     const mp=getPreds(m.id);const s=m.settlement;
     let plHtml='';
-    if(mp.length>0&&m.home_score!=null&&m.settled){
+    if(m.home_score!=null&&m.settled){
       const wdlD=s?.wdlDetails||{},scD=s?.scoreDetails||{},indv=s?.individual||{};
-      const ms={};
-      mp.forEach(function(x){if(!ms[x.user_name])ms[x.user_name]=x;});
-      var mu=Object.values(ms);
       plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 玩家得失分<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;">'+
-        mu.map(function(x){
-          const nm=x.user_name;const w=wdlD[nm],c=scD[nm];const total=indv[nm]||0;
-          const wdlTxt=w?(w.correct?'🎯 +'+w.payout.toFixed(1)+' ('+w.stake+'×'+w.odds+')':'❌'+w.payout.toFixed(1)):'';
-          const scTxt=c?(c.exact?(c.odds?'🎯 +'+Number(c.payout).toFixed(1)+' ('+c.stake+'×'+c.odds+')':'🎯+'+Number(c.payout).toFixed(1)):'❌'+Number(c.payout).toFixed(1)):'';
+        USERS.map(function(nm){
+          const w=wdlD[nm],c=scD[nm];const total=indv[nm]||0;
+          const wdlTxt=w?(w.correct?'🎯 +'+w.payout.toFixed(1)+' ('+w.stake+'×'+w.odds+')':'❌'+w.payout.toFixed(1)):'未预测';
+          const scTxt=c?(c.exact?(c.odds?'🎯 +'+Number(c.payout).toFixed(1)+' ('+c.stake+'×'+c.odds+')':'🎯+'+Number(c.payout).toFixed(1)):'❌'+Number(c.payout).toFixed(1)):'未预测';
           var tClr=total>0?'var(--primary)':total<0?'var(--red)':'var(--text2)';
           var totalTxt=(total>0?'+':'')+total.toFixed(1);
           return '<div style="background:var(--card2);padding:6px 8px;border-radius:6px;">'+
@@ -1439,8 +1436,8 @@ function renderPast(){
               '<span style="font-weight:600;font-size:13px;">'+nm+'</span>'+
               '<span style="font-weight:800;font-size:18px;color:'+tClr+';">'+totalTxt+'</span>'+
             '</div>'+
-            (wdlTxt?'<div style="font-size:10px;padding:1px 0;"><span style="color:'+(w.correct?'var(--primary)':'var(--red)')+';">胜平负:'+wdlTxt+'</span></div>':'')+
-            (scTxt?'<div style="font-size:10px;padding:1px 0;"><span style="color:'+(c.exact?'var(--primary)':'var(--red)')+';">比分:'+scTxt+'</span></div>':'')+
+            '<div style="font-size:10px;padding:1px 0;"><span style="color:'+(w?(w.correct?'var(--primary)':'var(--red)'):'var(--text2)')+';">胜平负:'+wdlTxt+'</span></div>'+
+            '<div style="font-size:10px;padding:1px 0;"><span style="color:'+(c?(c.exact?'var(--primary)':'var(--red)'):'var(--text2)')+';">比分:'+scTxt+'</span></div>'+
           '</div>';
         }).join('')+'</div></div>';
     }else if(mp.length>0&&m.home_score!=null){
