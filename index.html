@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.16 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.17 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1196,8 +1196,19 @@ async function settleMatch(m){
     indv[p.user_name]=(indv[p.user_name]||0)+payout;
   });
 
+  // === 未预测扣分 ===
+  const PENALTY = 20;
+  const psSet = new Set(ps.map(p=>p.user_name));
+  const wdlSet = wdlP ? new Set(Object.keys(wdlP)) : new Set();
+  const penalties = {};
+  USERS.forEach(u => {
+    let pAmt = 0;
+    if (!wdlSet.has(u)) pAmt += PENALTY;
+    if (!psSet.has(u)) pAmt += PENALTY;
+    if (pAmt) { penalties[u] = pAmt; indv[u] = (indv[u]||0) - pAmt; }
+  });
   const anyWin=wnrs.length>0||Object.values(wdlDetails).some(d=>d.correct);
-  const s={type:anyWin?'settled':'void',winners:wnrs,losers:losrs,totalPot:wnrs.length>0?losrs.reduce((s,n)=>s+(stakes[n]||defStake),0):0,individual:indv,scoreDetails:scDetails,wdlDetails:wdlDetails};
+  const s={type:anyWin?'settled':'void',winners:wnrs,losers:losrs,totalPot:wnrs.length>0?losrs.reduce((s,n)=>s+(stakes[n]||defStake),0):0,individual:indv,scoreDetails:scDetails,wdlDetails:wdlDetails,penalties};
 
   await ft(SB_URL+'/rest/v1/matches?id=eq.'+m.id,{
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
@@ -1423,10 +1434,10 @@ function renderPast(){
     const mp=getPreds(m.id);const s=m.settlement;
     let plHtml='';
     if(m.home_score!=null&&m.settled){
-      const wdlD=s?.wdlDetails||{},scD=s?.scoreDetails||{},indv=s?.individual||{};
+      const wdlD=s?.wdlDetails||{},scD=s?.scoreDetails||{},indv=s?.individual||{},penalties=s?.penalties||{};
       plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 玩家得失分<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;">'+
         USERS.map(function(nm){
-          const w=wdlD[nm],c=scD[nm];const total=indv[nm]||0;
+          const w=wdlD[nm],c=scD[nm];const total=indv[nm]||0;const pen=penalties[nm]||0;
           const wdlTxt=w?(w.correct?'🎯 +'+w.payout.toFixed(1)+' ('+w.stake+'×'+w.odds+')':'❌'+w.payout.toFixed(1)):'未预测';
           const scTxt=c?(c.exact?(c.odds?'🎯 +'+Number(c.payout).toFixed(1)+' ('+c.stake+'×'+c.odds+')':'🎯+'+Number(c.payout).toFixed(1)):'❌'+Number(c.payout).toFixed(1)):'未预测';
           var tClr=total>0?'var(--primary)':total<0?'var(--red)':'var(--text2)';
@@ -1438,6 +1449,7 @@ function renderPast(){
             '</div>'+
             '<div style="font-size:10px;padding:1px 0;"><span style="color:'+(w?(w.correct?'var(--primary)':'var(--red)'):'var(--text2)')+';">胜平负:'+wdlTxt+'</span></div>'+
             '<div style="font-size:10px;padding:1px 0;"><span style="color:'+(c?(c.exact?'var(--primary)':'var(--red)'):'var(--text2)')+';">比分:'+scTxt+'</span></div>'+
+            (pen?'<div style="font-size:10px;padding:1px 0;"><span style="color:var(--red);">未预测扣分:-'+pen+'</span></div>':'')+
           '</div>';
         }).join('')+'</div></div>';
     }else if(mp.length>0&&m.home_score!=null){
@@ -1889,6 +1901,7 @@ function showPredModal(mid){
         '<div style="font-size:15px;font-weight:800;'+(scR.exact?'color:var(--primary);':'color:var(--red);')+'">'+scIcon+' '+(scR.exact?'准确! +'+scR.payout+'分':'错误: '+scR.payout+'分')+'</div></div>';
     }else if(p&&!p.pick){html+='<div style="text-align:center;font-size:12px;color:var(--text2);padding:8px;">你未预测比分</div>';}
     if(!wdlR&&!scR&&!p){html+='<div style="text-align:center;font-size:12px;color:var(--text2);padding:12px;">你未参与本场预测</div>';}
+	    var _pen=s.penalties?.[u]||0;if(_pen) html+='<div style="text-align:center;font-size:12px;color:var(--red);padding:4px;">未预测扣分: -'+_pen+'</div>';
     document.getElementById('predModalContent').innerHTML=html;
     document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
   	  if(isAdmin&&!m.settled&&m.home_score==null){
