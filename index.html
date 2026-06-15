@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v3.1.18 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.1.19 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1328,6 +1328,25 @@ async function loadData(){
     }
     loaded=true;
     renderAll();
+    // 自动结算定时器: 每分钟检查一次有没有到时间的比赛需要结算
+    (function autoSettleLoop(){
+      setTimeout(function(){
+        if(!loaded) return;
+        (async function(){
+          var settled=false;
+          for(var i=0;i<M.length;i++){
+            var m=M[i];
+            if(m.home_score!=null&&m.away_score!=null&&!m.settled){
+              var cutoff=getMatchCutoff(m);
+              if(Date.now()-m.date>=cutoff){
+                try{await settleMatch(m);settled=true;}catch(e){console.error('自动结算失败',m.id,e);}
+              }
+            }
+          }
+          if(settled) renderAll();
+        })().then(autoSettleLoop).catch(autoSettleLoop);
+      }, 60000);
+    })();
   }catch(e){
     document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败: '+e.message+'<br><span style="font-size:11px;color:var(--text2);">请截图发给管理员</span></p></div>';
     console.error('loadData error:', e);
