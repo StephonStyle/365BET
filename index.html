@@ -1162,8 +1162,33 @@ function compressImage(file,maxSize){
 }
 
 // ======================== SETTLEMENT ========================
+// 结算前备份全量预测快照，用于日后恢复
+async function backupMatchPredictions(m){
+  try{
+    var ps=getPreds(m.id);
+    if(!ps.length) return;
+    var wdlP=m.settlement&&m.settlement.wdlPredictions;
+    var backupData=ps.map(function(p){
+      var w=wdlP&&wdlP[p.user_name];
+      return {
+        user_name:p.user_name,
+        home_score:p.home_score,
+        away_score:p.away_score,
+        pick:w?w.pick:(p.pick||null),
+        scrStake:(m.settlement&&m.settlement.stakes&&m.settlement.stakes[p.user_name])||p.scrStake||null,
+        wdlStake:w?w.stake:(p.stake||null)
+      };
+    });
+    await ft(SB_URL+'/rest/v1/settlement_logs',{
+      method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({match_id:m.id,detail:'pre_settle_backup '+JSON.stringify(backupData)})
+    });
+  }catch(e){console.error('备份预测失败',m.id,e);}
+}
 async function settleMatch(m){
   if(m.home_score==null||m.away_score==null||m.settled) return;
+  // 结算前先备份全量预测数据，防止丢失
+  await backupMatchPredictions(m);
   const ps=getPreds(m.id);
   if(!ps.length) return;
   const defStake=m.stake||10;
