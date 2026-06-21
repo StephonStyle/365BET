@@ -387,7 +387,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.4.01 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.4.02 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2365,8 +2365,10 @@ function renderBracketPhase() {
 
 function allGroupsSet() {
   for (const gid in BR_STATE.groups) {
-    const counts = Object.values(BR_STATE.groups[gid]).filter(v => v > 0);
-    if (counts.length < 3) return false;
+    const r = Object.values(BR_STATE.groups[gid]);
+    if (r.filter(v => v === 1).length !== 1) return false;
+    if (r.filter(v => v === 2).length !== 1) return false;
+    if (r.filter(v => v === 3).length !== 1) return false;
   }
   return true;
 }
@@ -2374,7 +2376,14 @@ function allGroupsSet() {
 function bracketClickTeam(gid, team) {
   if (BR_STATE.phase !== 'groups') return;
   const cur = BR_STATE.groups[gid][team] || 0;
-  BR_STATE.groups[gid][team] = cur >= 3 ? 0 : cur + 1;
+  const next = cur >= 3 ? 0 : cur + 1;
+  if (next > 0) {
+    // Clear same rank from other teams in this group
+    for (const t in BR_STATE.groups[gid]) {
+      if (t !== team && BR_STATE.groups[gid][t] === next) BR_STATE.groups[gid][t] = 0;
+    }
+  }
+  BR_STATE.groups[gid][team] = next;
   saveBracket(); renderBracketPhase();
 }
 
