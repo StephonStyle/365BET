@@ -282,12 +282,13 @@ body {
 .br-team.s2 .br-rank-trigger{background:var(--silver,#a0a0a0);color:#fff}
 .br-team.s3 .br-rank-trigger{background:var(--bronze,#cd7f32);color:#fff}
 .br-popup-overlay{position:fixed;inset:0;z-index:9998;background:transparent}
-.br-rank-popup{animation:popUp .15s ease;transform-origin:top left}
+.br-rank-popup{animation:popUp .15s ease;transform-origin:top left;background:#1a1a2e!important;border:1px solid rgba(255,255,255,0.15)!important;box-shadow:0 8px 32px rgba(0,0,0,0.6)!important}
 @keyframes popUp{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
-.br-popup-rank{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;background:var(--bg4);color:var(--text);transition:all .12s;border:2px solid var(--border)}
-.br-popup-rank:hover{transform:scale(1.15);border-color:var(--gold)}
-.br-popup-cur{background:var(--gold);color:#000;border-color:var(--gold)}
-.br-popup-clear{background:var(--red-dim);color:var(--red);border-color:var(--red);font-size:12px}
+.br-popup-rank{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;cursor:pointer;background:#2a2a40;color:#fff;transition:all .12s;border:2px solid #444460}
+.br-popup-rank:hover{transform:scale(1.15);border-color:#ffd740;background:#3a3a50}
+.br-popup-cur{background:#ffd740!important;color:#000!important;border-color:#ffd740!important}
+.br-popup-clear{background:#3a1a1a!important;color:#ff5252!important;border-color:#ff5252!important;font-size:13px}
+.br-popup-clear:hover{background:#5a2a2a!important}
 .br-team.s1{background:var(--gold);color:#000;font-weight:700}
 .br-team.s2{background:var(--silver,#a0a0a0);color:#fff;font-weight:600}
 .br-team.s3{background:var(--bronze,#cd7f32);color:#fff;font-weight:600}
@@ -394,7 +395,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.6.01 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.6.02 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2451,7 +2452,7 @@ function openRankPopup(gid, team, event) {
   // Create popup
   const popup = document.createElement('div');
   popup.className = 'br-rank-popup';
-  popup.style.cssText = `position:fixed;z-index:9999;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:8px;display:flex;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,0.5);`;
+  popup.style.cssText = `position:fixed;z-index:9999;background:#1a1a2e;border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:10px 12px;display:flex;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);`;
   popup.onclick = e => e.stopPropagation();
   // Position near trigger
   const popLeft = Math.min(rect.left, window.innerWidth - 180);
