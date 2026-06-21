@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.9.01 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.10.00 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -3282,37 +3282,66 @@ function generateBracketChart() {
   chart.innerHTML = html;
 }
 
-// ======================== USAGE TRACKING ========================
+// ======================== USAGE TRACKING (per user + per device) ========================
+function detectDevice() {
+  const ua = navigator.userAgent || '';
+  let type = 'PC', brand = 'Unknown';
+  if (/iPhone|iPad|iPod/i.test(ua)) { type = 'Phone'; brand = 'Apple iPhone'; }
+  else if (/Android/i.test(ua)) { type = 'Phone'; brand = 'Android'; if (/Samsung/i.test(ua)) brand = 'Samsung'; else if (/Xiaomi|Mi/i.test(ua)) brand = 'Xiaomi'; else if (/Huawei/i.test(ua)) brand = 'Huawei'; else if (/OPPO/i.test(ua)) brand = 'OPPO'; else if (/vivo/i.test(ua)) brand = 'vivo'; }
+  else if (/iPad/i.test(ua)) { type = 'Tablet'; brand = 'Apple iPad'; }
+  else if (/Macintosh|Mac OS/i.test(ua)) { type = 'Mac'; brand = 'Apple Mac'; }
+  else if (/Windows/i.test(ua)) { type = 'PC'; brand = /ARM/i.test(ua) ? 'Windows ARM' : 'Windows PC'; }
+  else if (/Linux/i.test(ua)) { type = 'PC'; brand = 'Linux'; }
+  if (/Edg/i.test(ua)) brand += ' Edge';
+  else if (/Chrome/i.test(ua) && !/Edg/i.test(ua)) brand += ' Chrome';
+  else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) brand += ' Safari';
+  else if (/Firefox/i.test(ua)) brand += ' Firefox';
+  return { type: type, brand: brand, ua: ua.substring(0,80) };
+}
+
 function trackUsage() {
   try {
     const user = cu() || '未登录';
+    const dev = detectDevice();
+    const deviceKey = dev.type + '_' + dev.brand.replace(/[^a-zA-Z0-9]/g,'');
     const today = new Date().toISOString().slice(0,10);
-    const usage = JSON.parse(localStorage.getItem('_usage_all') || '{}');
+    const now = Date.now();
+    const key = '_usage_v2';
+    const usage = JSON.parse(localStorage.getItem(key) || '{}');
     if (!usage[user]) usage[user] = {};
-    if (!usage[user][today]) usage[user][today] = {visits:0, sessions:[]};
-    usage[user][today].visits++;
-    usage[user][today].sessions.push({start:Date.now(), end:0});
-    localStorage.setItem('_usage_all', JSON.stringify(usage));
-    // Save to server periodically (every 3 visits)
-    if (usage[user][today].visits % 3 === 0) {
-      const totalMs = usage[user][today].sessions.reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
+    if (!usage[user][deviceKey]) usage[user][deviceKey] = {device:dev.type, brand:dev.brand, days:{}};
+    if (!usage[user][deviceKey].days[today]) usage[user][deviceKey].days[today] = {visits:0, sessions:[]};
+    usage[user][deviceKey].days[today].visits++;
+    usage[user][deviceKey].days[today].sessions.push({start:now, end:0});
+    localStorage.setItem(key, JSON.stringify(usage));
+    // Save to server periodically
+    if (usage[user][deviceKey].days[today].visits === 1 || usage[user][deviceKey].days[today].visits % 5 === 0) {
+      const totalMs = usage[user][deviceKey].days[today].sessions.reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
       fetch(SB_URL+'/rest/v1/settlement_logs', {
         method:'POST',
         headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-        body:JSON.stringify({match_id:'_usage_'+user, detail:JSON.stringify({user:user, date:today, visits:usage[user][today].visits, minutes:Math.round(totalMs/60000)})})
+        body:JSON.stringify({match_id:'_usage_'+user, detail:JSON.stringify({
+          user:user, device:dev.type, brand:dev.brand, date:today,
+          visits:usage[user][deviceKey].days[today].visits,
+          minutes:Math.round(totalMs/60000),
+          time:new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit'})
+        })})
       }).catch(function(){});
     }
   } catch(e) {}
 }
-// End session on page unload
+
 window.addEventListener('beforeunload', function(){
   try {
     const user = cu() || '未登录';
+    const dev = detectDevice();
+    const deviceKey = dev.type + '_' + dev.brand.replace(/[^a-zA-Z0-9]/g,'');
     const today = new Date().toISOString().slice(0,10);
-    const usage = JSON.parse(localStorage.getItem('_usage_all') || '{}');
-    if (usage[user] && usage[user][today] && usage[user][today].sessions.length > 0) {
-      usage[user][today].sessions[usage[user][today].sessions.length-1].end = Date.now();
-      localStorage.setItem('_usage_all', JSON.stringify(usage));
+    const usage = JSON.parse(localStorage.getItem('_usage_v2') || '{}');
+    if (usage[user] && usage[user][deviceKey] && usage[user][deviceKey].days[today]) {
+      const sessions = usage[user][deviceKey].days[today].sessions;
+      if (sessions.length > 0) sessions[sessions.length-1].end = Date.now();
+      localStorage.setItem('_usage_v2', JSON.stringify(usage));
     }
   } catch(e) {}
 });
@@ -3321,45 +3350,47 @@ async function showUsage() {
   try {
     const el = document.getElementById('adminContent');
     if (!el) return;
-    // Collect all users' data from localStorage
-    const allUsage = JSON.parse(localStorage.getItem('_usage_all') || '{}');
-
-    // Also fetch from server
+    // Collect from local + server
+    const allUsage = JSON.parse(localStorage.getItem('_usage_v2') || '{}');
     try {
-      const sv = await sbGet('settlement_logs','?match_id=like._usage_%25&order=id.desc&limit=100');
+      const sv = await sbGet('settlement_logs','?match_id=like._usage_%25&order=id.desc&limit=200');
       if (sv && sv.length) {
         sv.forEach(function(e){
           try {
             const d = JSON.parse(e.detail);
             if (d && d.user) {
+              const dk = (d.device||'PC') + '_' + (d.brand||'Unknown').replace(/[^a-zA-Z0-9]/g,'');
               if (!allUsage[d.user]) allUsage[d.user] = {};
-              if (!allUsage[d.user][d.date]) allUsage[d.user][d.date] = {visits:0, sessions:[]};
-              allUsage[d.user][d.date].visits = Math.max(allUsage[d.user][d.date].visits, d.visits);
+              if (!allUsage[d.user][dk]) allUsage[d.user][dk] = {device:d.device||'PC', brand:d.brand||'Unknown', days:{}};
+              if (!allUsage[d.user][dk].days[d.date]) allUsage[d.user][dk].days[d.date] = {visits:0, sessions:[]};
+              allUsage[d.user][dk].days[d.date].visits = Math.max(allUsage[d.user][dk].days[d.date].visits, d.visits);
             }
           } catch(ex) {}
         });
       }
     } catch(ex) {}
 
-    // Build table: rows = user + date
+    // Build rows: each row = user + device + date
     let rows = [];
     Object.keys(allUsage).forEach(function(user){
-      Object.keys(allUsage[user]).forEach(function(date){
-        const day = allUsage[user][date];
-        const totalMs = (day.sessions||[]).reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
-        rows.push({user:user, date:date, visits:day.visits, mins:Math.round(totalMs/60000)});
+      Object.keys(allUsage[user]).forEach(function(dk){
+        const devInfo = allUsage[user][dk];
+        Object.keys(devInfo.days).forEach(function(date){
+          const day = devInfo.days[date];
+          const totalMs = (day.sessions||[]).reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
+          rows.push({user:user, device:devInfo.device, brand:devInfo.brand, date:date, visits:day.visits, mins:Math.round(totalMs/60000)});
+        });
       });
     });
     rows.sort(function(a,b){return a.date < b.date ? 1 : a.date > b.date ? -1 : a.user.localeCompare(b.user);});
 
-    let html = '<div style="font-size:13px;">';
-    html += '<h3 style="margin:0 0 12px;">📊 使用统计（按玩家）</h3>';
-    html += '<table style="width:100%;border-collapse:collapse;">';
-    html += '<tr style="border-bottom:2px solid var(--border);"><th style="padding:6px;text-align:left;">玩家</th><th style="padding:6px;text-align:left;">日期</th><th style="padding:6px;text-align:center;">访问</th><th style="padding:6px;text-align:center;">时长</th></tr>';
+    let html = '<div style="font-size:13px;"><h3 style="margin:0 0 12px;">📊 使用统计（按玩家+设备）</h3>';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+    html += '<tr style="border-bottom:2px solid var(--border);"><th style="padding:4px;text-align:left;">玩家</th><th style="padding:4px;text-align:left;">设备</th><th style="padding:4px;text-align:left;">品牌</th><th style="padding:4px;text-align:left;">日期</th><th style="padding:4px;text-align:center;">访问</th><th style="padding:4px;text-align:center;">时长</th></tr>';
     rows.forEach(function(r){
-      html += `<tr style="border-bottom:1px solid var(--border);"><td style="padding:6px;">${r.user}</td><td style="padding:6px;">${r.date}</td><td style="padding:6px;text-align:center;">${r.visits}次</td><td style="padding:6px;text-align:center;">${r.mins}分钟</td></tr>`;
+      html += `<tr style="border-bottom:1px solid var(--border);"><td style="padding:4px;">${r.user}</td><td style="padding:4px;">${r.device}</td><td style="padding:4px;font-size:10px;">${r.brand}</td><td style="padding:4px;">${r.date}</td><td style="padding:4px;text-align:center;">${r.visits}次</td><td style="padding:4px;text-align:center;">${r.mins}分钟</td></tr>`;
     });
-    if (rows.length === 0) html += '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text3);">暂无数据</td></tr>';
+    if (rows.length === 0) html += '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--text3);">暂无数据</td></tr>';
     html += '</table></div>';
     el.innerHTML = html;
   } catch(e) { console.warn('Usage error:', e); }
