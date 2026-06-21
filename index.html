@@ -362,7 +362,11 @@ body {
     <div class="modal" style="max-width:420px;">
       <button class="modal-close" onclick="document.getElementById('adminModal').classList.remove('show')">&#10005;</button>
       <h2>&#128736; 管理员</h2>
-      <div id="adminContent" style="min-height:80px;max-height:60vh;overflow-y:auto;font-size:13px;color:var(--text2);">内容待定</div>
+      <div style="display:flex;gap:8px;padding:8px 16px 0;">
+        <button class="btn btn-small" onclick="document.getElementById('adminContent').innerHTML='内容待定';">⚙ 管理</button>
+        <button class="btn btn-small" onclick="showUsage()">📊 使用统计</button>
+      </div>
+      <div id="adminContent" style="min-height:80px;max-height:60vh;overflow-y:auto;font-size:13px;color:var(--text2);padding:12px 16px;">内容待定</div>
     </div>
   </div></div>
 
@@ -395,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.8.01 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.9.00 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -3142,25 +3146,45 @@ function bracketSaveHistory() {
   try {
     const champ = BR_STATE.final && BR_STATE.final['final'];
     if (!champ) return;
-    const history = JSON.parse(localStorage.getItem('br_history') || '[]');
-    // Get current user name
     const userName = cu() || '匿名';
+    const now = new Date();
     const entry = {
-      id: Date.now(),
       user: userName,
-      time: new Date().toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+      time: now.toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
       champion: champ,
-      data: JSON.parse(JSON.stringify(BR_STATE))
+      ts: now.getTime(),
+      data: {groups:BR_STATE.groups, thirdAdvancing:BR_STATE.thirdAdvancing,
+             r32:BR_STATE.r32, r16:BR_STATE.r16, qf:BR_STATE.qf, sf:BR_STATE.sf,
+             final:BR_STATE.final, third:BR_STATE.third, lang:BR_STATE.lang}
     };
+    // Save to server
+    fetch(SB_URL+'/rest/v1/settlement_logs', {
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({match_id:'_bracket_'+userName, detail:JSON.stringify(entry)})
+    }).catch(function(){});
+    // Also save locally
+    const history = JSON.parse(localStorage.getItem('br_history') || '[]');
     history.unshift(entry);
-    // Keep max 50 entries
     if (history.length > 50) history.length = 50;
     localStorage.setItem('br_history', JSON.stringify(history));
   } catch(e) {}
 }
 
-function showBracketHistory() {
-  const history = JSON.parse(localStorage.getItem('br_history') || '[]');
+async function showBracketHistory() {
+  // Fetch from server + local
+  let history = JSON.parse(localStorage.getItem('br_history') || '[]');
+  try {
+    const sv = await sbGet('settlement_logs','?match_id=like._bracket_%25&order=id.desc&limit=50');
+    if (sv && sv.length) {
+      const serverEntries = sv.map(function(e){try{return JSON.parse(e.detail);}catch(ex){return null;}}).filter(Boolean);
+      // Merge: server entries first, then local entries not on server
+      const serverKeys = new Set(serverEntries.map(function(e){return e.user+'_'+e.ts}));
+      const merged = [...serverEntries];
+      history.forEach(function(h){if(!serverKeys.has(h.user+'_'+h.ts))merged.push(h);});
+      history = merged.sort(function(a,b){return b.ts - a.ts}).slice(0,50);
+    }
+  } catch(e) {}
   if (history.length === 0) {
     showToast('暂无预测记录');
     return;
@@ -3257,7 +3281,61 @@ function generateBracketChart() {
   chart.innerHTML = html;
 }
 
+// ======================== USAGE TRACKING ========================
+function trackUsage() {
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const usage = JSON.parse(localStorage.getItem('_usage') || '{}');
+    if (!usage[today]) usage[today] = {visits:0, sessions:[]};
+    usage[today].visits++;
+    usage[today].sessions.push({start:Date.now(), end:0});
+    localStorage.setItem('_usage', JSON.stringify(usage));
+    // Save to server periodically
+    if (usage[today].visits % 3 === 0) {
+      fetch(SB_URL+'/rest/v1/settlement_logs', {
+        method:'POST',
+        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify({match_id:'_usage_'+cu()||'匿名', detail:JSON.stringify({date:today,visits:usage[today].visits,time:Date.now()})})
+      }).catch(function(){});
+    }
+  } catch(e) {}
+}
+// End session on page unload
+window.addEventListener('beforeunload', function(){
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const usage = JSON.parse(localStorage.getItem('_usage') || '{}');
+    if (usage[today] && usage[today].sessions.length > 0) {
+      usage[today].sessions[usage[today].sessions.length-1].end = Date.now();
+      localStorage.setItem('_usage', JSON.stringify(usage));
+    }
+  } catch(e) {}
+});
+
+function showUsage() {
+  try {
+    const usage = JSON.parse(localStorage.getItem('_usage') || '{}');
+    const dates = Object.keys(usage).sort().reverse();
+    let html = '<div style="padding:16px;font-size:13px;">';
+    html += '<h3 style="margin:0 0 12px;">📊 使用统计</h3>';
+    html += '<table style="width:100%;border-collapse:collapse;">';
+    html += '<tr style="border-bottom:1px solid var(--border);"><th style="padding:6px;text-align:left;">日期</th><th style="padding:6px;text-align:center;">访问次数</th><th style="padding:6px;text-align:center;">使用时长</th></tr>';
+    dates.forEach(function(d){
+      const day = usage[d];
+      const totalSessions = day.sessions || [];
+      const totalMs = totalSessions.reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
+      const mins = Math.round(totalMs / 60000);
+      html += `<tr style="border-bottom:1px solid var(--border);"><td style="padding:6px;">${d}</td><td style="padding:6px;text-align:center;">${day.visits}</td><td style="padding:6px;text-align:center;">${mins}分钟</td></tr>`;
+    });
+    html += '</table></div>';
+
+    const el = document.getElementById('adminContent');
+    if (el) { el.innerHTML = html; }
+  } catch(e) {}
+}
+
 function init(){
+  trackUsage();
   document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
     document.querySelectorAll('.content,.tab').forEach(e=>e.classList.remove('active'));
     document.getElementById('tab'+t.dataset.tab).classList.add('active');t.classList.add('active');renderAll();
