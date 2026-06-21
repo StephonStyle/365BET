@@ -395,7 +395,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.7.01 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.7.02 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2545,14 +2545,22 @@ function getSlot(desc) {
 
 const BRACKET = {
   r32: [
-    {id:'r73',h:'A组第2',a:'B组第2'},{id:'r74',h:'C组第1',a:'F组第2'},
-    {id:'r75',h:'E组第1',a:'第3(ABCD)'},{id:'r76',h:'A组第1',a:'第3(CEFHI)'},
-    {id:'r77',h:'F组第1',a:'C组第2'},{id:'r78',h:'E组第2',a:'I组第2'},
-    {id:'r79',h:'I组第1',a:'第3(CDFGH)'},{id:'r80',h:'D组第1',a:'第3(BEFIJ)'},
-    {id:'r81',h:'L组第1',a:'第3(EHIJK)'},{id:'r82',h:'G组第1',a:'第3(AEHIJ)'},
-    {id:'r83',h:'H组第1',a:'J组第2'},{id:'r84',h:'B组第1',a:'第3(EFGIJ)'},
-    {id:'r85',h:'K组第2',a:'L组第2'},{id:'r86',h:'J组第1',a:'H组第2'},
-    {id:'r87',h:'D组第2',a:'G组第2'},{id:'r88',h:'K组第1',a:'第3(DEIJL)'}
+    {id:'r73',h:'A组第2',a:'B组第2'},
+    {id:'r74',h:'E组第1',a:'第3(ABCDF)'},    // FIFA: E1 vs Best 3rd A/B/C/D/F
+    {id:'r75',h:'F组第1',a:'C组第2'},
+    {id:'r76',h:'C组第1',a:'F组第2'},
+    {id:'r77',h:'I组第1',a:'第3(CDFGH)'},    // FIFA: I1 vs Best 3rd C/D/F/G/H
+    {id:'r78',h:'E组第2',a:'I组第2'},
+    {id:'r79',h:'A组第1',a:'第3(CEFHI)'},    // FIFA: A1 vs Best 3rd C/E/F/H/I
+    {id:'r80',h:'L组第1',a:'第3(EHIJK)'},    // FIFA: L1 vs Best 3rd E/H/I/J/K
+    {id:'r81',h:'D组第1',a:'第3(BEFIJ)'},    // FIFA: D1 vs Best 3rd B/E/F/I/J
+    {id:'r82',h:'G组第1',a:'第3(AEHIJ)'},    // FIFA: G1 vs Best 3rd A/E/H/I/J
+    {id:'r83',h:'K组第2',a:'L组第2'},
+    {id:'r84',h:'H组第1',a:'J组第2'},
+    {id:'r85',h:'B组第1',a:'第3(EFGIJ)'},    // FIFA: B1 vs Best 3rd E/F/G/I/J
+    {id:'r86',h:'J组第1',a:'H组第2'},
+    {id:'r87',h:'K组第1',a:'第3(DEIJL)'},    // FIFA: K1 vs Best 3rd D/E/I/J/L
+    {id:'r88',h:'D组第2',a:'G组第2'}
   ],
   r16: [
     {id:'r89',h:'r73',a:'r75'},{id:'r90',h:'r74',a:'r77'},
