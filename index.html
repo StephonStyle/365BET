@@ -377,7 +377,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.2.00 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.2.01 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1777,7 +1777,7 @@ document.addEventListener('click', function(e){
   }
 });
 
-function renderAll(){try{renderMatches();}catch(e){}try{renderChart();}catch(e){}try{renderRank();}catch(e){}try{renderGroups();}catch(e){}try{renderPast();}catch(e){}try{renderBracket();}catch(e){}try{updateUI();}catch(e){}}
+function renderAll(){try{renderMatches();}catch(e){}try{renderChart();}catch(e){}try{renderRank();}catch(e){}try{renderGroups();}catch(e){}try{renderPast();}catch(e){}try{updateUI();}catch(e){}}
 
 // ======================== ACTIONS ========================
 async function submitPred(mid){
@@ -2285,13 +2285,22 @@ function loadBracket() {
 }
 
 function renderBracket() {
-  const el = document.getElementById('bracketContent');
-  if (!loadBracket()) initBracket();
-  el.innerHTML = '<div class="br-phase" id="brPhase"></div><div id="brBody"></div>';
-  renderBracketPhase();
+  try {
+    const el = document.getElementById('bracketContent');
+    if (!el) return;
+    if (!el.classList.contains('active') && !document.getElementById('tabBracket')?.classList.contains('active')) {
+      // Not the active tab - don't render fully, just ensure state exists
+      if (!loadBracket()) initBracket();
+      return;
+    }
+    if (!loadBracket()) initBracket();
+    el.innerHTML = '<div class="br-phase" id="brPhase"></div><div id="brBody"></div>';
+    renderBracketPhase();
+  } catch(e) { console.warn('Bracket error:', e); }
 }
 
 function renderBracketPhase() {
+  try {
   const phase = BR_STATE.phase;
   const body = document.getElementById('brBody');
   const phaseEl = document.getElementById('brPhase');
@@ -2319,6 +2328,7 @@ function renderBracketPhase() {
   } else {
     renderKnockout();
   }
+  } catch(e) { console.warn('BracketPhase error:', e); }
 }
 
 function allGroupsSet() {
