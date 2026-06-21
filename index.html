@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.10.00 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.10.01 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -3348,12 +3348,12 @@ window.addEventListener('beforeunload', function(){
 
 async function showUsage() {
   try {
-    const el = document.getElementById('adminContent');
-    if (!el) return;
+    // Close admin modal and show full-page overlay
+    document.getElementById('adminModal').classList.remove('show');
     // Collect from local + server
     const allUsage = JSON.parse(localStorage.getItem('_usage_v2') || '{}');
     try {
-      const sv = await sbGet('settlement_logs','?match_id=like._usage_%25&order=id.desc&limit=200');
+      const sv = await sbGet('settlement_logs','?match_id=like._usage_%25&order=id.desc&limit=500');
       if (sv && sv.length) {
         sv.forEach(function(e){
           try {
@@ -3370,7 +3370,6 @@ async function showUsage() {
       }
     } catch(ex) {}
 
-    // Build rows: each row = user + device + date
     let rows = [];
     Object.keys(allUsage).forEach(function(user){
       Object.keys(allUsage[user]).forEach(function(dk){
@@ -3384,16 +3383,33 @@ async function showUsage() {
     });
     rows.sort(function(a,b){return a.date < b.date ? 1 : a.date > b.date ? -1 : a.user.localeCompare(b.user);});
 
-    let html = '<div style="font-size:13px;"><h3 style="margin:0 0 12px;">📊 使用统计（按玩家+设备）</h3>';
-    html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
-    html += '<tr style="border-bottom:2px solid var(--border);"><th style="padding:4px;text-align:left;">玩家</th><th style="padding:4px;text-align:left;">设备</th><th style="padding:4px;text-align:left;">品牌</th><th style="padding:4px;text-align:left;">日期</th><th style="padding:4px;text-align:center;">访问</th><th style="padding:4px;text-align:center;">时长</th></tr>';
-    rows.forEach(function(r){
-      html += `<tr style="border-bottom:1px solid var(--border);"><td style="padding:4px;">${r.user}</td><td style="padding:4px;">${r.device}</td><td style="padding:4px;font-size:10px;">${r.brand}</td><td style="padding:4px;">${r.date}</td><td style="padding:4px;text-align:center;">${r.visits}次</td><td style="padding:4px;text-align:center;">${r.mins}分钟</td></tr>`;
+    let html = '<div style="background:var(--bg);min-height:100vh;padding:20px;font-size:14px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h2 style="margin:0;">📊 使用统计（按玩家+设备）</h2>';
+    html += '<span style="font-size:24px;cursor:pointer;color:var(--text2);padding:4px 12px;" onclick="this.parentElement.parentElement.remove();showAdmin()">✕</span>';
+    html += '</div>';
+    html += '<div style="overflow-x:auto;">';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+    html += '<tr style="border-bottom:2px solid var(--border);background:var(--card2);"><th style="padding:8px 6px;text-align:left;">玩家</th><th style="padding:8px 6px;text-align:left;">设备</th><th style="padding:8px 6px;text-align:left;">品牌/浏览器</th><th style="padding:8px 6px;text-align:left;">日期</th><th style="padding:8px 6px;text-align:center;">访问</th><th style="padding:8px 6px;text-align:center;">时长</th></tr>';
+    rows.forEach(function(r, i){
+      const bg = i % 2 === 0 ? '' : 'background:var(--card2);';
+      html += `<tr style="border-bottom:1px solid var(--border);${bg}"><td style="padding:6px;font-weight:600;">${r.user}</td><td style="padding:6px;">${r.device}</td><td style="padding:6px;font-size:11px;">${r.brand}</td><td style="padding:6px;">${r.date}</td><td style="padding:6px;text-align:center;">${r.visits}次</td><td style="padding:6px;text-align:center;">${r.mins}分钟</td></tr>`;
     });
-    if (rows.length === 0) html += '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--text3);">暂无数据</td></tr>';
+    if (rows.length === 0) html += '<tr><td colspan="6" style="padding:40px;text-align:center;color:var(--text3);">暂无数据</td></tr>';
     html += '</table></div>';
-    el.innerHTML = html;
+    html += '<div style="text-align:center;margin-top:16px;font-size:12px;color:var(--text3);">共 ' + rows.length + ' 条记录</div>';
+    html += '</div>';
+    // Full page overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;overflow-y:auto;';
+    overlay.innerHTML = html;
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+    document.body.appendChild(overlay);
   } catch(e) { console.warn('Usage error:', e); }
+}
+
+function showAdmin() {
+  document.getElementById('adminModal').classList.add('show');
 }
 
 function init(){
