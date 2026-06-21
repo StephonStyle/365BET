@@ -285,6 +285,9 @@ body {
 .br-team.s2 .br-rank{background:#fff;color:#555}
 .br-team.s3 .br-rank{background:#fff;color:#8b4513}
 .br-hint{font-size:10px;color:var(--text2);text-align:center;margin-top:4px}
+.br-rank-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:var(--card2);border:2px solid var(--border);color:var(--text2);text-align:center;flex:1}
+.br-rank-btn.active{background:var(--gold);color:#000;border-color:var(--gold);box-shadow:0 0 12px rgba(255,215,0,0.3);transform:scale(1.05)}
+.br-group-done{background:rgba(255,215,0,0.04)}
 .br-round{background:var(--card);border:1px solid var(--border);border-radius:10px;margin:0 0 10px;overflow:hidden}
 .br-round-title{background:var(--gold);color:#000;padding:6px 12px;font-size:12px;font-weight:700;text-align:center}
 .br-match{padding:8px 10px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center}
@@ -387,7 +390,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.5.00 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.5.01 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2335,7 +2338,7 @@ function initBracket() {
   });
   BR_STATE.r32 = {}; BR_STATE.r16 = {}; BR_STATE.qf = {}; BR_STATE.sf = {};
   BR_STATE.final = {}; BR_STATE.third = {}; BR_STATE.phase = 'groups';
-  BR_STATE.version = 2;
+  BR_STATE._selRank = 1; BR_STATE.version = 2;
   localStorage.removeItem('br_predict');
 }
 
@@ -2369,16 +2372,31 @@ function renderBracketPhase() {
   if (!body) return;
 
   if (phase === 'groups') {
-    phaseEl.innerHTML = '🏆 <b>第1步：选择每组前三名</b> — 点击球队切换名次';
-    let html = '<div class="br-group-grid">';
+    phaseEl.innerHTML = '🏆 <b>第1步：选择每组前三名</b> — 先点上方名次按钮，再点球队';
+    // Rank selector
+    const selRank = BR_STATE._selRank || 1;
+    let html = `<div style="display:flex;gap:8px;justify-content:center;margin:0 0 12px;">
+      <span class="br-rank-btn ${selRank===1?'active':''}" onclick="setSelRank(1)">🥇 1st</span>
+      <span class="br-rank-btn ${selRank===2?'active':''}" onclick="setSelRank(2)">🥈 2nd</span>
+      <span class="br-rank-btn ${selRank===3?'active':''}" onclick="setSelRank(3)">🥉 3rd</span>
+    </div>`;
+    html += '<div class="br-group-grid">';
     WC_GROUPS.forEach(g => {
-      html += `<div class="br-group"><h3>${g.id}组</h3>`;
+      const has1 = Object.values(BR_STATE.groups[g.id]).includes(1);
+      const has2 = Object.values(BR_STATE.groups[g.id]).includes(2);
+      const has3 = Object.values(BR_STATE.groups[g.id]).includes(3);
+      const done = has1 && has2 && has3;
+      html += `<div class="br-group ${done?'br-group-done':''}" style="${done?'border-color:rgba(255,215,0,0.3);':''}">
+        <h3>${g.id}组 ${done?'✅':''}</h3>`;
       g.teams.forEach(t => {
         const r = BR_STATE.groups[g.id][t] || 0;
         const cls = r === 1 ? 's1' : r === 2 ? 's2' : r === 3 ? 's3' : '';
-        const label = r === 1 ? '1st' : r === 2 ? '2nd' : r === 3 ? '3rd' : '—';
-        html += `<div class="br-team ${cls}" onclick="bracketClickTeam('${g.id}','${t}')">
-          <span class="br-rank">${label}</span> ${flg(t)} ${tr(t)}</div>`;
+        const label = r === 1 ? '1st' : r === 2 ? '2nd' : r === 3 ? '3rd' : '';
+        const taken = Object.values(BR_STATE.groups[g.id]).filter(v => v > 0).length;
+        const isNextTarget = !r && !done && taken === selRank - 1;
+        html += `<div class="br-team ${cls}" style="${isNextTarget ? 'border:2px dashed var(--primary);opacity:1;' : (!r ? 'opacity:0.6;' : '')}" onclick="bracketClickTeam('${g.id}','${t}')">
+          ${r ? `<span class="br-rank">${label}</span>` : `<span class="br-rank" style="background:transparent;color:var(--text3);font-size:9px;">○</span>`}
+          ${flg(t)} ${tr(t)}</div>`;
       });
       html += '</div>';
     });
@@ -2428,17 +2446,32 @@ function allGroupsSet() {
   return true;
 }
 
+function setSelRank(r) {
+  BR_STATE._selRank = r;
+  renderBracketPhase();
+}
+
 function bracketClickTeam(gid, team) {
   if (BR_STATE.phase !== 'groups') return;
-  const cur = BR_STATE.groups[gid][team] || 0;
-  const next = cur >= 3 ? 0 : cur + 1;
-  if (next > 0) {
-    // Clear same rank from other teams in this group
-    for (const t in BR_STATE.groups[gid]) {
-      if (t !== team && BR_STATE.groups[gid][t] === next) BR_STATE.groups[gid][t] = 0;
-    }
+  const rank = BR_STATE._selRank || 1;
+  if (BR_STATE.groups[gid][team] > 0) {
+    // Already ranked - clicking removes the rank
+    BR_STATE.groups[gid][team] = 0;
+    saveBracket(); renderBracketPhase();
+    return;
   }
-  BR_STATE.groups[gid][team] = next;
+  // Check if this rank is already taken in this group
+  for (const t in BR_STATE.groups[gid]) {
+    if (BR_STATE.groups[gid][t] === rank) return; // rank taken
+  }
+  BR_STATE.groups[gid][team] = rank;
+  // Auto-advance to next unset rank
+  const has1 = Object.values(BR_STATE.groups[gid]).includes(1);
+  const has2 = Object.values(BR_STATE.groups[gid]).includes(2);
+  const has3 = Object.values(BR_STATE.groups[gid]).includes(3);
+  if (rank === 1 && !has2) BR_STATE._selRank = 2;
+  else if (rank === 2 && !has3) BR_STATE._selRank = 3;
+  else if (rank === 3) BR_STATE._selRank = 1;
   saveBracket(); renderBracketPhase();
 }
 
