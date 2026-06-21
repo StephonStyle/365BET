@@ -395,7 +395,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.7.00 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.7.01 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2517,6 +2517,9 @@ function bracketThirdDone() {
   saveBracket(); renderKnockout();
 }
 
+let _usedThird = null;
+function resetUsedThird() { _usedThird = new Set(); }
+
 function getSlot(desc) {
   let m = desc.match(/^(\w+)组第(\d)$/);
   if (m) {
@@ -2527,6 +2530,11 @@ function getSlot(desc) {
   m = desc.match(/^第3\((\w+)\)$/);
   if (m) {
     const candidates = m[1].match(/[A-L]/g) || [];
+    for (const gid of candidates.filter(g => BR_STATE.thirdAdvancing[g])) {
+      for (const t in BR_STATE.groups[gid]) {
+        if (BR_STATE.groups[gid][t] === 3 && !_usedThird.has(t)) { _usedThird.add(t); return t; }
+      }
+    }
     for (const gid of candidates.filter(g => BR_STATE.thirdAdvancing[g])) {
       for (const t in BR_STATE.groups[gid]) { if (BR_STATE.groups[gid][t] === 3) return t; }
     }
@@ -2586,6 +2594,7 @@ function renderKnockout() {
   let html = '';
   let cIdx = rounds.findIndex(r => r.key === BR_STATE.phase);
   if (cIdx < 0) cIdx = 0;
+  resetUsedThird();
   for (let i = 0; i <= cIdx && i < rounds.length; i++) {
     const r = rounds[i], isCur = i === cIdx;
     const ps = rounds.slice(0, i).map(x => x.store);
@@ -2752,6 +2761,7 @@ function generateBracketChart() {
   const chart = document.getElementById('br-chart');
   chart.classList.add('show');
   chart.scrollIntoView({behavior:'smooth'});
+  resetUsedThird();
   function gh(m,p) { return m.h.match(/^(r\d+|qf\d|sf\d|final|third)$/)?getTeamForMatch(m.h,p)||'?':getSlot(m.h); }
   function ga(m,p) { return m.a.match(/^(r\d+|qf\d|sf\d|final|third)$/)?getTeamForMatch(m.a,p)||'?':getSlot(m.a); }
   const p0=[],p1=[BR_STATE.r32],p2=[BR_STATE.r32,BR_STATE.r16],p3=[BR_STATE.r32,BR_STATE.r16,BR_STATE.qf],p4=[BR_STATE.r32,BR_STATE.r16,BR_STATE.qf,BR_STATE.sf];
