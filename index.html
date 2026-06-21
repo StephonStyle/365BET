@@ -296,13 +296,23 @@ body {
 .br-gen-btn:active{transform:scale(.97)}
 
 /* Bracket chart for screenshot */
-#br-chart{background:#0a0a12;padding:24px 16px;border-radius:12px;margin:12px 0;overflow-x:auto;display:none}
+#br-chart{background:#0a0a12;padding:24px 12px;border-radius:12px;margin:12px 0;display:none}
 #br-chart.show{display:block}
-.br-chart-title{text-align:center;font-size:18px;font-weight:800;color:var(--gold);margin-bottom:20px}
-.br-chart-round{display:flex;gap:0;margin-bottom:12px}
-.br-chart-cell{flex:1;padding:6px 8px;font-size:10px;border-bottom:2px solid var(--gold);margin:0 1px;text-align:center;white-space:nowrap;min-width:80px}
-.br-chart-cell.win{font-weight:700;color:var(--gold)}
-.br-chart-cell.lose{color:var(--text3);text-decoration:line-through}
+.br-chart-wrap{max-width:400px;margin:0 auto}
+.br-chart-hdr{text-align:center;font-size:20px;font-weight:800;color:var(--gold);margin-bottom:20px;line-height:1.4;letter-spacing:1px}
+.br-section{margin-bottom:6px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,215,64,0.15)}
+.br-section-title{background:linear-gradient(90deg,#b8860b,#ffd740);color:#000;padding:5px 10px;font-size:11px;font-weight:700;text-align:center;letter-spacing:2px}
+.br-section-final{background:linear-gradient(90deg,#8b0000,#ff4444);color:#fff}
+.br-row{display:flex;align-items:center;padding:5px 8px;border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02)}
+.br-row:last-child{border-bottom:none}
+.br-row-team{flex:1;font-size:11px;font-weight:500;padding:2px 4px}
+.br-row-team.br-row-win{color:var(--gold);font-weight:700}
+.br-row-vs{flex:0 0 28px;text-align:center;font-size:9px;color:var(--text3);font-weight:600}
+.br-champion{text-align:center;font-size:22px;font-weight:800;color:#ffd700;padding:16px;margin-top:12px;background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(255,215,0,0.05));border-radius:10px;border:1px solid rgba(255,215,0,0.2)}
+
+/* Restart button */
+.br-restart-btn{display:block;width:100%;padding:14px;margin:16px 0 40px;border:2px solid var(--red);border-radius:10px;background:transparent;color:var(--red);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center}
+.br-restart-btn:active{background:var(--red);color:#fff}
 
 /* Phase indicator */
 .br-phase{text-align:center;padding:20px 0;color:var(--text2);font-size:14px}
@@ -377,7 +387,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.2.02 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.3.00 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2562,7 +2572,8 @@ function renderKnockout() {
       <div style="font-size:22px;font-weight:800;">冠军：${champ}</div>
       <div style="font-size:13px;margin-top:4px;">🥉 季军：${third || '待定'}</div>
     </div>`;
-    html += `<button class="br-gen-btn" onclick="generateBracketChart()">📸 生成预测对阵图（可截屏）</button>`;
+    html += `<button class="br-gen-btn" onclick="generateBracketChart()">📸 生成预测对阵图</button>`;
+    html += `<button class="br-restart-btn" onclick="bracketReset()">🔄 重来</button>`;
   }
 
   html += '<div id="br-chart"></div>';
@@ -2589,61 +2600,98 @@ function bracketNextPhase(nextPhase) {
   renderKnockout();
 }
 
+function bracketReset() {
+  if (!confirm('确定要重新预测？所有已选的排名和胜负将被清空。')) return;
+  localStorage.removeItem('br_predict');
+  initBracket();
+  renderBracket();
+}
+
 function generateBracketChart() {
   const chart = document.getElementById('br-chart');
-  // Build chart data from r32 onwards
-  let html = '<div class="br-chart-title">🏆 365BET 2026世界杯 预测对阵图</div>';
-
-  // Helper to render a round
-  function renderRound(name, matches, store, prevStores) {
-    html += `<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;text-align:center">▸ ${name}</div>`;
-    matches.forEach(m => {
-      let h, a;
-      if (name === '32强赛') {
-        h = getSlot(m.h);
-        a = getSlot(m.a);
-      } else {
-        h = getTeamForMatch(m.h, prevStores) || '?';
-        a = getTeamForMatch(m.a, prevStores) || '?';
-      }
-      const w = store[m.id];
-      const hCls = w === h ? 'win' : '';
-      const aCls = w === a ? 'win' : '';
-      // Avoid showing "?" for unresolved matches
-      if (h === '?' && a === '?') return;
-      html += `<div class="br-chart-round">
-        <div class="br-chart-cell ${hCls}">${h}</div>
-        <div style="flex:0 0 20px;text-align:center;font-size:10px;color:var(--text2)">vs</div>
-        <div class="br-chart-cell ${aCls}">${a}</div>
-      </div>`;
-    });
-    html += '</div>';
-  }
-
-  const prevStoresR32 = [];
-  renderRound('32强赛', BRACKET.r32, BR_STATE.r32, prevStoresR32);
-  renderRound('16强赛', BRACKET.r16, BR_STATE.r16, [BR_STATE.r32]);
-  renderRound('1/4决赛', BRACKET.qf, BR_STATE.qf, [BR_STATE.r32, BR_STATE.r16]);
-  renderRound('半决赛', BRACKET.sf, BR_STATE.sf, [BR_STATE.r32, BR_STATE.r16, BR_STATE.qf]);
-
-  // Final & 3rd place
-  const finalPrev = [BR_STATE.r32, BR_STATE.r16, BR_STATE.qf, BR_STATE.sf];
-  html += '<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;text-align:center">▸ 决赛</div>';
-  const fh = getTeamForMatch(BRACKET.final[0].h, finalPrev) || '?';
-  const fa = getTeamForMatch(BRACKET.final[0].a, finalPrev) || '?';
-  const fw = BR_STATE.final['final'];
-  html += `<div class="br-chart-round">
-    <div class="br-chart-cell ${fw === fh ? 'win' : ''}">${fh}</div>
-    <div style="flex:0 0 20px;text-align:center;font-size:10px;color:var(--text2)">vs</div>
-    <div class="br-chart-cell ${fw === fa ? 'win' : ''}">${fa}</div>
-  </div></div>`;
-
-  // Champion
-  if (fw) html += `<div style="text-align:center;font-size:20px;font-weight:800;color:#ffd700;padding:16px;background:rgba(255,215,0,0.1);border-radius:10px;margin-top:12px">🏆 冠军：${fw}</div>`;
-
-  chart.innerHTML = html;
   chart.classList.add('show');
   chart.scrollIntoView({behavior:'smooth'});
+
+  // Build data
+  function getH(m, prev) {
+    if (m.h.match(/^(r\d+|qf\d|sf\d|final|third)$/)) return getTeamForMatch(m.h, prev) || '?';
+    return getSlot(m.h);
+  }
+  function getA(m, prev) {
+    if (m.a.match(/^(r\d+|qf\d|sf\d|final|third)$/)) return getTeamForMatch(m.a, prev) || '?';
+    return getSlot(m.a);
+  }
+
+  const r32prev = [], r16prev = [BR_STATE.r32], qfprev = [BR_STATE.r32, BR_STATE.r16];
+  const sfprev = [BR_STATE.r32, BR_STATE.r16, BR_STATE.qf];
+  const finalprev = [BR_STATE.r32, BR_STATE.r16, BR_STATE.qf, BR_STATE.sf];
+
+  // Build matches for each round
+  function buildMatches(matches, store, prev) {
+    return matches.map(m => {
+      const h = getH(m, prev);
+      const a = getA(m, prev);
+      const w = store[m.id];
+      if (h === '?' && a === '?') return null;
+      return { h, a, w, id: m.id };
+    }).filter(Boolean);
+  }
+
+  const r32m = buildMatches(BRACKET.r32, BR_STATE.r32, r32prev);
+  const r16m = buildMatches(BRACKET.r16, BR_STATE.r16, r16prev);
+  const qfm = buildMatches(BRACKET.qf, BR_STATE.qf, qfprev);
+  const sfm = buildMatches(BRACKET.sf, BR_STATE.sf, sfprev);
+
+  const fh = getTeamForMatch(BRACKET.final[0].h, finalprev) || '?';
+  const fa = getTeamForMatch(BRACKET.final[0].a, finalprev) || '?';
+  const fw = BR_STATE.final['final'];
+
+  // Build the bracket tree from final backwards
+  function bracketTree(matches, store, teamH, teamA, winner) {
+    const hWon = winner === teamH;
+    const aWon = winner === teamA;
+    return `<div class="bmt">
+      <div class="bmt-team ${hWon ? 'bmt-win' : 'bmt-lose'}">${teamH || '?'}</div>
+      <div class="bmt-vs">VS</div>
+      <div class="bmt-team ${aWon ? 'bmt-win' : 'bmt-lose'}">${teamA || '?'}</div>
+    </div>`;
+  }
+
+  function roundTable(title, matches) {
+    let rows = matches.map(m => {
+      const hWon = m.w === m.h;
+      const aWon = m.w === m.a;
+      return `<div class="br-row">
+        <span class="br-row-team ${hWon ? 'br-row-win' : ''}">${m.h}</span>
+        <span class="br-row-vs">vs</span>
+        <span class="br-row-team ${aWon ? 'br-row-win' : ''}">${m.a}</span>
+      </div>`;
+    }).join('');
+    return `<div class="br-section"><div class="br-section-title">${title}</div>${rows}</div>`;
+  }
+
+  let html = '<div class="br-chart-wrap">';
+  html += '<div class="br-chart-hdr">🏆 365BET 2026世界杯<br><span style="font-size:14px;">🏆 预测对阵图</span></div>';
+
+  // R32
+  if (r32m.length) html += roundTable('32强赛', r32m);
+  // R16
+  if (r16m.length) html += roundTable('16强赛', r16m);
+  // QF
+  if (qfm.length) html += roundTable('1/4决赛', qfm);
+  // SF
+  if (sfm.length) html += roundTable('半决赛', sfm);
+  // Final
+  html += `<div class="br-section"><div class="br-section-title br-section-final">决 赛</div>
+    <div class="br-row"><span class="br-row-team ${fw === fh ? 'br-row-win' : ''}">${fh}</span>
+    <span class="br-row-vs">vs</span>
+    <span class="br-row-team ${fw === fa ? 'br-row-win' : ''}">${fa}</span></div></div>`;
+
+  // Champion
+  if (fw) html += `<div class="br-champion">🏆 冠军：${fw}</div>`;
+  html += '</div>';
+
+  chart.innerHTML = html;
 }
 
 function init(){
