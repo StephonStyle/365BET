@@ -395,7 +395,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.8.00 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.8.01 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2378,7 +2378,10 @@ function renderBracketPhase() {
 
   if (phase === 'groups') {
     phaseEl.innerHTML = '🏆 <b>第1步：选择每组前三名</b> — 点击 <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--bg4);text-align:center;line-height:16px;font-size:10px;">—</span> 选择名次';
-    let html = '<div class="br-group-grid">';
+    let html = '<div style="display:flex;gap:8px;margin:0 0 10px;justify-content:center;">';
+    html += '<button class="btn btn-outline" style="font-size:12px;padding:6px 14px;" onclick="randomizeGroups()">🎲 随机选择</button>';
+    html += '</div>';
+    html += '<div class="br-group-grid">';
     WC_GROUPS.forEach(g => {
       html += `<div class="br-group"><h3>${g.id}组</h3>`;
       g.teams.forEach(t => {
@@ -2436,6 +2439,18 @@ function allGroupsSet() {
     if (r.filter(v => v === 3).length !== 1) return false;
   }
   return true;
+}
+
+function randomizeGroups() {
+  if (BR_STATE.phase !== 'groups') return;
+  WC_GROUPS.forEach(g => {
+    const shuffled = [...g.teams].sort(() => Math.random() - 0.5);
+    shuffled.forEach((t, i) => {
+      BR_STATE.groups[g.id][t] = i < 3 ? i + 1 : 0;
+    });
+  });
+  saveBracket();
+  renderBracketPhase();
 }
 
 function openRankPopup(gid, team, event) {
