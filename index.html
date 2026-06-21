@@ -276,25 +276,21 @@ body {
 .br-group{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;cursor:default}
 .br-group h3{font-size:13px;margin:0 0 6px;text-align:center;color:var(--gold)}
 .br-team{padding:5px 8px;margin:2px 0;border-radius:6px;font-size:12px;transition:all .15s;background:var(--card2);display:flex;align-items:center;gap:4px;position:relative;min-height:28px}
-.br-rank-trigger{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;cursor:pointer;background:var(--bg4);color:var(--text3);transition:all .15s;flex-shrink:0}
-.br-rank-trigger:hover{background:var(--gold);color:#000}
+.br-rank-trigger{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;background:var(--bg4);color:var(--text3);transition:all .15s;flex-shrink:0;margin-right:2px}
+.br-rank-trigger:hover{background:var(--gold);color:#000;transform:scale(1.1)}
 .br-team.s1 .br-rank-trigger{background:var(--gold);color:#000}
 .br-team.s2 .br-rank-trigger{background:var(--silver,#a0a0a0);color:#fff}
 .br-team.s3 .br-rank-trigger{background:var(--bronze,#cd7f32);color:#fff}
-.br-rank-picker{display:flex;gap:3px;flex-shrink:0;animation:popIn .15s ease}
-@keyframes popIn{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
-.br-pick-rank{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;background:var(--bg4);color:var(--text);transition:all .12s}
-.br-pick-rank:hover{transform:scale(1.2)}
-.br-pick-rank.br-pick-cur{background:var(--gold);color:#000}
-.br-pick-rank.br-pick-clear{background:var(--red-dim);color:var(--red);font-size:10px}
-.br-team-name{flex:1;min-width:0}
+.br-popup-overlay{position:fixed;inset:0;z-index:9998;background:transparent}
+.br-rank-popup{animation:popUp .15s ease;transform-origin:top left}
+@keyframes popUp{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+.br-popup-rank{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;background:var(--bg4);color:var(--text);transition:all .12s;border:2px solid var(--border)}
+.br-popup-rank:hover{transform:scale(1.15);border-color:var(--gold)}
+.br-popup-cur{background:var(--gold);color:#000;border-color:var(--gold)}
+.br-popup-clear{background:var(--red-dim);color:var(--red);border-color:var(--red);font-size:12px}
 .br-team.s1{background:var(--gold);color:#000;font-weight:700}
 .br-team.s2{background:var(--silver,#a0a0a0);color:#fff;font-weight:600}
 .br-team.s3{background:var(--bronze,#cd7f32);color:#fff;font-weight:600}
-.br-team .br-rank{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.br-team.s1 .br-rank{background:#fff;color:#b8860b}
-.br-team.s2 .br-rank{background:#fff;color:#555}
-.br-team.s3 .br-rank{background:#fff;color:#8b4513}
 .br-hint{font-size:10px;color:var(--text2);text-align:center;margin-top:4px}
 .br-round{background:var(--card);border:1px solid var(--border);border-radius:10px;margin:0 0 10px;overflow:hidden}
 .br-round-title{background:var(--gold);color:#000;padding:6px 12px;font-size:12px;font-weight:700;text-align:center}
@@ -398,7 +394,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.6.00 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.6.01 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2380,33 +2376,17 @@ function renderBracketPhase() {
   if (!body) return;
 
   if (phase === 'groups') {
-    phaseEl.innerHTML = '🏆 <b>第1步：选择每组前三名</b> — 点击球队左侧横线选择名次';
-    // Track which team has open rank selector
-    if (BR_STATE._openSel === undefined) BR_STATE._openSel = null;
+    phaseEl.innerHTML = '🏆 <b>第1步：选择每组前三名</b> — 点击 <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--bg4);text-align:center;line-height:16px;font-size:10px;">—</span> 选择名次';
     let html = '<div class="br-group-grid">';
     WC_GROUPS.forEach(g => {
-      const taken = Object.values(BR_STATE.groups[g.id]).filter(v => v > 0);
       html += `<div class="br-group"><h3>${g.id}组</h3>`;
       g.teams.forEach(t => {
         const r = BR_STATE.groups[g.id][t] || 0;
         const cls = r === 1 ? 's1' : r === 2 ? 's2' : r === 3 ? 's3' : '';
         const label = r === 1 ? '1st' : r === 2 ? '2nd' : r === 3 ? '3rd' : '';
-        const isOpen = BR_STATE._openSel === g.id + '_' + t;
-        // Build rank options
-        let rankBtns = '';
-        if (isOpen) {
-          const opts = [];
-          for (let rk = 1; rk <= 3; rk++) {
-            const taken2 = Object.entries(BR_STATE.groups[g.id]).find(([k,v]) => v === rk && k !== t);
-            opts.push(`<span class="br-pick-rank ${r===rk?'br-pick-cur':''}" onclick="event.stopPropagation();assignRank('${g.id}','${t}',${rk})">${rk}</span>`);
-          }
-          opts.push(`<span class="br-pick-rank br-pick-clear" onclick="event.stopPropagation();assignRank('${g.id}','${t}',0)">✕</span>`);
-          rankBtns = `<div class="br-rank-picker">${opts.join('')}</div>`;
-        }
         html += `<div class="br-team ${cls}">
-          <span class="br-rank-trigger" onclick="toggleRankSel('${g.id}','${t}')">${r ? `<span class="br-rank">${label}</span>` : '—'}</span>
-          ${rankBtns}
-          <span class="br-team-name">${flg(t)} ${tr(t)}</span>
+          <span class="br-rank-trigger" onclick="openRankPopup('${g.id}','${t}',event)">${r ? label : '—'}</span>
+          ${flg(t)} ${tr(t)}
         </div>`;
       });
       html += '</div>';
@@ -2457,18 +2437,57 @@ function allGroupsSet() {
   return true;
 }
 
-function toggleRankSel(gid, team) {
-  const key = gid + '_' + team;
-  BR_STATE._openSel = BR_STATE._openSel === key ? null : key;
-  renderBracketPhase();
+function openRankPopup(gid, team, event) {
+  if (event) event.stopPropagation();
+  // Remove any existing popup
+  closeRankPopup();
+  // Get trigger position
+  const trigger = event.target;
+  const rect = trigger.getBoundingClientRect();
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'br-popup-overlay';
+  overlay.onclick = closeRankPopup;
+  // Create popup
+  const popup = document.createElement('div');
+  popup.className = 'br-rank-popup';
+  popup.style.cssText = `position:fixed;z-index:9999;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:8px;display:flex;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,0.5);`;
+  popup.onclick = e => e.stopPropagation();
+  // Position near trigger
+  const popLeft = Math.min(rect.left, window.innerWidth - 180);
+  const popTop = rect.bottom + 4;
+  popup.style.left = popLeft + 'px';
+  popup.style.top = popTop + 'px';
+  // Rank buttons 1, 2, 3
+  const cur = BR_STATE.groups[gid][team] || 0;
+  for (let rk = 1; rk <= 3; rk++) {
+    const btn = document.createElement('div');
+    btn.className = 'br-popup-rank' + (cur === rk ? ' br-popup-cur' : '');
+    btn.textContent = rk;
+    btn.onclick = e => { e.stopPropagation(); assignRank(gid, team, rk); };
+    popup.appendChild(btn);
+  }
+  // Clear button
+  if (cur > 0) {
+    const clearBtn = document.createElement('div');
+    clearBtn.className = 'br-popup-rank br-popup-clear';
+    clearBtn.textContent = '✕';
+    clearBtn.onclick = e => { e.stopPropagation(); assignRank(gid, team, 0); };
+    popup.appendChild(clearBtn);
+  }
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+}
+
+function closeRankPopup() {
+  document.querySelectorAll('.br-popup-overlay').forEach(el => el.remove());
 }
 
 function assignRank(gid, team, rank) {
-  BR_STATE._openSel = null;
+  closeRankPopup();
   if (rank === 0) {
     BR_STATE.groups[gid][team] = 0;
   } else {
-    // Clear same rank from other teams
     for (const t in BR_STATE.groups[gid]) {
       if (t !== team && BR_STATE.groups[gid][t] === rank) BR_STATE.groups[gid][t] = 0;
     }
