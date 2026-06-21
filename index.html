@@ -395,7 +395,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.6.02 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.7.00 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2343,7 +2343,7 @@ function initBracket() {
   });
   BR_STATE.r32 = {}; BR_STATE.r16 = {}; BR_STATE.qf = {}; BR_STATE.sf = {};
   BR_STATE.final = {}; BR_STATE.third = {}; BR_STATE.phase = 'groups';
-  BR_STATE._selRank = 1; BR_STATE.version = 2;
+  BR_STATE._historySaved = false; BR_STATE.version = 2;
   localStorage.removeItem('br_predict');
 }
 
@@ -2615,7 +2615,10 @@ function renderKnockout() {
     html += `<div style="text-align:center;padding:20px;margin:16px 0;background:linear-gradient(135deg,#b8860b,#ffd700);border-radius:12px;color:#000;">
       <div style="font-size:36px;margin-bottom:8px">🏆</div>
       <div style="font-size:22px;font-weight:800;">${flg(champ)} ${tr(champ)} 🏆</div></div>`;
+    // Auto-save to history on champion (once per session)
+    if (!BR_STATE._historySaved) { bracketSaveHistory(); BR_STATE._historySaved = true; saveBracket(); }
     html += `<button class="br-gen-btn" onclick="generateBracketChart()">📸 生成预测对阵图</button>`;
+    html += `<button class="br-restart-btn" style="margin-bottom:8px;" onclick="showBracketHistory()">📋 预测历史</button>`;
     html += `<button class="br-restart-btn" onclick="bracketReset()">🔄 重来</button>`;
   }
   html += '<div id="br-chart"></div>';
@@ -2632,8 +2635,117 @@ function bracketPick(round, matchId, team) {
 function bracketNextPhase(p) { BR_STATE.phase = p; saveBracket(); renderKnockout(); }
 
 function bracketReset() {
-  if (!confirm('确定要重新预测？所有结果将被清空。')) return;
-  localStorage.removeItem('br_predict'); initBracket(); renderBracket();
+  // Custom confirm with swapped button order
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.style.cssText = 'display:flex;z-index:9999;';
+  overlay.innerHTML = `<div class="modal" style="max-width:280px;text-align:center;">
+    <h2 style="font-size:16px;margin-bottom:16px;">🔄 重新预测</h2>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px;">确定要重新预测？<br>所有结果将被清空。</p>
+    <div style="display:flex;gap:10px;flex-direction:row-reverse;">
+      <button class="btn btn-primary" style="flex:1;" onclick="bracketResetConfirm(this)">确定</button>
+      <button class="btn" style="flex:1;background:var(--card2);color:var(--text2);" onclick="this.closest('.modal-overlay').remove()">取消</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function bracketResetConfirm(btn) {
+  btn.closest('.modal-overlay').remove();
+  localStorage.removeItem('br_predict');
+  // Save current prediction to history before clearing
+  bracketSaveHistory();
+  initBracket();
+  renderBracket();
+  showToast('已重置，开始新预测');
+}
+
+function bracketSaveHistory() {
+  try {
+    const champ = BR_STATE.final && BR_STATE.final['final'];
+    if (!champ) return;
+    const history = JSON.parse(localStorage.getItem('br_history') || '[]');
+    // Get current user name
+    const userName = cu() || '匿名';
+    const entry = {
+      id: Date.now(),
+      user: userName,
+      time: new Date().toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+      champion: champ,
+      data: JSON.parse(JSON.stringify(BR_STATE))
+    };
+    history.unshift(entry);
+    // Keep max 50 entries
+    if (history.length > 50) history.length = 50;
+    localStorage.setItem('br_history', JSON.stringify(history));
+  } catch(e) {}
+}
+
+function showBracketHistory() {
+  const history = JSON.parse(localStorage.getItem('br_history') || '[]');
+  if (history.length === 0) {
+    showToast('暂无预测记录');
+    return;
+  }
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.style.cssText = 'display:flex;z-index:9999;';
+  overlay.onclick = function(e) { if (e.target === this) this.remove(); };
+  let listHtml = history.map((h, i) => `
+    <div style="display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);gap:8px;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:600;">${h.user} <span style="font-size:11px;color:var(--text3);font-weight:400;">${h.time}</span></div>
+        <div style="font-size:11px;color:var(--gold);margin-top:2px;">🏆 ${tr(h.champion)}</div>
+      </div>
+      <button class="btn btn-small btn-primary" onclick="viewHistoryDetail(${i})">详情</button>
+    </div>
+  `).join('');
+
+  overlay.innerHTML = `<div class="modal" style="max-width:340px;max-height:70vh;display:flex;flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 16px 8px;">
+      <h2 style="font-size:16px;">📋 预测历史</h2>
+      <span style="cursor:pointer;color:var(--text3);font-size:18px;" onclick="this.closest('.modal-overlay').remove()">✕</span>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:0 12px 12px;">
+      ${listHtml || '<div style="text-align:center;padding:30px;color:var(--text3);">暂无记录</div>'}
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function viewHistoryDetail(idx) {
+  const history = JSON.parse(localStorage.getItem('br_history') || '[]');
+  const h = history[idx];
+  if (!h) return;
+  // Close history list
+  document.querySelectorAll('.modal-overlay').forEach(el => el.remove());
+  // Load into bracket state temporarily
+  const savedState = JSON.parse(JSON.stringify(BR_STATE));
+  Object.assign(BR_STATE, JSON.parse(JSON.stringify(h.data)));
+  // Show the chart
+  const chart = document.getElementById('br-chart');
+  chart.classList.add('show');
+  generateBracketChart();
+  // Add header with close button
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'text-align:center;padding:8px;margin-bottom:8px;';
+  hdr.innerHTML = `<div style="font-size:12px;color:var(--text2);">📋 ${h.user} · ${h.time} · 🏆 ${tr(h.champion)}</div>
+    <span style="font-size:12px;color:var(--primary);cursor:pointer;" onclick="restoreBracketState()">← 返回</span>`;
+  chart.parentNode.insertBefore(hdr, chart);
+  chart._historyState = savedState;
+  chart._historyHeader = hdr;
+  chart.scrollIntoView({behavior:'smooth'});
+}
+
+function restoreBracketState() {
+  const chart = document.getElementById('br-chart');
+  if (chart._historyState) {
+    Object.assign(BR_STATE, chart._historyState);
+    chart._historyState = null;
+    if (chart._historyHeader) { chart._historyHeader.remove(); chart._historyHeader = null; }
+  }
+  chart.classList.remove('show');
+  renderBracket();
 }
 
 function generateBracketChart() {
