@@ -387,7 +387,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.4.00 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.4.01 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2282,6 +2282,7 @@ function initBracket() {
   });
   BR_STATE.r32 = {}; BR_STATE.r16 = {}; BR_STATE.qf = {}; BR_STATE.sf = {};
   BR_STATE.final = {}; BR_STATE.third = {}; BR_STATE.phase = 'groups';
+  BR_STATE.version = 2;
   localStorage.removeItem('br_predict');
 }
 
@@ -2290,7 +2291,7 @@ function saveBracket() { localStorage.setItem('br_predict', JSON.stringify(BR_ST
 function loadBracket() {
   try {
     const d = JSON.parse(localStorage.getItem('br_predict'));
-    if (d && d.groups) { Object.assign(BR_STATE, d); return true; }
+    if (d && d.groups && d.version === 2) { Object.assign(BR_STATE, d); return true; }
   } catch(e) {}
   return false;
 }
@@ -2455,7 +2456,8 @@ function renderKnockout() {
   if (!body) return;
   const phaseNames = {r32:'⚔️ <b>第3步：32强赛</b> — 点击胜方晋级',r16:'🏅 <b>第4步：16强赛</b> — 点击胜方晋级',
     qf:'🏆 <b>第5步：1/4决赛</b> — 点击胜方晋级',sf:'👑 <b>第6步：半决赛</b> — 点击胜方晋级',final:'🏆 <b>第7步：决赛</b> — 点击冠军'};
-  phaseEl.innerHTML = phaseNames[BR_STATE.phase] || '';
+  phaseEl.innerHTML = (phaseNames[BR_STATE.phase] || '') +
+    ' <span style="font-size:11px;color:var(--red);cursor:pointer;margin-left:8px;" onclick="bracketReset()">[重来]</span>';
   const rounds = [
     {key:'r32',label:'32强赛',data:BRACKET.r32,store:BR_STATE.r32,next:'r16'},
     {key:'r16',label:'16强赛',data:BRACKET.r16,store:BR_STATE.r16,next:'qf'},
