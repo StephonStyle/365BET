@@ -387,7 +387,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.4.02 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.5.00 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2270,7 +2270,60 @@ async function deleteMyPred(mid){
   }catch(e){showToast('删除失败');}
 }
 // ======================== BRACKET PREDICTION ========================
-const BR_STATE = { groups: {}, thirdAdvancing: {}, r32: {}, r16: {}, qf: {}, sf: {}, final: {}, third: {}, phase: 'groups' };
+const BR_STATE = { groups: {}, thirdAdvancing: {}, r32: {}, r16: {}, qf: {}, sf: {}, final: {}, third: {}, phase: 'groups', version: 2, lang: 'zh' };
+
+// Team name translations
+const LANG_NAMES = {
+  en: {}, zh: {}, ja: {}
+};
+// Build zh from reverse of CN_RANK
+for (const cn in CN_RANK) { LANG_NAMES.zh[CN_RANK[cn]] = cn; }
+// Japanese names
+const JA_NAMES = {
+  'Mexico':'メキシコ','South Africa':'南アフリカ','South Korea':'韓国','Czechia':'チェコ',
+  'Canada':'カナダ','Bosnia':'ボスニア','Qatar':'カタール','Switzerland':'スイス',
+  'Brazil':'ブラジル','Morocco':'モロッコ','Haiti':'ハイチ','Scotland':'スコットランド',
+  'USA':'アメリカ','Paraguay':'パラグアイ','Australia':'オーストラリア','Turkey':'トルコ',
+  'Germany':'ドイツ','Curacao':'キュラソー','Ivory Coast':'コートジボワール','Ecuador':'エクアドル',
+  'Netherlands':'オランダ','Japan':'日本','Sweden':'スウェーデン','Tunisia':'チュニジア',
+  'Belgium':'ベルギー','Egypt':'エジプト','Iran':'イラン','New Zealand':'ニュージーランド',
+  'Spain':'スペイン','Cape Verde':'カーボベルデ','Saudi Arabia':'サウジアラビア','Uruguay':'ウルグアイ',
+  'France':'フランス','Senegal':'セネガル','Iraq':'イラク','Norway':'ノルウェー',
+  'Argentina':'アルゼンチン','Algeria':'アルジェリア','Austria':'オーストリア','Jordan':'ヨルダン',
+  'Portugal':'ポルトガル','DR Congo':'コンゴ民主共和国','Uzbekistan':'ウズベキスタン','Colombia':'コロンビア',
+  'England':'イングランド','Croatia':'クロアチア','Ghana':'ガーナ','Panama':'パナマ'
+};
+LANG_NAMES.ja = JA_NAMES;
+
+function tr(name) {
+  if (!name || name === '?') return name;
+  const lang = BR_STATE.lang || 'en';
+  if (lang === 'en') return name;
+  return LANG_NAMES[lang][name] || name;
+}
+
+function showLangModal(callback) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.style.cssText = 'display:flex;z-index:999;';
+  overlay.innerHTML = `<div class="modal" style="max-width:300px;text-align:center;">
+    <h2 style="font-size:18px;margin-bottom:16px;">🌐 选择语言</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button class="btn btn-primary" onclick="selectLang('zh',this)">🇨🇳 中文</button>
+      <button class="btn" onclick="selectLang('en',this)" style="background:var(--card2);color:var(--text);">🇬🇧 English</button>
+      <button class="btn" onclick="selectLang('ja',this)" style="background:var(--card2);color:var(--text);">🇯🇵 日本語</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  window._langCallback = callback;
+}
+
+function selectLang(lang, btn) {
+  BR_STATE.lang = lang;
+  saveBracket();
+  document.querySelectorAll('.modal-overlay').forEach(el => el.remove());
+  if (window._langCallback) window._langCallback();
+}
 
 function flg(t) { return WC_FLAGS[t] || ''; }
 
@@ -2301,8 +2354,10 @@ function renderBracket() {
     const el = document.getElementById('bracketContent');
     if (!el) return;
     if (!loadBracket()) initBracket();
-    el.innerHTML = '<div class="br-phase" id="brPhase"></div><div id="brBody"></div>';
-    renderBracketPhase();
+    showLangModal(() => {
+      el.innerHTML = '<div class="br-phase" id="brPhase"></div><div id="brBody"></div>';
+      renderBracketPhase();
+    });
   } catch(e) { console.warn('Bracket error:', e); }
 }
 
@@ -2323,7 +2378,7 @@ function renderBracketPhase() {
         const cls = r === 1 ? 's1' : r === 2 ? 's2' : r === 3 ? 's3' : '';
         const label = r === 1 ? '1st' : r === 2 ? '2nd' : r === 3 ? '3rd' : '—';
         html += `<div class="br-team ${cls}" onclick="bracketClickTeam('${g.id}','${t}')">
-          <span class="br-rank">${label}</span> ${flg(t)} ${t}</div>`;
+          <span class="br-rank">${label}</span> ${flg(t)} ${tr(t)}</div>`;
       });
       html += '</div>';
     });
@@ -2346,7 +2401,7 @@ function renderBracketPhase() {
       const isAdv = BR_STATE.thirdAdvancing[g.id] || false;
       html += `<div class="br-group ${isAdv?'br-third-adv':''}" style="${isAdv?'border-color:var(--gold);':''}" onclick="toggleThirdAdv('${g.id}')">
         <h3 style="font-size:11px;">${g.id}组 第3名</h3>
-        <div class="br-team ${isAdv?'s3':''}" style="${isAdv?'':'opacity:0.6;'}">${flg(third)} ${third}</div>
+        <div class="br-team ${isAdv?'s3':''}" style="${isAdv?'':'opacity:0.6;'}">${flg(third)} ${tr(third)}</div>
         <div style="font-size:10px;text-align:center;margin-top:4px;color:${isAdv?'var(--gold)':'var(--text3)'};">${isAdv?'✅ 晋级':'⏳ 待定'}</div>
       </div>`;
     });
@@ -2486,12 +2541,12 @@ function renderKnockout() {
       if (hT==='?'&&aT==='?') return;
       const w = r.store[m.id];
       if (isCur) {
-        html += `<div class="br-match"><div class="br-team-select ${w===hT?'win':''}" onclick="bracketPick('${r.key}','${m.id}','${hT.replace(/'/g,"\\'")}')">${flg(hT)} ${hT}</div>
+        html += `<div class="br-match"><div class="br-team-select ${w===hT?'win':''}" onclick="bracketPick('${r.key}','${m.id}','${hT.replace(/'/g,"\\'")}')">${flg(hT)} ${tr(hT)}</div>
           <div class="br-vs">VS</div>
-          <div class="br-team-select ${w===aT?'win':''}" onclick="bracketPick('${r.key}','${m.id}','${aT.replace(/'/g,"\\'")}')">${flg(aT)} ${aT}</div></div>`;
+          <div class="br-team-select ${w===aT?'win':''}" onclick="bracketPick('${r.key}','${m.id}','${aT.replace(/'/g,"\\'")}')">${flg(aT)} ${tr(aT)}</div></div>`;
       } else {
-        html += `<div class="br-match" style="opacity:0.6"><div class="br-team-select ${w===hT?'win':''}">${flg(hT)} ${hT}</div>
-          <div class="br-vs">VS</div><div class="br-team-select ${w===aT?'win':''}">${flg(aT)} ${aT}</div></div>`;
+        html += `<div class="br-match" style="opacity:0.6"><div class="br-team-select ${w===hT?'win':''}">${flg(hT)} ${tr(hT)}</div>
+          <div class="br-vs">VS</div><div class="br-team-select ${w===aT?'win':''}">${flg(aT)} ${tr(aT)}</div></div>`;
       }
     });
     html += '</div>';
@@ -2504,7 +2559,7 @@ function renderKnockout() {
     const champ = BR_STATE.final['final'];
     html += `<div style="text-align:center;padding:20px;margin:16px 0;background:linear-gradient(135deg,#b8860b,#ffd700);border-radius:12px;color:#000;">
       <div style="font-size:36px;margin-bottom:8px">🏆</div>
-      <div style="font-size:22px;font-weight:800;">${flg(champ)} 冠军：${champ}</div></div>`;
+      <div style="font-size:22px;font-weight:800;">${flg(champ)} ${tr(champ)} 🏆</div></div>`;
     html += `<button class="br-gen-btn" onclick="generateBracketChart()">📸 生成预测对阵图</button>`;
     html += `<button class="br-restart-btn" onclick="bracketReset()">🔄 重来</button>`;
   }
@@ -2537,14 +2592,14 @@ function generateBracketChart() {
   const r32m=bm(BRACKET.r32,BR_STATE.r32,p0),r16m=bm(BRACKET.r16,BR_STATE.r16,p1),qfm=bm(BRACKET.qf,BR_STATE.qf,p2),sfm=bm(BRACKET.sf,BR_STATE.sf,p3);
   const fh=getTeamForMatch(BRACKET.final[0].h,p4)||'?',fa=getTeamForMatch(BRACKET.final[0].a,p4)||'?',fw=BR_STATE.final['final'];
   function rt(t,ms,cls){return `<div class="br-section ${cls||''}"><div class="br-section-title">${t}</div>${
-    ms.map(m=>`<div class="br-row"><span class="br-row-team ${m.w===m.h?'br-row-win':''}">${flg(m.h)} ${m.h}</span><span class="br-row-vs">vs</span><span class="br-row-team ${m.w===m.a?'br-row-win':''}">${flg(m.a)} ${m.a}</span></div>`).join('')}</div>`;}
+    ms.map(m=>`<div class="br-row"><span class="br-row-team ${m.w===m.h?'br-row-win':''}">${flg(m.h)} ${tr(m.h)}</span><span class="br-row-vs">vs</span><span class="br-row-team ${m.w===m.a?'br-row-win':''}">${flg(m.a)} ${tr(m.a)}</span></div>`).join('')}</div>`;}
   let html='<div class="br-chart-wrap"><div class="br-chart-hdr">🏆 2026世界杯 预测对阵图</div>';
   if(r32m.length)html+=rt('32强赛',r32m);
   if(r16m.length)html+=rt('16强赛',r16m);
   if(qfm.length)html+=rt('1/4决赛',qfm);
   if(sfm.length)html+=rt('半决赛',sfm);
   html+=rt('决 赛',[{h:fh,a:fa,w:fw}],'br-section-final');
-  if(fw)html+=`<div class="br-champion">🏆 ${flg(fw)} ${fw}</div>`;
+  if(fw)html+=`<div class="br-champion">${flg(fw)} ${tr(fw)} 🏆</div>`;
   html+='</div>';
   chart.innerHTML = html;
 }
