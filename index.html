@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.10.02 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.10.03 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -3361,10 +3361,14 @@ async function showUsage() {
               const dk = (d.device||'PC') + '_' + (d.brand||'Unknown').replace(/[^a-zA-Z0-9]/g,'');
               if (!allUsage[d.user]) allUsage[d.user] = {};
               if (!allUsage[d.user][dk]) allUsage[d.user][dk] = {device:d.device||'PC', brand:d.brand||'Unknown', days:{}};
-              if (!allUsage[d.user][dk].days[d.date]) allUsage[d.user][dk].days[d.date] = {visits:0, sessions:[], serverTimes:d.times||[]};
+              if (!allUsage[d.user][dk].days[d.date]) allUsage[d.user][dk].days[d.date] = {visits:0, sessions:[], serverTimes:[]};
               allUsage[d.user][dk].days[d.date].visits = Math.max(allUsage[d.user][dk].days[d.date].visits, d.visits);
-              if (d.times && d.times.length > (allUsage[d.user][dk].days[d.date].serverTimes||[]).length) {
+              // Handle both old format (time string) and new format (times array)
+              if (d.times && d.times.length > 0) {
                 allUsage[d.user][dk].days[d.date].serverTimes = d.times;
+              } else if (d.time) {
+                const t = allUsage[d.user][dk].days[d.date].serverTimes;
+                if (t.indexOf(d.time) < 0) t.push(d.time);
               }
             }
           } catch(ex) {}
@@ -3375,6 +3379,13 @@ async function showUsage() {
     function fmtTime(ts) {
       if (!ts) return '';
       return new Date(ts).toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    }
+    // Try extracting user names from match_id for server records that have no detail
+    function getServerUsers() {
+      try {
+        const sv = JSON.parse(localStorage.getItem('_usage_v2_raw') || '[]');
+        return sv;
+      } catch(e){ return []; }
     }
 
     let html = '<div style="background:var(--bg);min-height:100vh;padding:16px;font-size:14px;">';
