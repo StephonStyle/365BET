@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.10.04 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.10.05 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -3409,10 +3409,13 @@ async function showUsage() {
               if (ss.start) timeline.push({user:user, device:di.device, time:ss.start, date:date});
             });
             (day.serverTimes||[]).forEach(function(t){
-              // Try to parse server time string
-              const h = parseInt(t, 10);
-              if (!isNaN(h)) { timeline.push({user:user, device:di.device, time:h, date:date, timeStr:t}); }
-              else { timeline.push({user:user, device:di.device, time:0, date:date, timeStr:t}); }
+              // Parse "HH:MM" or "HH:MM:SS" string with date
+              let ts = 0;
+              const parts = t.split(':');
+              if (parts.length >= 2) {
+                ts = new Date(date + 'T' + parts[0] + ':' + parts[1] + ':00').getTime();
+              }
+              timeline.push({user:user, device:di.device, time:ts, date:date, timeStr:t});
             });
           });
         });
