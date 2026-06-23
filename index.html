@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.10.05 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.11.00 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -3363,7 +3363,6 @@ async function showUsage() {
               if (!allUsage[d.user][dk]) allUsage[d.user][dk] = {device:d.device||'PC', brand:d.brand||'Unknown', days:{}};
               if (!allUsage[d.user][dk].days[d.date]) allUsage[d.user][dk].days[d.date] = {visits:0, sessions:[], serverTimes:[]};
               allUsage[d.user][dk].days[d.date].visits = Math.max(allUsage[d.user][dk].days[d.date].visits, d.visits);
-              // Handle both old format (time string) and new format (times array)
               if (d.times && d.times.length > 0) {
                 allUsage[d.user][dk].days[d.date].serverTimes = d.times;
               } else if (d.time) {
@@ -3380,96 +3379,106 @@ async function showUsage() {
       if (!ts) return '';
       return new Date(ts).toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
     }
-    // Try extracting user names from match_id for server records that have no detail
-    function getServerUsers() {
-      try {
-        const sv = JSON.parse(localStorage.getItem('_usage_v2_raw') || '[]');
-        return sv;
-      } catch(e){ return []; }
-    }
 
-    let html = '<div style="background:var(--bg);min-height:100vh;padding:16px;font-size:14px;">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
-    html += '<h2 style="margin:0;font-size:18px;">📊 使用统计（按玩家+设备）</h2>';
-    html += '<span style="font-size:22px;cursor:pointer;color:var(--text2);padding:4px 8px;" onclick="this.parentElement.parentElement.remove();showAdmin()">✕</span>';
-    html += '</div>';
-
-    const users = Object.keys(allUsage).sort();
-    if (users.length === 0) {
-      html += '<div style="text-align:center;padding:40px;color:var(--text3);">暂无数据</div>';
-    } else {
-      // Global timeline: all login events from newest to oldest
-      let timeline = [];
-      users.forEach(function(user){
-        Object.keys(allUsage[user]).forEach(function(dk){
-          const di = allUsage[user][dk];
-          Object.keys(di.days).forEach(function(date){
-            const day = di.days[date];
-            (day.sessions||[]).forEach(function(ss){
-              if (ss.start) timeline.push({user:user, device:di.device, time:ss.start, date:date});
-            });
-            (day.serverTimes||[]).forEach(function(t){
-              // Parse "HH:MM" or "HH:MM:SS" string with date
-              let ts = 0;
-              const parts = t.split(':');
-              if (parts.length >= 2) {
-                ts = new Date(date + 'T' + parts[0] + ':' + parts[1] + ':00').getTime();
-              }
-              timeline.push({user:user, device:di.device, time:ts, date:date, timeStr:t});
-            });
+    // Build timeline data
+    let timeline = [];
+    Object.keys(allUsage).forEach(function(user){
+      Object.keys(allUsage[user]).forEach(function(dk){
+        const di = allUsage[user][dk];
+        Object.keys(di.days).forEach(function(date){
+          const day = di.days[date];
+          (day.sessions||[]).forEach(function(ss){
+            if (ss.start) timeline.push({user:user, device:di.device, time:ss.start, date:date});
+          });
+          (day.serverTimes||[]).forEach(function(t){
+            let ts = 0;
+            const parts = t.split(':');
+            if (parts.length >= 2) ts = new Date(date + 'T' + parts[0] + ':' + parts[1] + ':00').getTime();
+            timeline.push({user:user, device:di.device, time:ts, date:date, timeStr:t});
           });
         });
       });
-      timeline.sort(function(a,b){return (b.time||0) - (a.time||0);});
-      if (timeline.length > 0) {
-        html += '<div style="margin-bottom:16px;background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;">';
-        html += '<div style="padding:10px 14px;font-weight:700;font-size:14px;background:var(--card2);">⏱ 全部登录时间线（最新→最早）</div>';
-        html += '<div style="padding:8px 14px 10px;max-height:300px;overflow-y:auto;">';
-        timeline.slice(0,100).forEach(function(e){
-          const t = e.timeStr || (e.time ? fmtTime(e.time) : '');
-          html += `<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border);">`;
-          html += `<span style="font-weight:500;">${e.user}</span>`;
-          html += `<span style="color:var(--text2);">${e.date} ${t} · ${e.device}</span>`;
-          html += `</div>`;
-        });
-        if (timeline.length > 100) html += `<div style="text-align:center;font-size:11px;color:var(--text3);margin-top:4px;">仅显示最近100条，共${timeline.length}条</div>`;
-        html += '</div></div>';
+    });
+    timeline.sort(function(a,b){return (b.time||0) - (a.time||0);});
+
+    function renderUsagePage(tab) {
+      let html = '<div style="background:var(--bg);min-height:100vh;padding:16px;font-size:14px;">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
+      html += '<h2 style="margin:0;font-size:18px;">📊 使用统计</h2>';
+      html += '<span style="font-size:22px;cursor:pointer;color:var(--text2);padding:4px 8px;" onclick="this.parentElement.parentElement.remove();showAdmin()">✕</span>';
+      html += '</div>';
+      // Tabs
+      html += '<div style="display:flex;gap:8px;margin-bottom:12px;">';
+      html += `<span class="tab-btn ${tab==='player'?'active':''}" onclick="renderUsagePage('player')" style="padding:6px 16px;border-radius:16px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);${tab==='player'?'background:var(--primary);color:#fff;border-color:var(--primary);':'background:transparent;color:var(--text2);'}">👤 按玩家</span>`;
+      html += `<span class="tab-btn ${tab==='timeline'?'active':''}" onclick="renderUsagePage('timeline')" style="padding:6px 16px;border-radius:16px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);${tab==='timeline'?'background:var(--primary);color:#fff;border-color:var(--primary);':'background:transparent;color:var(--text2);'}">⏱ 时间线</span>`;
+      html += '</div>';
+
+      const users = Object.keys(allUsage).sort();
+
+      if (tab === 'timeline') {
+        // Time line view
+        if (timeline.length === 0) {
+          html += '<div style="text-align:center;padding:40px;color:var(--text3);">暂无数据</div>';
+        } else {
+          html += '<div style="background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;">';
+          html += '<div style="padding:10px 14px;font-weight:700;font-size:14px;background:var(--card2);">⏱ 全部登录时间线（最新→最早）</div>';
+          html += '<div style="padding:8px 14px 10px;max-height:70vh;overflow-y:auto;">';
+          timeline.slice(0,200).forEach(function(e, i){
+            const t = e.timeStr || (e.time ? fmtTime(e.time) : '');
+            const bg = i % 2 === 0 ? '' : 'background:var(--bg2);';
+            html += `<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 8px;${bg}border-bottom:1px solid var(--border);border-radius:4px;">`;
+            html += `<span style="font-weight:500;">${e.user}</span>`;
+            html += `<span style="color:var(--text2);">${e.date} ${t} · ${e.device}</span>`;
+            html += `</div>`;
+          });
+          if (timeline.length > 200) html += `<div style="text-align:center;font-size:11px;color:var(--text3);margin-top:6px;">仅显示最近200条，共${timeline.length}条</div>`;
+          html += '</div></div>';
+        }
+      } else {
+        // Player view
+        if (users.length === 0) {
+          html += '<div style="text-align:center;padding:40px;color:var(--text3);">暂无数据</div>';
+        } else {
+          users.forEach(function(user){
+            html += `<div style="margin-bottom:14px;background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;">`;
+            html += `<div style="padding:10px 14px;font-weight:700;font-size:15px;background:var(--card2);">${user}</div>`;
+            Object.keys(allUsage[user]).forEach(function(dk){
+              const di = allUsage[user][dk];
+              html += `<div style="padding:4px 14px 10px;border-bottom:1px solid var(--border);">`;
+              html += `<div style="font-size:12px;color:var(--text2);margin:6px 0 4px;">📱 ${di.device} · ${di.brand}</div>`;
+              Object.keys(di.days).sort().reverse().forEach(function(date){
+                const day = di.days[date];
+                const totalMs = (day.sessions||[]).reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
+                const times = day.sessions.map(function(ss){return fmtTime(ss.start);}).filter(Boolean);
+                const serverTimes = day.serverTimes || [];
+                const allTimes = times.length > 0 ? times : serverTimes;
+                html += `<div style="margin:4px 0;padding:6px 8px;background:var(--bg2);border-radius:6px;">`;
+                html += `<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="font-weight:600;">${date}</span><span style="color:var(--text2);">${day.visits}次 · ${Math.round(totalMs/60000)}分钟</span></div>`;
+                if (allTimes.length > 0) html += `<div style="font-size:11px;color:var(--text3);margin-top:4px;">登录时间: ${allTimes.join(' → ')}</div>`;
+                html += `</div>`;
+              });
+              html += `</div>`;
+            });
+            html += `</div>`;
+          });
+        }
       }
-
-      users.forEach(function(user){
-        html += `<div style="margin-bottom:16px;background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;">`;
-        html += `<div style="padding:10px 14px;font-weight:700;font-size:15px;background:var(--card2);">${user}</div>`;
-        Object.keys(allUsage[user]).forEach(function(dk){
-          const di = allUsage[user][dk];
-          html += `<div style="padding:4px 14px 10px;border-bottom:1px solid var(--border);">`;
-          html += `<div style="font-size:12px;color:var(--text2);margin:6px 0 4px;">📱 ${di.device} · ${di.brand}</div>`;
-          Object.keys(di.days).sort().reverse().forEach(function(date){
-            const day = di.days[date];
-            const totalMs = (day.sessions||[]).reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
-            const times = day.sessions.map(function(ss){return fmtTime(ss.start);}).filter(Boolean);
-            const serverTimes = day.serverTimes || [];
-            const allTimes = times.length > 0 ? times : serverTimes;
-            html += `<div style="margin:4px 0;padding:6px 8px;background:var(--bg2);border-radius:6px;">`;
-            html += `<div style="display:flex;justify-content:space-between;font-size:12px;">`;
-            html += `<span style="font-weight:600;">${date}</span>`;
-            html += `<span style="color:var(--text2);">${day.visits}次 · ${Math.round(totalMs/60000)}分钟</span>`;
-            html += `</div>`;
-            if (allTimes.length > 0) {
-              html += `<div style="font-size:11px;color:var(--text3);margin-top:4px;">登录时间: ${allTimes.join(' → ')}</div>`;
-            }
-            html += `</div>`;
-          });
-          html += `</div>`;
-        });
-        html += `</div>`;
-      });
+      html += '</div>';
+      const existing = document.querySelector('#usageOverlay');
+      if (existing) existing.innerHTML = html;
     }
-    html += '</div>';
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;overflow-y:auto;';
-    overlay.innerHTML = html;
-    overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
-    document.body.appendChild(overlay);
+
+    // Create or update overlay
+    let overlay = document.querySelector('#usageOverlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'usageOverlay';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;overflow-y:auto;';
+      document.body.appendChild(overlay);
+    }
+    // Expose renderUsagePage globally
+    window.renderUsagePage = renderUsagePage;
+    renderUsagePage('player');
   } catch(e) { console.warn('Usage error:', e); }
 }
 
