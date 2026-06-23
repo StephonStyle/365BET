@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.10.01 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.10.02 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -3317,6 +3317,7 @@ function trackUsage() {
     // Save to server periodically
     if (usage[user][deviceKey].days[today].visits === 1 || usage[user][deviceKey].days[today].visits % 5 === 0) {
       const totalMs = usage[user][deviceKey].days[today].sessions.reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
+      const times = usage[user][deviceKey].days[today].sessions.map(function(ss){return new Date(ss.start).toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});});
       fetch(SB_URL+'/rest/v1/settlement_logs', {
         method:'POST',
         headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
@@ -3324,7 +3325,7 @@ function trackUsage() {
           user:user, device:dev.type, brand:dev.brand, date:today,
           visits:usage[user][deviceKey].days[today].visits,
           minutes:Math.round(totalMs/60000),
-          time:new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit'})
+          times:times
         })})
       }).catch(function(){});
     }
@@ -3348,9 +3349,7 @@ window.addEventListener('beforeunload', function(){
 
 async function showUsage() {
   try {
-    // Close admin modal and show full-page overlay
     document.getElementById('adminModal').classList.remove('show');
-    // Collect from local + server
     const allUsage = JSON.parse(localStorage.getItem('_usage_v2') || '{}');
     try {
       const sv = await sbGet('settlement_logs','?match_id=like._usage_%25&order=id.desc&limit=500');
@@ -3362,44 +3361,61 @@ async function showUsage() {
               const dk = (d.device||'PC') + '_' + (d.brand||'Unknown').replace(/[^a-zA-Z0-9]/g,'');
               if (!allUsage[d.user]) allUsage[d.user] = {};
               if (!allUsage[d.user][dk]) allUsage[d.user][dk] = {device:d.device||'PC', brand:d.brand||'Unknown', days:{}};
-              if (!allUsage[d.user][dk].days[d.date]) allUsage[d.user][dk].days[d.date] = {visits:0, sessions:[]};
+              if (!allUsage[d.user][dk].days[d.date]) allUsage[d.user][dk].days[d.date] = {visits:0, sessions:[], serverTimes:d.times||[]};
               allUsage[d.user][dk].days[d.date].visits = Math.max(allUsage[d.user][dk].days[d.date].visits, d.visits);
+              if (d.times && d.times.length > (allUsage[d.user][dk].days[d.date].serverTimes||[]).length) {
+                allUsage[d.user][dk].days[d.date].serverTimes = d.times;
+              }
             }
           } catch(ex) {}
         });
       }
     } catch(ex) {}
 
-    let rows = [];
-    Object.keys(allUsage).forEach(function(user){
-      Object.keys(allUsage[user]).forEach(function(dk){
-        const devInfo = allUsage[user][dk];
-        Object.keys(devInfo.days).forEach(function(date){
-          const day = devInfo.days[date];
-          const totalMs = (day.sessions||[]).reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
-          rows.push({user:user, device:devInfo.device, brand:devInfo.brand, date:date, visits:day.visits, mins:Math.round(totalMs/60000)});
-        });
-      });
-    });
-    rows.sort(function(a,b){return a.date < b.date ? 1 : a.date > b.date ? -1 : a.user.localeCompare(b.user);});
+    function fmtTime(ts) {
+      if (!ts) return '';
+      return new Date(ts).toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    }
 
-    let html = '<div style="background:var(--bg);min-height:100vh;padding:20px;font-size:14px;">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-    html += '<h2 style="margin:0;">📊 使用统计（按玩家+设备）</h2>';
-    html += '<span style="font-size:24px;cursor:pointer;color:var(--text2);padding:4px 12px;" onclick="this.parentElement.parentElement.remove();showAdmin()">✕</span>';
+    let html = '<div style="background:var(--bg);min-height:100vh;padding:16px;font-size:14px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
+    html += '<h2 style="margin:0;font-size:18px;">📊 使用统计（按玩家+设备）</h2>';
+    html += '<span style="font-size:22px;cursor:pointer;color:var(--text2);padding:4px 8px;" onclick="this.parentElement.parentElement.remove();showAdmin()">✕</span>';
     html += '</div>';
-    html += '<div style="overflow-x:auto;">';
-    html += '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
-    html += '<tr style="border-bottom:2px solid var(--border);background:var(--card2);"><th style="padding:8px 6px;text-align:left;">玩家</th><th style="padding:8px 6px;text-align:left;">设备</th><th style="padding:8px 6px;text-align:left;">品牌/浏览器</th><th style="padding:8px 6px;text-align:left;">日期</th><th style="padding:8px 6px;text-align:center;">访问</th><th style="padding:8px 6px;text-align:center;">时长</th></tr>';
-    rows.forEach(function(r, i){
-      const bg = i % 2 === 0 ? '' : 'background:var(--card2);';
-      html += `<tr style="border-bottom:1px solid var(--border);${bg}"><td style="padding:6px;font-weight:600;">${r.user}</td><td style="padding:6px;">${r.device}</td><td style="padding:6px;font-size:11px;">${r.brand}</td><td style="padding:6px;">${r.date}</td><td style="padding:6px;text-align:center;">${r.visits}次</td><td style="padding:6px;text-align:center;">${r.mins}分钟</td></tr>`;
-    });
-    if (rows.length === 0) html += '<tr><td colspan="6" style="padding:40px;text-align:center;color:var(--text3);">暂无数据</td></tr>';
-    html += '</table></div>';
-    html += '<div style="text-align:center;margin-top:16px;font-size:12px;color:var(--text3);">共 ' + rows.length + ' 条记录</div>';
+
+    const users = Object.keys(allUsage).sort();
+    if (users.length === 0) {
+      html += '<div style="text-align:center;padding:40px;color:var(--text3);">暂无数据</div>';
+    } else {
+      users.forEach(function(user){
+        html += `<div style="margin-bottom:16px;background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;">`;
+        html += `<div style="padding:10px 14px;font-weight:700;font-size:15px;background:var(--card2);">${user}</div>`;
+        Object.keys(allUsage[user]).forEach(function(dk){
+          const di = allUsage[user][dk];
+          html += `<div style="padding:4px 14px 10px;border-bottom:1px solid var(--border);">`;
+          html += `<div style="font-size:12px;color:var(--text2);margin:6px 0 4px;">📱 ${di.device} · ${di.brand}</div>`;
+          Object.keys(di.days).sort().reverse().forEach(function(date){
+            const day = di.days[date];
+            const totalMs = (day.sessions||[]).reduce(function(s,ss){return s + Math.max(0, (ss.end||Date.now()) - ss.start);}, 0);
+            const times = day.sessions.map(function(ss){return fmtTime(ss.start);}).filter(Boolean);
+            const serverTimes = day.serverTimes || [];
+            const allTimes = times.length > 0 ? times : serverTimes;
+            html += `<div style="margin:4px 0;padding:6px 8px;background:var(--bg2);border-radius:6px;">`;
+            html += `<div style="display:flex;justify-content:space-between;font-size:12px;">`;
+            html += `<span style="font-weight:600;">${date}</span>`;
+            html += `<span style="color:var(--text2);">${day.visits}次 · ${Math.round(totalMs/60000)}分钟</span>`;
+            html += `</div>`;
+            if (allTimes.length > 0) {
+              html += `<div style="font-size:11px;color:var(--text3);margin-top:4px;">登录时间: ${allTimes.join(' → ')}</div>`;
+            }
+            html += `</div>`;
+          });
+          html += `</div>`;
+        });
+        html += `</div>`;
+      });
+    }
     html += '</div>';
-    // Full page overlay
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;overflow-y:auto;';
     overlay.innerHTML = html;
