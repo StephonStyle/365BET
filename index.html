@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.11.03 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.11.04 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1175,13 +1175,14 @@ function restorePredFromLogs(){
     var m=M.find(function(x){return x.id===l.match_id;});if(!m)return;
     if(!m.settlement||typeof m.settlement!=='object')m.settlement={};
     var cur=m.settlement;
+    // Don't overwrite existing settlement data, only fill missing
     if(!cur.wdlPredictions)cur.wdlPredictions={};
-    if(data.pick)cur.wdlPredictions[uname]={pick:data.pick,stake:data.wdlStake||10};
+    if(data.pick&&!cur.wdlPredictions[uname])cur.wdlPredictions[uname]={pick:data.pick,stake:data.wdlStake||10};
     if(!cur.stakes)cur.stakes={};
-    if(data.scrStake)cur.stakes[uname]=data.scrStake;
-    // Also update P
+    if(data.scrStake&&!cur.stakes[uname])cur.stakes[uname]=data.scrStake;
+    // Also update P (only if no existing prediction data for this user)
     var idx=P.findIndex(function(p){return p.match_id===l.match_id&&p.user_name===uname;});
-    if(idx>=0){if(data.pick)P[idx].pick=data.pick;if(data.pick)P[idx].stake=data.wdlStake||10;}
+    if(idx>=0){if(data.pick&&!P[idx].pick)P[idx].pick=data.pick;if(data.pick&&!P[idx].stake)P[idx].stake=data.wdlStake||10;}
   });
 }
 // Sync WDL predictions stored in match.settlement.wdlPredictions into P array
