@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.11.01 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.11.02 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1456,8 +1456,8 @@ async function loadData(){
 function gs(m){
   if(m.settled) return{label:m.settlement?.type==='void'?'流局':'已结算',cls:m.settlement?.type==='void'?'流局':'已结算'};
   if(m.home_score!=null) return{label:'待结算',cls:'待结算'};
-  if(m.settlement?.live_home!==undefined) return{label:'🔴 进行中',cls:'待结算'};
-  if(!m.home_score&&Date.now()>m.date&&Date.now()-m.date<getMatchCutoff(m)) return{label:'🔴 进行中',cls:'待结算'};
+  if(m.settlement?.live_home!==undefined) return{label:'🔴 进行中',cls:'进行中'};
+  if(!m.home_score&&Date.now()>m.date&&Date.now()-m.date<getMatchCutoff(m)) return{label:'🔴 进行中',cls:'进行中'};
   if(Date.now()-m.date>=getMatchCutoff(m)) return{label:'待录入比分',cls:'待结算'};
   const u=cu();if(u&&getPred(m.id,u)) return{label:'已预测',cls:'已预测'};
   if(Date.now()>m.date-PREDICT_CUTOFF) return{label:'预测截止',cls:'预测截止'};
