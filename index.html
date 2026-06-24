@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.11.00 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.11.01 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1457,6 +1457,7 @@ function gs(m){
   if(m.settled) return{label:m.settlement?.type==='void'?'流局':'已结算',cls:m.settlement?.type==='void'?'流局':'已结算'};
   if(m.home_score!=null) return{label:'待结算',cls:'待结算'};
   if(m.settlement?.live_home!==undefined) return{label:'🔴 进行中',cls:'待结算'};
+  if(!m.home_score&&Date.now()>m.date&&Date.now()-m.date<getMatchCutoff(m)) return{label:'🔴 进行中',cls:'待结算'};
   if(Date.now()-m.date>=getMatchCutoff(m)) return{label:'待录入比分',cls:'待结算'};
   const u=cu();if(u&&getPred(m.id,u)) return{label:'已预测',cls:'已预测'};
   if(Date.now()>m.date-PREDICT_CUTOFF) return{label:'预测截止',cls:'预测截止'};
@@ -1520,6 +1521,7 @@ function getMatchCutoff(m){
   if(m.league==='世界杯'){
     var h=m.home||'',a=m.away||'';
     if(h.indexOf('组')>0||h.indexOf('1/8')>=0||h.indexOf('1/4')>=0||h.indexOf('半')>=0||h.indexOf('决赛')>=0||h.indexOf('季军')>=0) return 4*60*60*1000;
+    if(WC_TEAM_GROUP[h]||WC_TEAM_GROUP[a]||WC_TEAM_GROUP[CN_RANK[h]]||WC_TEAM_GROUP[CN_RANK[a]]) return PAST_CUTOFF;
     return 2.5*60*60*1000;
   }
   return PAST_CUTOFF;
@@ -1566,8 +1568,8 @@ function renderPast(){
             (pen?'<div style="font-size:10px;padding:1px 0;"><span style="color:var(--red);">未预测扣分:-'+pen+'</span></div>':'')+
           '</div>';
         }).join('')+'</div></div>';
-    }else if(mp.length>0&&m.home_score!=null){
-      // Match has ended but not settled - show predictions
+    }else if(mp.length>0&&(m.home_score!=null||Date.now()>m.date-PREDICT_CUTOFF)){
+      // Match in progress or ended but not settled - show predictions
       plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 预测详情<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:4px;">'+mp.map(x=>{
         return '<span style="background:var(--card2);padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;"><span style="font-weight:600;font-size:11px;">'+x.user_name+' <span style="font-weight:800;font-size:13px;color:var(--text);">'+(x.pick?({H:'胜',D:'平',A:'负'}[x.pick]||x.pick):(x.home_score!=null?x.home_score+':'+x.away_score:''))+'</span></span></span>';
       }).join('')+'</div></div>';
