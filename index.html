@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.11.04 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.11.05 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1516,15 +1516,14 @@ function renderMatches(){
   }); el.innerHTML=parts.join('');
 }
 
-const PAST_CUTOFF = 4 * 60 * 60 * 1000;
-// 世界杯小组赛2.5h自动结算, 淘汰赛4h, 手动模式不过期
+const PAST_CUTOFF = 130 * 60 * 1000; // 2h10min = 开球后2h10min跳历史页，管理员录入比分即结算
 function getMatchCutoff(m){
   if(m.settlement?.manual_settle) return Infinity;
   if(m.league==='世界杯'){
     var h=m.home||'',a=m.away||'';
-    if(h.indexOf('组')>0||h.indexOf('1/8')>=0||h.indexOf('1/4')>=0||h.indexOf('半')>=0||h.indexOf('决赛')>=0||h.indexOf('季军')>=0) return 4*60*60*1000;
+    if(h.indexOf('组')>0||h.indexOf('1/8')>=0||h.indexOf('1/4')>=0||h.indexOf('半')>=0||h.indexOf('决赛')>=0||h.indexOf('季军')>=0) return PAST_CUTOFF;
     if(WC_TEAM_GROUP[h]||WC_TEAM_GROUP[a]||WC_TEAM_GROUP[CN_RANK[h]]||WC_TEAM_GROUP[CN_RANK[a]]) return PAST_CUTOFF;
-    return 2.5*60*60*1000;
+    return PAST_CUTOFF;
   }
   return PAST_CUTOFF;
 }
