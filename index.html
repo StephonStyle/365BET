@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.11.02 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.11.03 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1389,6 +1389,7 @@ async function loadData(){
     M = (matches||[]).map(m => { if(typeof m.settlement === 'string') try{ m.settlement=JSON.parse(m.settlement); }catch(e){} return m; });
     var _sp=await sbGet('predictions','?order=id');if(_sp)_sp.forEach(function(p){var ex=P.findIndex(function(x){return x.match_id===p.match_id&&x.user_name===p.user_name;});if(ex>=0)P[ex]=p;else P.push(p);});
     L = await sbGet('settlement_logs','?order=created_at.desc');
+    restorePredFromLogs();
     await loadAvatars();
     await settleAll();
     syncWDLFromMatches();
@@ -2237,8 +2238,9 @@ function startPoll(){
       const mRaw = await sbGet('matches','?order=date');
       M = (mRaw||[]).map(m => { if(typeof m.settlement === 'string') try{ m.settlement=JSON.parse(m.settlement); }catch(e){} return m; });
       var _sp=await sbGet('predictions','?order=id');if(_sp)_sp.forEach(function(p){var ex=P.findIndex(function(x){return x.match_id===p.match_id&&x.user_name===p.user_name;});if(ex>=0)P[ex]=p;else P.push(p);});
-      syncWDLFromMatches();
       L = await sbGet('settlement_logs','?order=created_at.desc');
+      restorePredFromLogs();
+      syncWDLFromMatches();
       await loadAvatars();
       await settleAll();
       if(!loaded) loaded=true;
