@@ -399,7 +399,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.11.07 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.11.08 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1570,16 +1570,10 @@ function renderPast(){
           '</div>';
         }).join('')+'</div></div>';
     }else if(mp.length>0&&(m.home_score!=null||Date.now()>m.date-PREDICT_CUTOFF)){
-      // Match in progress or ended but not settled - show predictions with WDL + score + stakes
-      var wdlLbl={'H':'胜','D':'平','A':'负'},wdlClr={'H':'var(--primary)','D':'var(--gold)','A':'var(--red)'};
-      var stks=(s&&s.stakes)||{},wdlP=(s&&s.wdlPredictions)||{},ds=m.stake||10;
-      plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 预测详情<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:4px;">'+mp.map(x=>{
-        var wStk=(wdlP[x.user_name]&&wdlP[x.user_name].stake)||x.stake||'';
-        var w=x.pick?('<span style="font-weight:700;font-size:14px;color:'+(wdlClr[x.pick]||'var(--text)')+';">'+(wdlLbl[x.pick]||x.pick)+'</span>'+(wStk?' <span style="font-size:10px;color:var(--text2);">'+wStk+'分</span>':'')):'';
-        var sStk=stks[x.user_name]||'';
-        var sc=x.home_score!=null?('<div style="font-size:12px;color:var(--text);">'+x.home_score+':'+x.away_score+(sStk?' <span style="font-size:10px;color:var(--text2);">'+sStk+'分</span>':'')+'</div>'):'';
-        return '<span style="background:var(--card2);padding:5px 8px;border-radius:6px;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-weight:600;font-size:11px;">'+x.user_name+'</span>'+(w?('<div>'+w+'</div>'):'')+sc+'</span>';
-      }).join('')+'</div></div>';
+      // 未结算: 用和当前页一样的预测卡片样式
+      var wdlP=(s&&s.wdlPredictions)||{},stks=(s&&s.stakes)||{},ds=m.stake||10,so=typeof m.score_odds=='string'?JSON.parse(m.score_odds):(m.score_odds||{});
+      var merged={};mp.forEach(function(x){if(!merged[x.user_name])merged[x.user_name]={};var e=merged[x.user_name];e.user_name=x.user_name;if(x.pick)e.pick=x.pick;if(x.home_score!=null){e.home_score=x.home_score;e.away_score=x.away_score}if(x.stake)e.stake=x.stake;var w=wdlP[x.user_name];if(w&&w.pick&&!e.pick)e.pick=w.pick;});var mp2=Object.values(merged);
+      plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 预测详情<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-top:4px;">'+mp2.map(function(x){var idx=USERS.indexOf(x.user_name);var bg=COLORS[idx]+'15',cl=COLORS[idx];var pk=x.pick||(wdlP[x.user_name]&&wdlP[x.user_name].pick);var wOd=pk==='H'?(m.odds_h||2):pk==='D'?(m.odds_d||3):(m.odds_a||3);var wSk=(wdlP[x.user_name]&&wdlP[x.user_name].stake)||x.stake||ds;var sSk=stks[x.user_name]||ds;var sc=x.home_score!=null?x.home_score+':'+x.away_score:'';var sOd=so[sc]||'';var pickLabels={'H':'胜','D':'平','A':'负'};var wdlC={'H':'var(--primary)','D':'var(--gold)','A':'var(--red)'};var scC=x.home_score!=null?(x.home_score>x.away_score?'var(--primary)':x.home_score<x.away_score?'var(--red)':'var(--gold)'):'var(--text2)';return'<div style="background:'+bg+';border:1px solid '+cl+'33;border-radius:10px;padding:6px 4px;text-align:center;"><div style="display:flex;align-items:center;justify-content:center;gap:3px;margin-bottom:3px;"><span style="width:20px;height:20px;border-radius:50%;background:'+cl+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">'+ac(x.user_name)+'</span><span style="font-size:11px;font-weight:600;">'+x.user_name+'</span></div>'+(pk?'<div style="font-size:14px;font-weight:800;color:'+wdlC[pk]+';">'+pickLabels[pk]+'</div><div style="font-size:9px;color:var(--text2);"><span style="font-weight:700;">'+wSk+'</span>@'+wOd.toFixed(2)+'</div>':'')+(sc?'<div style="font-size:14px;font-weight:800;color:'+scC+';margin-top:2px;">'+sc+'</div><div style="font-size:9px;color:var(--text2);"><span style="font-weight:700;">'+sSk+'</span>'+(sOd?'@'+sOd:'')+'</div>':'')+'</div>';}).join('')+'</div></div>';
     }
     let act='';
     if(isAdmin&&m.settled) act=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;"><input type="number" min="0" max="20" id="rh_${m.id}_p" value="${m.home_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><span style="color:var(--text2);font-weight:700;">:</span><input type="number" min="0" max="20" id="ra_${m.id}_p" value="${m.away_score}" style="width:40px;padding:4px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);text-align:center;font-size:14px;"><button class="btn btn-gold btn-small" onclick="adminEditResultPast('${m.id}')">修改</button></div>`;
