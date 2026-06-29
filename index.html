@@ -6,6 +6,17 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<script>
+// 强制清除旧 Service Worker 缓存
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    regs.forEach(function(reg) { reg.update(); });
+  });
+  caches.keys().then(function(ks) {
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.05';}).map(function(k){return caches.delete(k);}));
+  });
+}
+</script>
 <title>365BET</title>
 <style>
 /* 开屏闪图 */
@@ -399,7 +410,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.11.09 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.12.06 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1516,7 +1527,7 @@ function renderMatches(){
   }); el.innerHTML=parts.join('');
 }
 
-const PAST_CUTOFF = 130 * 60 * 1000; // 2h10min = 开球后2h10min跳历史页，管理员录入比分即结算
+const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 4h = 开球后4小时跳历史页，管理员录入比分即结算
 function getMatchCutoff(m){
   if(m.settlement?.manual_settle) return Infinity;
   if(m.league==='世界杯'){
@@ -1530,7 +1541,7 @@ function getMatchCutoff(m){
 
 function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
-  let f=M.filter(function(m){return m.settled||(!m.home_score&&Date.now()-m.date>=getMatchCutoff(m));});
+  let f=M.filter(function(m){return m.settled||(!m.home_score&&Date.now()-m.date>=getMatchCutoff(m))||(m.home_score!=null&&!m.settled);});
   f.sort((a,b)=>b.date-a.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
   var lastRound=0,parts2=[];
@@ -2151,7 +2162,7 @@ function selStake(btn,v){
   btn.closest('.stake-row').querySelectorAll('.stake-btn').forEach(function(b){b.classList.remove('active','stake-set');});
   btn.classList.add('active');
 }
-function subPredModal(){
+async function subPredModal(){
   var mid=PRED_CURRENT_MID; if(!mid)return;
   var u=cu(); if(!u){showToast('请先选择身份');showUserSelect();return;}
   var m=M.find(function(x){return x.id===mid;});if(!m||m.settled||m.home_score!=null){showToast('比赛已结束');return;}
@@ -2167,20 +2178,21 @@ function subPredModal(){
   var score=scrEl.querySelector('.s-lg').textContent;
   var parts=score.split(':');var h=parseInt(parts[0]),a=parseInt(parts[1]);
   if(isNaN(h)||isNaN(a)){showToast('无效比分');return;}
-  // Save score prediction
+  // Save score + WDL to predictions table (持久化)
   try{
     var e=getPred(mid,u);
+    var predData={home_score:h,away_score:a,pick:pick,wdlStake:parseInt(sk)};
     if(e){
-      ft(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{
+      await ft(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{
         method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-        body:JSON.stringify({home_score:h,away_score:a})
+        body:JSON.stringify(predData)
       });
-      e.home_score=h;e.away_score=a;
+      e.home_score=h;e.away_score=a;e.pick=pick;e.wdlStake=parseInt(sk);
     }else{
-      sbPost('predictions',{match_id:mid,user_name:u,home_score:h,away_score:a});
-      P.push({match_id:mid,user_name:u,home_score:h,away_score:a});
+      await sbPost('predictions',predData);
+      P.push({match_id:mid,user_name:u,home_score:h,away_score:a,pick:pick,wdlStake:parseInt(sk)});
     }
-  }catch(ex){}
+  }catch(ex){showToast('提交失败');return;}
   // Save WDL + stakes
   try{
     var cur=m.settlement?(typeof m.settlement==='string'?JSON.parse(m.settlement):m.settlement):{};
@@ -2188,10 +2200,10 @@ function subPredModal(){
     cur.wdlPredictions[u]={pick:pick,stake:parseInt(sk)};
     if(!cur.stakes) cur.stakes={};
     cur.stakes[u]=parseInt(scrSk);
-    ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});
+    await ft(SB_URL+"/rest/v1/matches?id=eq."+mid,{method:"PATCH",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({settlement:JSON.stringify(cur)})});
     m.settlement=cur;
     // Backup prediction to settlement_logs (防丢失)
-    ft(SB_URL+'/rest/v1/settlement_logs',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({match_id:mid,detail:'prediction_backup '+u+' '+JSON.stringify({pick:pick,wdlStake:parseInt(sk),score:h+':'+a,scrStake:parseInt(scrSk)})})});
+    await ft(SB_URL+'/rest/v1/settlement_logs',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({match_id:mid,detail:'prediction_backup '+u+' '+JSON.stringify({pick:pick,wdlStake:parseInt(sk),score:h+':'+a,scrStake:parseInt(scrSk)})})});
     var idx=P.findIndex(function(x){return x.match_id===mid&&x.user_name===u;});
     if(idx>=0){P[idx].pick=pick;P[idx].stake=parseInt(sk);}else{P.push({match_id:mid,user_name:u,pick:pick,stake:parseInt(sk)});}
     renderAll();
@@ -3065,9 +3077,13 @@ function renderKnockout() {
   let cIdx = rounds.findIndex(r => r.key === BR_STATE.phase);
   if (cIdx < 0) cIdx = 0;
   resetUsedThird();
+  const dividers = {r32:'32进16',r16:'16进8',qf:'8进4'};
   for (let i = 0; i <= cIdx && i < rounds.length; i++) {
     const r = rounds[i], isCur = i === cIdx;
     const ps = rounds.slice(0, i).map(x => x.store);
+    if (dividers[r.key]) {
+      html += `<div style="display:flex;align-items:center;gap:12px;margin:18px 0 8px;"><div style="flex:1;height:2px;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-dim));border-radius:2px;"></div><span style="font-size:14px;font-weight:800;color:var(--gold);white-space:nowrap;letter-spacing:2px;">${dividers[r.key]}</span><div style="flex:1;height:2px;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-dim));border-radius:2px;"></div></div>`;
+    }
     html += `<div class="br-round"><div class="br-round-title">${r.label}</div>`;
     r.data.forEach(m => {
       let hT, aT;
