@@ -1,16 +1,16 @@
-const CACHE = '365BET-v3.0.1';
+const CACHE = '365BET-v3.12.08';
 self.addEventListener('install',function(e){
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(['/365BET/']);}));
 });
 self.addEventListener('activate',function(e){
   e.waitUntil(
-    caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));})
+    caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));})
     .then(function(){return clients.claim();})
   );
 });
 self.addEventListener('fetch',function(e){
+  // Network first — always try server, fallback to cache if offline
   e.respondWith(
-    caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(r2){return caches.open(CACHE).then(function(c){c.put(e.request,r2.clone());return r2;});});})
+    fetch(e.request).catch(function(){return caches.match(e.request);})
   );
 });

@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.05';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.08';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -410,7 +410,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.12.06 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.12.08 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2178,21 +2178,23 @@ async function subPredModal(){
   var score=scrEl.querySelector('.s-lg').textContent;
   var parts=score.split(':');var h=parseInt(parts[0]),a=parseInt(parts[1]);
   if(isNaN(h)||isNaN(a)){showToast('无效比分');return;}
-  // Save score + WDL to predictions table (持久化)
+  // Save score to predictions table (持久化，pick/wdlStake存在match.settlement.wdlPredictions中)
   try{
     var e=getPred(mid,u);
-    var predData={home_score:h,away_score:a,pick:pick,wdlStake:parseInt(sk)};
     if(e){
       await ft(SB_URL+'/rest/v1/predictions?match_id=eq.'+mid+'&user_name=eq.'+encodeURIComponent(u),{
         method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-        body:JSON.stringify(predData)
+        body:JSON.stringify({home_score:h,away_score:a})
       });
       e.home_score=h;e.away_score=a;e.pick=pick;e.wdlStake=parseInt(sk);
     }else{
-      await sbPost('predictions',predData);
+      await sbPost('predictions',{match_id:mid,user_name:u,home_score:h,away_score:a});
       P.push({match_id:mid,user_name:u,home_score:h,away_score:a,pick:pick,wdlStake:parseInt(sk)});
     }
-  }catch(ex){showToast('提交失败');return;}
+  }catch(ex){
+    if(!e&&ex.message&&ex.message.includes('23505')){showToast('你已经提交过预测了！');return;}
+    showToast('提交失败');return;
+  }
   // Save WDL + stakes
   try{
     var cur=m.settlement?(typeof m.settlement==='string'?JSON.parse(m.settlement):m.settlement):{};
