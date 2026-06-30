@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.08';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.09';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -410,7 +410,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.12.08 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.12.09 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1295,7 +1295,9 @@ async function settleMatch(m){
   const mr=h>a?'H':h<a?'A':'D';
   const wdlDetails={};
   ps.filter(p=>p.pick).forEach(p=>{
-    const correct=p.pick===mr;const stk=p.stake||defStake;
+    const correct=p.pick===mr;
+    const wdlInfo=cur.wdlPredictions&&cur.wdlPredictions[p.user_name];
+    const stk=(wdlInfo&&wdlInfo.stake)||p.stake||defStake;
     const odds=p.pick==='H'?(m.odds_h||2.0):p.pick==='D'?(m.odds_d||3.0):(m.odds_a||3.0);
     const payout=correct?Math.round(stk*(odds-1)*10)/10:-stk;
     wdlDetails[p.user_name]={pick:p.pick,result:mr,stake:stk,odds:Math.round(odds*100)/100,correct,payout};
@@ -1314,7 +1316,7 @@ async function settleMatch(m){
     if (pAmt) { penalties[u] = pAmt; indv[u] = (indv[u]||0) - pAmt; }
   });
   const anyWin=wnrs.length>0||Object.values(wdlDetails).some(d=>d.correct);
-  const s={type:anyWin?'settled':'void',winners:wnrs,losers:losrs,totalPot:wnrs.length>0?losrs.reduce((s,n)=>s+(stakes[n]||defStake),0):0,individual:indv,scoreDetails:scDetails,wdlDetails:wdlDetails,penalties};
+  const s={type:anyWin?'settled':'void',winners:wnrs,losers:losrs,totalPot:wnrs.length>0?losrs.reduce((s,n)=>s+(stakes[n]||defStake),0):0,individual:indv,scoreDetails:scDetails,wdlDetails:wdlDetails,penalties,wdlPredictions:cur.wdlPredictions||{},stakes:cur.stakes||{}};
 
   await ft(SB_URL+'/rest/v1/matches?id=eq.'+m.id,{
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
@@ -1403,8 +1405,8 @@ async function loadData(){
     L = await sbGet('settlement_logs','?order=created_at.desc');
     restorePredFromLogs();
     await loadAvatars();
-    await settleAll();
     syncWDLFromMatches();
+    await settleAll();
     // Create 2 demo settled matches if none exist
     if(!M.some(m=>m.settled)){
       try{
