@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.16';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.17';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -410,7 +410,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.12.16 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.12.17 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1464,7 +1464,7 @@ async function loadData(){
 
 	// ======================== ROUND DIVIDERS ========================
 	const ROUND_TS = [0, 1781510400000, 1781942400000, 1782550800000, 1782979200000, 1783353600000, 1783699200000, 1784044800000, 9999999999999];
-	const ROUND_DIV = {2:'⚡ 第一轮结算日',3:'⚡ 第二轮结算日',4:'🏆 小组赛完结 · 结算日',6:'🏆 1/8决赛结算日'};
+	const ROUND_DIV = {2:'⚡ 第一轮结算日',3:'⚡ 第二轮结算日',4:'🏆 1/16决赛',5:'🏆 1/8决赛',6:'🏆 1/4决赛',7:'🏆 半决赛',8:'🏆 决赛'};
 	function getMatchRound(m){ for(var i=1;i<ROUND_TS.length;i++) if(m.date<ROUND_TS[i]) return i; return 8; }
 
 // ======================== RENDER ========================
