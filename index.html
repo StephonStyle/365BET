@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.26';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.27';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -410,7 +410,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.12.26 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.12.27 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1338,6 +1338,14 @@ async function settleAll(){
 
 // ======================== LOAD DATA ========================
 async function loadData(){
+  // === 本地缓存 (5分钟) 减少Supabase带宽 ===
+  var _ck='bet365_cache',_cc=localStorage.getItem(_ck),_ct=localStorage.getItem(_ck+'_t');
+  if(_cc&&_ct&&Date.now()-parseInt(_ct)<300000){
+    try{var _d=JSON.parse(_cc);M=_d.m||[];P=_d.p||[];L=_d.l||[];loaded=true;renderAll();
+      (function a(){setTimeout(function(){if(!loaded)return;(async function(){var s=false;for(var i=0;i<M.length;i++){var m=M[i];if(m.home_score!=null&&m.away_score!=null&&!m.settled){var c=getMatchCutoff(m);if(Date.now()-m.date>=c){try{await settleMatch(m);s=true;}catch(e){console.error('自动结算失败',m.id,e);}}}}if(s)renderAll();})().then(a).catch(a);},60000)})();
+      return;
+    }catch(e){}
+  }
   try{
     let matches = await sbGet('matches','?order=date');
     if(!matches||matches.length===0){
@@ -1456,6 +1464,7 @@ async function loadData(){
         })().then(autoSettleLoop).catch(autoSettleLoop);
       }, 60000);
     })();
+    try{localStorage.setItem('bet365_cache',JSON.stringify({m:M,p:P,l:L}));localStorage.setItem('bet365_cache_t',Date.now());}catch(e){}
   }catch(e){
     document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败: '+e.message+'<br><span style="font-size:11px;color:var(--text2);">请截图发给管理员</span></p></div>';
     console.error('loadData error:', e);
@@ -1853,6 +1862,7 @@ async function submitPred(mid){
     mx.settlement=cur;
   }
   renderAll();showToast(`✅ 已${existing?'修':''}提交 ${m.home} ${h}-${a} ${m.away}`);
+  try{localStorage.removeItem('bet365_cache');}catch(e){}
 }
 function selectStake(mid,v){
   const btns=document.querySelectorAll('#stk_'+mid+' .stake-btn');
@@ -1873,6 +1883,7 @@ async function enterResult(mid){
   });
   m.home_score=h;m.away_score=a;
   await settleMatch(m);renderAll();showToast(`✅ ${m.home} ${h}-${a} ${m.away} 已录入并结算`);
+  try{localStorage.removeItem('bet365_cache');}catch(e){}
   // Refresh logs
   L = await sbGet('settlement_logs','?order=created_at.desc');
 }
@@ -1890,6 +1901,7 @@ async function adminEditResult(mid){
   m.settled=false;m.settlement=null;m.home_score=h;m.away_score=a;
   await settleMatch(m);
   renderAll();showToast(`✅ ${m.home} ${h}-${a} ${m.away} 已修改并重新结算`);
+  try{localStorage.removeItem('bet365_cache');}catch(e){}
   L = await sbGet('settlement_logs','?order=created_at.desc');
 }
 
@@ -1905,6 +1917,7 @@ async function enterResultPast(mid){
   });
   m.home_score=h;m.away_score=a;
   await settleMatch(m);renderAll();showToast(`✅ ${m.home} ${h}-${a} ${m.away} 已录入并结算`);
+  try{localStorage.removeItem('bet365_cache');}catch(e){}
   L = await sbGet('settlement_logs','?order=created_at.desc');
 }
 
@@ -1921,6 +1934,7 @@ async function adminEditResultPast(mid){
   m.settled=false;m.settlement=null;m.home_score=h;m.away_score=a;
   await settleMatch(m);
   renderAll();showToast(`✅ ${m.home} ${h}-${a} ${m.away} 已修改并重新结算`);
+  try{localStorage.removeItem('bet365_cache');}catch(e){}
   L = await sbGet('settlement_logs','?order=created_at.desc');
 }
 
@@ -1953,6 +1967,7 @@ if(!h||!a){showToast('请输入球队名称');return;}
   M.push(nm);
   document.getElementById('addHome').value='';document.getElementById('addAway').value='';document.getElementById('addDate').value='';
   renderAll();showToast(`✅ 已添加 ${h} vs ${a}`);
+  try{localStorage.removeItem('bet365_cache');}catch(e){}
 }
 
 // ======================== UI ========================
@@ -2152,6 +2167,7 @@ function showPredModal(mid){
   var scrDiv=document.getElementById('scrResult');
   if(scrDiv){scrDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+cs+'分 '+score+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
   renderAll();showToast('✅ 已提交比分预测 '+score);
+  try{localStorage.removeItem('bet365_cache');}catch(e){}
 }
 function closePredModal(){ 
 document.getElementById('predModal').classList.remove('show');document.body.style.overflow='';}
