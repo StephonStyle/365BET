@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.27';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.12.28';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -410,7 +410,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.12.27 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.12.28 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -422,8 +422,8 @@ body {
 
 <script>
 // ======================== SUPABASE REST ========================
-const SB_URL = 'https://dpfdndvxhsbdngvypoie.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwZmRuZHZ4aHNiZG5ndnlwb2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjg4NDIsImV4cCI6MjA5MzgwNDg0Mn0.Np3v76r6q9sfu0LsP82UqQmRQH8tVhaF0G2fzlqYoeQ';
+const SB_URL = 'https://ndixftdwpufamhrxmlfw.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kaXhmdGR3cHVmYW1ocnhtbGZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMjcyMzksImV4cCI6MjA5ODYwMzIzOX0.Qz8PhttmbqfOY9NoliTlBXFvJDzI0WFSMeWQvRwf4d4';
 
 async function sbGet(table, opts='') {
   const r = await Promise.race([
