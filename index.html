@@ -2267,7 +2267,16 @@ async function submitNewPred(mid){
     m.settlement=cur;
     await ft(SB_URL+'/rest/v1/settlement_logs',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({match_id:mid,detail:'newpred_backup '+u+' '+JSON.stringify({ht:{pick:htPick,stake:htSk},wt:{pick:wtPick,stake:wtSk}})})});
     renderAll();showToast('✅ 新预测已提交');
-    var _sb=document.querySelector('#newPredModalContent .btn.btn-gold');if(_sb){_sb.textContent='✅ 已提交';_sb.onclick=function(){closeNewPredModal();};_sb.className='btn';}
+    var _mc=document.getElementById('newPredModalContent');
+    if(_mc){
+      var _htl={HH:'主-主',HD:'主-平',HA:'主-客',DH:'平-主',DD:'平-平',DA:'平-客',AH:'客-主',AD:'客-平',AA:'客-客'};
+      var _wtl={H_ET:'主加时',H_PK:'主点球',A_ET:'客加时',A_PK:'客点球'};
+      var _h='';
+      if(htPick)_h+='<div style="font-size:14px;color:var(--gold);margin:12px 0 8px;padding:12px;background:var(--card2);border-radius:8px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 半全场：'+_htl[htPick]+' <span style="color:var(--text2);font-weight:700;margin-left:8px;">'+htSk+'分</span></div>';
+      if(wtPick)_h+='<div style="font-size:14px;color:var(--gold);margin:8px 0 12px;padding:12px;background:var(--card2);border-radius:8px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 获胜时间：'+_wtl[wtPick]+' <span style="color:var(--text2);font-weight:700;margin-left:8px;">'+wtSk+'分</span></div>';
+      _h+='<div style="display:flex;gap:8px;justify-content:center;"><button class="btn btn-small" style="background:var(--red);color:#fff;" onclick="deleteNewPred(\''+mid+'\');closeNewPredModal();">删除</button><button class="btn" onclick="closeNewPredModal()">关闭</button></div>';
+      _mc.innerHTML=_h;
+    }
     try{localStorage.removeItem("bet365_cache");}catch(e){}
   }catch(ex){showToast('提交失败');console.error(ex);}
 }
