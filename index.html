@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.17';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.18';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -411,7 +411,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.13.17 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.13.18 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2139,7 +2139,7 @@ function showPredModal(mid){
   var wtPred=wtState.wintimePredictions&&wtState.wintimePredictions[u];
   var wtOdds=wtState.wintimeOdds||{};
   var wtLabels={H_ET:m.home+' 加时胜',A_ET:m.away+' 加时胜',H_PK:m.home+' 点球胜',A_PK:m.away+' 点球胜'};
-  var wtStake=wtPred?wtPred.stake:10;
+  var wtStake=wtPred?wtPred.stake:50;
   var wtAllowedInitial=p&&p.home_score!=null&&canPredictWintime(currentPick,p.home_score,p.away_score);
   var wdlPred=currentPick?'<div style="font-size:12px;color:var(--gold);margin:4px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+wdlStake+'分 '+pl[currentPick]+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>':'';
   var wtPredHtml=(wtPred&&wtAllowedInitial)?'<div style="font-size:12px;color:var(--gold);margin:4px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+wtPred.stake+'分 '+wtLabels[wtPred.pick]+'</div>':'';
@@ -2174,7 +2174,7 @@ function showPredModal(mid){
     '<div id="scrResult" style="min-height:36px;"></div>'+
     '<div style="font-size:14px;font-weight:700;margin:12px 0 6px;text-align:center;">加时 / 点球</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">'+wtItem('H_ET')+wtItem('A_ET')+wtItem('H_PK')+wtItem('A_PK')+'</div>'+
-    '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="wt_'+mid+'">'+[10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===wtStake?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div><button class="btn btn-primary" onclick="subPredModal()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button></div>'+
+    '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="wt_'+mid+'">'+[0,50].map(function(v){return '<span class="stake-btn'+(v===0?'':' active')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div></div>'+
     '<div id="wtResult" style="min-height:36px;">'+wtPredHtml+'</div>';
   document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
   	  if(isAdmin&&!m.settled&&m.home_score==null){
