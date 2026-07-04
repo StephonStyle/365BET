@@ -2197,7 +2197,7 @@ function renderNewPredDisplay(m,u){
 }
 function closeNewPredModal(){document.getElementById('newPredModal').classList.remove('show');document.body.style.overflow='';}
 function isKnockout(m){return m.league==='世界杯'&&getMatchRound(m)>=5;}
-function showNewPredModal(btn){try{
+function showNewPredModal(btn){
   var mid=btn.dataset.mid;var u=cu();if(!u){showToast('请先选择身份');showUserSelect();return;}
   var m=M.find(function(x){return x.id===mid;});if(!m)return;
   var cur=m.settlement?(typeof m.settlement==='string'?JSON.parse(m.settlement):m.settlement):{};
@@ -2233,7 +2233,6 @@ function showNewPredModal(btn){try{
     '<button class="btn btn-gold" style="width:100%;margin-top:10px;padding:10px;font-size:14px;" onclick="submitNewPred(mid)">提交新预测</button>';
   document.getElementById('newPredModal').classList.add('show');document.body.style.overflow='hidden';
 }
-}catch(e){alert("新预测错误: "+e.message);}
 function selectNewBtn(el){
   el.parentNode.querySelectorAll('.score-item-lg').forEach(function(b){b.classList.remove('active');});
   el.classList.add('active');
