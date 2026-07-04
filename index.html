@@ -2269,8 +2269,8 @@ async function submitNewPred(mid){
     renderAll();showToast('✅ 新预测已提交');
     var _mc=document.getElementById('newPredModalContent');
     if(_mc){
-      var _htl={HH:'主-主',HD:'主-平',HA:'主-客',DH:'平-主',DD:'平-平',DA:'平-客',AH:'客-主',AD:'客-平',AA:'客-客'};
-      var _wtl={H_ET:'主加时',H_PK:'主点球',A_ET:'客加时',A_PK:'客点球'};
+      var _hn=m.home,_an=m.away;var _htl={HH:_hn+'-'+_hn,HD:_hn+'-平',HA:_hn+'-'+_an,DH:'平-'+_hn,DD:'平-平',DA:'平-'+_an,AH:_an+'-'+_hn,AD:_an+'-平',AA:_an+'-'+_an};
+      var _wtl={H_ET:_hn+' 加时胜',H_PK:_hn+' 点球胜',A_ET:_an+' 加时胜',A_PK:_an+' 点球胜'};
       var _h='';
       if(htPick)_h+='<div style="font-size:14px;color:var(--gold);margin:12px 0 8px;padding:12px;background:var(--card2);border-radius:8px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 半全场：'+_htl[htPick]+' <span style="color:var(--text2);font-weight:700;margin-left:8px;">'+htSk+'分</span></div>';
       if(wtPick)_h+='<div style="font-size:14px;color:var(--gold);margin:8px 0 12px;padding:12px;background:var(--card2);border-radius:8px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 获胜时间：'+_wtl[wtPick]+' <span style="color:var(--text2);font-weight:700;margin-left:8px;">'+wtSk+'分</span></div>';
