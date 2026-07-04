@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.15';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.16';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -411,7 +411,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.13.15 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.13.16 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2278,6 +2278,7 @@ function canPickWintimeNow(){
 }
 function clearWtSelection(){
   document.querySelectorAll('#predModalContent .wt-item-lg.active').forEach(function(b){b.classList.remove('active');});
+  var _wr=document.getElementById('wtResult');if(_wr)_wr.innerHTML='';
 }
 function selWt(el){
   if(!canPickWintimeNow()){
