@@ -2229,7 +2229,7 @@ function showNewPredModal(btn){
       sg(wtl.H_PK,wto.H_PK,wtSel==='H_PK')+sg(wtl.A_PK,wto.A_PK,wtSel==='A_PK')+
     '</div>'+
     '<div class="stake-row">'+[0,10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(wtStk===v?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div>'+
-    (isAdmin?'<button class="btn btn-outline" style="width:100%;margin:8px 0;padding:6px;" onclick="saveOdds(mid)">保存赔率</button>':'')+
+    (isAdmin?'<button class="btn btn-outline" style="width:100%;margin:8px 0;padding:6px;" data-mid="'+mid+'" onclick="saveOdds(this)">保存赔率</button>':'')+
     '<button class="btn btn-gold" style="width:100%;margin-top:10px;padding:10px;font-size:14px;" onclick="submitNewPred(mid)">提交新预测</button>';
   document.getElementById('newPredModal').classList.add('show');document.body.style.overflow='hidden';
 }
@@ -2289,8 +2289,8 @@ function deleteNewPred(mid){
   m.settlement=cur;renderAll();showToast('已删除');
   try{localStorage.removeItem("bet365_cache");}catch(e){}
 }
-async function saveOdds(mid){
-  var m=M.find(function(x){return x.id===mid;});if(!m)return;
+async function saveOdds(btn){
+  var mid=btn.dataset.mid;var m=M.find(function(x){return x.id===mid;});if(!m)return;
   var cur=m.settlement?(typeof m.settlement==='string'?JSON.parse(m.settlement):m.settlement):{};
   if(!cur.htftOdds)cur.htftOdds={};if(!cur.wintimeOdds)cur.wintimeOdds={};
   ['HH','HD','HA','DH','DD','DA','AH','AD','AA'].forEach(function(k,i){
