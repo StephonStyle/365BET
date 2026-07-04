@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.06';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.07';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -417,7 +417,7 @@ body {
   </div>
 </div><div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.13.06 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.13.07 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2266,7 +2266,8 @@ async function submitNewPred(mid){
     await ft(SB_URL+'/rest/v1/matches?id=eq.'+mid,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({settlement:JSON.stringify(cur)})});
     m.settlement=cur;
     await ft(SB_URL+'/rest/v1/settlement_logs',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({match_id:mid,detail:'newpred_backup '+u+' '+JSON.stringify({ht:{pick:htPick,stake:htSk},wt:{pick:wtPick,stake:wtSk}})})});
-    closeNewPredModal();renderAll();showToast('✅ 新预测已提交');
+    renderAll();showToast('✅ 新预测已提交');
+    var _sb=document.querySelector('#newPredModalContent .btn.btn-gold');if(_sb){_sb.textContent='✅ 已提交';_sb.onclick=function(){closeNewPredModal();};_sb.className='btn';}
     try{localStorage.removeItem("bet365_cache");}catch(e){}
   }catch(ex){showToast('提交失败');console.error(ex);}
 }
