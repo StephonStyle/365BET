@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.19';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.18';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -411,7 +411,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.13.19 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.13.18 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2174,7 +2174,7 @@ function showPredModal(mid){
     '<div id="scrResult" style="min-height:36px;"></div>'+
     '<div style="font-size:14px;font-weight:700;margin:12px 0 6px;text-align:center;">加时 / 点球</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">'+wtItem('H_ET')+wtItem('A_ET')+wtItem('H_PK')+wtItem('A_PK')+'</div>'+
-    '+
+    '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="wt_'+mid+'">'+[0,50].map(function(v){return '<span class="stake-btn'+(v===0?'':' active')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div></div>'+
     '<div id="wtResult" style="min-height:36px;">'+wtPredHtml+'</div>';
   document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
   	  if(isAdmin&&!m.settled&&m.home_score==null){
@@ -2306,7 +2306,7 @@ async function subPredModal(){
   var parts=score.split(':');var h=parseInt(parts[0]),a=parseInt(parts[1]);
   if(isNaN(h)||isNaN(a)){showToast('无效比分');return;}
   var wtBtn=document.querySelector('#predModalContent .wt-item-lg.active');
-  var wtSk=50;
+  var wtSk=document.querySelector('#wt_'+mid+' .stake-btn.active')?.dataset?.stake;
   var wtAllowed=canPredictWintime(pick,h,a);
   if(wtBtn&&!wtAllowed){showToast('只有预测平局或平局比分时可选加时/点球');return;}
   // Save score to predictions table (持久化，pick/wdlStake存在match.settlement.wdlPredictions中)
