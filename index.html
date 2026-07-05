@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.19';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.18';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -411,7 +411,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.13.19 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.13.18 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2177,11 +2177,6 @@ function showPredModal(mid){
     '<div class="stake-row" style="margin-top:4px;"><span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="wt_'+mid+'">'+[0,50].map(function(v){return '<span class="stake-btn'+(v===0?'':' active')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+'</div></div>'+
     '<div id="wtResult" style="min-height:36px;">'+wtPredHtml+'</div>';
   document.getElementById('predModal').classList.add('show');document.body.style.overflow='hidden';
-  if(!localStorage.getItem('wt_hint')){
-    var _hd=document.createElement('div');_hd.style.cssText='position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:9999;display:flex;align-items:center;justify-content:center;';
-    _hd.innerHTML='<div style="background:var(--card);padding:24px;border-radius:12px;max-width:300px;text-align:center;margin:20px;"><div style="font-size:14px;line-height:1.7;margin-bottom:16px;">⚽ 如果预测<span style="color:var(--gold);font-weight:700;">平局</span>或者<span style="color:var(--gold);font-weight:700;">平局的比分</span>，则可以预测加时/点球<br><br>加时/点球默认<span style="color:var(--gold);font-weight:700;">50分</span>，不中返还</div><label style="display:flex;align-items:center;gap:6px;font-size:12px;justify-content:center;margin-bottom:12px;cursor:pointer;"><input type="checkbox" id="wtHintHide" style="width:16px;height:16px;"> 下次不再显示</label><button class="btn btn-primary" style="padding:8px 24px;" onclick="if(document.getElementById('wtHintHide')&&document.getElementById('wtHintHide').checked)localStorage.setItem('wt_hint','1');this.closest('div').parentNode.remove();">知道了</button></div>';
-    document.getElementById('predModal').appendChild(_hd);
-  }
   	  if(isAdmin&&!m.settled&&m.home_score==null){
 	    var sb=document.createElement('div');sb.style.cssText='text-align:center;margin:2px 0 10px;';
 	    sb.innerHTML='<button class="btn btn-gold btn-small" id="saveOddsBtn" style="font-size:11px;padding:3px 10px;">' + String.fromCharCode(128190) + String.fromCharCode(32) + String.fromCharCode(20445,23384,20462,25913) + '</button>';
