@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.22';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.23';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -413,7 +413,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.13.22 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.13.23 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1616,7 +1616,7 @@ function renderPast(){
     let wi='';
     if(m.settlement?.type==='void') wi=`<div style="font-size:11px;color:var(--text2);margin-top:6px;">💤 流局</div>`;
     let rd='';
-    if(m.home_score!=null) rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`;
+    if(m.home_score!=null) {var _wtR=m.settlement?.wintimeResult||'',_wtS=m.settlement?.wintimeScore||'';rd=`<div class="match-score">${m.home_score} - ${m.away_score}</div>`+(_wtR?'<div style="font-size:10px;color:var(--gold);text-align:center;margin-top:2px;">'+(_wtR.includes('PK')?'点球':'加时')+(_wtS?' '+_wtS:'')+' '+(m.settlement?.wintimeResult?.includes('H')?'🏠':'✈️')+'</div>':'');}
     else rd=`<div class="match-score"><span class="vs">VS</span></div>`;
         // Per-player P&L details
     const mp=getPreds(m.id);const s=m.settlement;
@@ -1638,7 +1638,7 @@ function renderPast(){
             '</div>'+
             '<div style="font-size:10px;padding:1px 0;"><span style="color:'+(w?(w.correct?'var(--primary)':'var(--red)'):'var(--text2)')+';">胜平负:'+wdlTxt+'</span></div>'+
             '<div style="font-size:10px;padding:1px 0;"><span style="color:'+(c?(c.exact?'var(--primary)':'var(--red)'):'var(--text2)')+';">比分:'+scTxt+'</span></div>'+
-            '<div style="font-size:10px;padding:1px 0;"><span style="color:'+(t?(t.correct?'var(--primary)':'var(--gold)'):'var(--text2)')+';">加时/点球:'+wtTxt+'</span></div>'+
+            '<div style="font-size:10px;padding:1px 0;"><span style="color:'+(t?(t.correct?'var(--primary)':'var(--gold)'):'var(--text2)')+';">'+(t?(t.pick.includes('ET')?'加时:':t.pick.includes('PK')?'点球:':'加时/点球:'):'加时/点球:')+wtTxt+'</span></div>'+
             (pen?'<div style="font-size:10px;padding:1px 0;"><span style="color:var(--red);">未预测扣分:-'+pen+'</span></div>':'')+
           '</div>';
         }).join('')+'</div></div>';
