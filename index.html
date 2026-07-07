@@ -429,14 +429,36 @@ const SB_URL = 'https://ndixftdwpufamhrxmlfw.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kaXhmdGR3cHVmYW1ocnhtbGZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMjcyMzksImV4cCI6MjA5ODYwMzIzOX0.Qz8PhttmbqfOY9NoliTlBXFvJDzI0WFSMeWQvRwf4d4';
 
 async function sbGet(table, opts='') {
+  const cacheKey = 'sb_cache_' + table + '_' + opts;
+  const cacheTimeKey = cacheKey + '_time';
+  const cacheMaxAge = 10 * 60 * 1000; // 10分钟缓存
+
+  const cached = localStorage.getItem(cacheKey);
+  const cachedTime = localStorage.getItem(cacheTimeKey);
+
+  if (cached && cachedTime && Date.now() - Number(cachedTime) < cacheMaxAge) {
+    return JSON.parse(cached);
+  }
+
   const r = await Promise.race([
-    fetch(SB_URL+'/rest/v1/'+table+opts, {
-      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Accept': 'application/json' }
+    fetch(SB_URL + '/rest/v1/' + table + opts, {
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Accept': 'application/json'
+      }
     }),
-    new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))
+    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 15000))
   ]);
-  if (!r.ok) throw new Error(table+' GET failed: '+r.status);
-  return r.json();
+
+  if (!r.ok) throw new Error(table + ' GET failed: ' + r.status);
+
+  const data = await r.json();
+
+  localStorage.setItem(cacheKey, JSON.stringify(data));
+  localStorage.setItem(cacheTimeKey, String(Date.now()));
+
+  return data;
 }
 
 async function sbPost(table, data) {
