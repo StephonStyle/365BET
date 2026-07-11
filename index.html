@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.25';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.26';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -413,7 +413,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.13.25 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.13.26 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -429,9 +429,9 @@ const SB_URL = 'https://ndixftdwpufamhrxmlfw.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kaXhmdGR3cHVmYW1ocnhtbGZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMjcyMzksImV4cCI6MjA5ODYwMzIzOX0.Qz8PhttmbqfOY9NoliTlBXFvJDzI0WFSMeWQvRwf4d4';
 
 async function sbGet(table, opts='') {
-  const cacheKey = 'sb_cache_' + table + '_' + opts;
+  const cacheKey = 'sb_cache_v3.13.26_' + table + '_' + opts;
   const cacheTimeKey = cacheKey + '_time';
-  const cacheMaxAge = 10 * 60 * 1000; // 10分钟缓存
+  const cacheMaxAge = 60 * 1000; // 1分钟缓存
 
   const cached = localStorage.getItem(cacheKey);
   const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -2397,6 +2397,7 @@ async function subPredModal(){
     var wd=document.getElementById('wtResult');
     if(wd&&wtBtn){var wtNames={H_ET:m.home+' 加时胜',A_ET:m.away+' 加时胜',H_PK:m.home+' 点球胜',A_PK:m.away+' 点球胜'};wd.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+(parseInt(wtSk)||50)+'分 '+wtNames[wtBtn.dataset.wt]+'</div>';}
     showToast('预测已提交');
+    try{localStorage.removeItem('bet365_cache');}catch(e){}
   }catch(e){showToast('提交失败');}
 }
 const ADMIN_PWD='321';
@@ -3721,8 +3722,6 @@ document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
-
-
 
 
 
