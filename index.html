@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.update(); });
   });
   caches.keys().then(function(ks) {
-    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.26';}).map(function(k){return caches.delete(k);}));
+    return Promise.all(ks.filter(function(k){return k!=='365BET-v3.13.27';}).map(function(k){return caches.delete(k);}));
   });
 }
 </script>
@@ -413,7 +413,7 @@ body {
 
 <div id="tabBracket" class="content"><div id="bracketContent"></div></div>
 
-<div class="footer">© 2026-2030 Stephon · v3.13.26 · 365BET</div>
+<div class="footer">© 2026-2030 Stephon · v3.13.27 · 365BET</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -429,7 +429,7 @@ const SB_URL = 'https://ndixftdwpufamhrxmlfw.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kaXhmdGR3cHVmYW1ocnhtbGZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMjcyMzksImV4cCI6MjA5ODYwMzIzOX0.Qz8PhttmbqfOY9NoliTlBXFvJDzI0WFSMeWQvRwf4d4';
 
 async function sbGet(table, opts='') {
-  const cacheKey = 'sb_cache_v3.13.26_' + table + '_' + opts;
+  const cacheKey = 'sb_cache_v3.13.27_' + table + '_' + opts;
   const cacheTimeKey = cacheKey + '_time';
   const cacheMaxAge = 60 * 1000; // 1分钟缓存
 
@@ -462,15 +462,32 @@ async function sbGet(table, opts='') {
 }
 
 async function sbPost(table, data) {
-  const r = await Promise.race([
-    fetch(SB_URL+'/rest/v1/'+table, {
-      method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify(data)
-    }),
-    new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))
-  ]);
-  if (!r.ok && r.status!==201) { const te=await r.text(); throw new Error(table+' POST failed: '+r.status+' '+te); }
-  return r;
+  let payload={...data};
+  for(let attempt=0;attempt<4;attempt++){
+    const r = await Promise.race([
+      fetch(SB_URL+'/rest/v1/'+table, {
+        method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer '+SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify(payload)
+      }),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))
+    ]);
+    if(r.ok||r.status===201) return r;
+    const te=await r.text();
+    // predictions 历史导入后自增序列可能落后；主键冲突时用当前最大 ID 重试。
+    if(table==='predictions'&&te.includes('predictions_pkey')){
+      const mr=await fetch(SB_URL+'/rest/v1/predictions?select=id&order=id.desc&limit=1',{
+        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Accept':'application/json'}
+      });
+      if(mr.ok){
+        const rows=await mr.json();
+        const maxId=rows.length?Number(rows[0].id)||0:0;
+        payload={...data,id:Math.max(maxId+1,Number(payload.id||0)+1)};
+        continue;
+      }
+    }
+    throw new Error(table+' POST failed: '+r.status+' '+te);
+  }
+  throw new Error(table+' POST failed: primary key retry exhausted');
 }
 
 async function sbPatch(table, data) {
@@ -3722,7 +3739,6 @@ document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
-
 
 
 

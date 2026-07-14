@@ -1,4 +1,4 @@
-const CACHE = '365BET-v3.13.26';
+const CACHE = '365BET-v3.13.27';
 self.addEventListener('install',function(e){
   self.skipWaiting();
 });
